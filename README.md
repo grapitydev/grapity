@@ -1,6 +1,6 @@
 # @grapity/grapity
 
-grapity - API spec registry and compatibility guardian. Unified package containing the CLI, Registry server, and Hub developer portal.
+grapity - API spec registry and compatibility guardian.
 
 Requires Node.js 20+.
 

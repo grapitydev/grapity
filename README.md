@@ -2,8 +2,6 @@
 
 grapity - API spec registry and compatibility guardian.
 
-Requires Node.js 20+.
-
 [Quickstart](https://grapity.dev/docs/getting-started/quickstart) · [CLI Reference](https://grapity.dev/docs/cli-reference/init)
 
 ## Installation

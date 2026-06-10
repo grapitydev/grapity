@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1777109278745,
+      "tag": "0000_curly_firebrand",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1777109540592,
+      "tag": "0001_amazing_purple_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1780233327415,
+      "tag": "0002_powerful_union_jack",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1780261614822,
+      "tag": "0003_aspiring_edwin_jarvis",
+      "breakpoints": true
+    }
+  ]
+}

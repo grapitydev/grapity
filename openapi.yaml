@@ -1,0 +1,3843 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Grapity Registry API",
+    "version": "0.2.0",
+    "description": "The Grapity Registry is an API contract guardian. It validates, versions, and enforces backward compatibility for OpenAPI and AsyncAPI specs. It also manages gateway configurations and ingests gateway access logs. Every spec that enters the registry has earned its place.\n",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3750",
+      "description": "Local development server"
+    }
+  ],
+  "security": [
+    {
+      "apiKey": []
+    },
+    {}
+  ],
+  "tags": [
+    {
+      "name": "health",
+      "description": "Server health"
+    },
+    {
+      "name": "specs",
+      "description": "Spec management — push, list, retrieve, validate, versions, delete, and compatibility"
+    },
+    {
+      "name": "gateway-configs",
+      "description": "Gateway configuration management"
+    },
+    {
+      "name": "gateway-logs",
+      "description": "Gateway access log ingestion and querying"
+    }
+  ],
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "operationId": "getHealth",
+        "tags": [
+          "health"
+        ],
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "Server is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "version": "0.2.0",
+                  "uptime": 3600.42
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/specs": {
+      "get": {
+        "operationId": "listSpecs",
+        "tags": [
+          "specs"
+        ],
+        "summary": "List all specs",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SpecType"
+            },
+            "description": "Filter by spec type"
+          },
+          {
+            "name": "owner",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by owner"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated list of tags to filter by",
+            "example": "payments,public"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of specs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListSpecsResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "name": "payments-api",
+                      "type": "openapi",
+                      "description": "Payments service API",
+                      "owner": "platform-team",
+                      "sourceRepo": "https://github.com/acme/payments-service",
+                      "tags": [
+                        "payments",
+                        "public"
+                      ],
+                      "createdAt": "2026-04-25T10:30:00.000Z",
+                      "updatedAt": "2026-06-07T14:00:00.000Z",
+                      "latestVersion": {
+                        "id": "ver-uuid-1",
+                        "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                        "semver": "1.2.0",
+                        "checksum": "sha256-abc123",
+                        "gitRef": "a1b2c3d4",
+                        "pushedBy": "github-actions[bot]",
+                        "previousVersion": "1.1.0",
+                        "isPrerelease": false,
+                        "createdAt": "2026-06-07T14:00:00.000Z"
+                      }
+                    },
+                    {
+                      "id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+                      "name": "notifications-api",
+                      "type": "asyncapi",
+                      "description": "Event-driven notifications",
+                      "owner": "messaging-team",
+                      "tags": [
+                        "events",
+                        "internal"
+                      ],
+                      "createdAt": "2026-05-01T09:00:00.000Z",
+                      "updatedAt": "2026-05-15T11:30:00.000Z",
+                      "latestVersion": {
+                        "id": "ver-uuid-2",
+                        "specId": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+                        "semver": "0.3.0",
+                        "checksum": "sha256-def456",
+                        "isPrerelease": true,
+                        "createdAt": "2026-05-15T11:30:00.000Z"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "pushSpec",
+        "tags": [
+          "specs"
+        ],
+        "summary": "Push a spec version",
+        "description": "Push a new spec version to the registry. On the first push for a given name, the spec is created. On subsequent pushes, the spec is diffed against the previous version. Breaking changes are blocked unless `force: true` is provided with a reason.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushSpecRequest"
+              },
+              "example": {
+                "content": "openapi: 3.1.0\ninfo:\n  title: Payments API\n  version: 1.0.0\npaths:\n  /payments:\n    get:\n      operationId: listPayments\n      responses:\n        '200':\n          description: OK\n",
+                "name": "payments-api",
+                "type": "openapi",
+                "description": "Payments service API",
+                "owner": "platform-team",
+                "sourceRepo": "https://github.com/acme/payments-service",
+                "tags": [
+                  "payments",
+                  "public"
+                ],
+                "gitRef": "a1b2c3d4",
+                "pushedBy": "github-actions[bot]",
+                "prerelease": false,
+                "force": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Spec version registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushSpecResponse"
+                },
+                "example": {
+                  "data": {
+                    "isNewSpec": false,
+                    "spec": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "name": "payments-api",
+                      "type": "openapi",
+                      "description": "Payments service API",
+                      "owner": "platform-team",
+                      "sourceRepo": "https://github.com/acme/payments-service",
+                      "tags": [
+                        "payments",
+                        "public"
+                      ],
+                      "createdAt": "2026-04-25T10:30:00.000Z",
+                      "updatedAt": "2026-06-07T14:00:00.000Z"
+                    },
+                    "version": {
+                      "id": "ver-uuid-3",
+                      "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "semver": "1.2.0",
+                      "checksum": "sha256-ghi789",
+                      "gitRef": "a1b2c3d4",
+                      "pushedBy": "github-actions[bot]",
+                      "previousVersion": "1.1.0",
+                      "isPrerelease": false,
+                      "createdAt": "2026-06-07T14:00:00.000Z",
+                      "compatibility": {
+                        "previousVersion": "1.1.0",
+                        "classification": "minor",
+                        "suggestedVersion": "1.2.0",
+                        "breakingChanges": [],
+                        "safeChanges": [
+                          {
+                            "id": "chg-1",
+                            "rule": "endpoint-added",
+                            "description": "Endpoint GET /payments/{id}/refunds added",
+                            "path": "/payments/{id}/refunds/GET"
+                          }
+                        ]
+                      }
+                    },
+                    "compatReport": {
+                      "previousVersion": "1.1.0",
+                      "classification": "minor",
+                      "suggestedVersion": "1.2.0",
+                      "breakingChanges": [],
+                      "safeChanges": [
+                        {
+                          "id": "chg-1",
+                          "rule": "endpoint-added",
+                          "description": "Endpoint GET /payments/{id}/refunds added",
+                          "path": "/payments/{id}/refunds/GET"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required fields or invalid spec content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "bad_request",
+                  "message": "Missing required field: content",
+                  "statusCode": 400
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Breaking change detected. The spec breaks backward compatibility with the previous version. Use `force: true` with a `reason` to override and create an audit record.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BreakingChangeError"
+                },
+                "example": {
+                  "error": "breaking_change",
+                  "message": "Breaking changes detected. Use force: true with a reason to override.",
+                  "statusCode": 409,
+                  "compatReport": {
+                    "previousVersion": "1.1.0",
+                    "classification": "major",
+                    "suggestedVersion": "2.0.0",
+                    "breakingChanges": [
+                      {
+                        "id": "chg-2",
+                        "rule": "response-property-removed",
+                        "description": "Response property 'userId' was removed from GET /users/{id}",
+                        "path": "/users/{id}/GET/response/200/userId"
+                      }
+                    ],
+                    "safeChanges": []
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Prerelease constraint violation. A prerelease version (0.x) cannot be pushed after a release version (1.x+) has already been registered.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "prerelease_constraint",
+                  "message": "Cannot push pre-release version. payments-api@1.1.0 is already a release version.",
+                  "statusCode": 422
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/specs/{name}": {
+      "get": {
+        "operationId": "getSpec",
+        "tags": [
+          "specs"
+        ],
+        "summary": "Get a spec and its latest version",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/specName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Spec metadata and latest version",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetSpecResponse"
+                },
+                "example": {
+                  "data": {
+                    "spec": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "name": "payments-api",
+                      "type": "openapi",
+                      "description": "Payments service API",
+                      "owner": "platform-team",
+                      "sourceRepo": "https://github.com/acme/payments-service",
+                      "tags": [
+                        "payments",
+                        "public"
+                      ],
+                      "createdAt": "2026-04-25T10:30:00.000Z",
+                      "updatedAt": "2026-06-07T14:00:00.000Z"
+                    },
+                    "latestVersion": {
+                      "id": "ver-uuid-1",
+                      "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "semver": "1.2.0",
+                      "checksum": "sha256-abc123",
+                      "gitRef": "a1b2c3d4",
+                      "pushedBy": "github-actions[bot]",
+                      "previousVersion": "1.1.0",
+                      "isPrerelease": false,
+                      "createdAt": "2026-06-07T14:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Spec not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Spec \"payments-api\" not found",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteSpec",
+        "tags": [
+          "specs"
+        ],
+        "summary": "Delete a spec and all its versions",
+        "description": "Deletes a spec and all associated versions from the registry. This action is permanent and cannot be undone. The operation is recorded in the audit log.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/specName"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Spec deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Spec not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Spec \"payments-api\" not found",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/specs/{name}/validate": {
+      "post": {
+        "operationId": "validateSpec",
+        "tags": [
+          "specs"
+        ],
+        "summary": "Validate a spec without pushing",
+        "description": "Validates the spec content and checks backward compatibility against the latest registered version for this name. Does not store anything.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/specName"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateSpecRequest"
+              },
+              "example": {
+                "content": "openapi: 3.1.0\ninfo:\n  title: Payments API\n  version: 1.0.0\npaths:\n  /payments:\n    get:\n      operationId: listPayments\n      responses:\n        '200':\n          description: OK\n"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Validation result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidateSpecResponse"
+                },
+                "example": {
+                  "data": {
+                    "valid": true,
+                    "compatReport": {
+                      "previousVersion": "1.1.0",
+                      "classification": "minor",
+                      "suggestedVersion": "1.2.0",
+                      "breakingChanges": [],
+                      "safeChanges": [
+                        {
+                          "id": "chg-1",
+                          "rule": "endpoint-added",
+                          "description": "Endpoint GET /payments/{id}/refunds added",
+                          "path": "/payments/{id}/refunds/GET"
+                        }
+                      ]
+                    },
+                    "warnings": []
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "bad_request",
+                  "message": "Request body must be valid JSON",
+                  "statusCode": 400
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Spec not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Spec \"payments-api\" not found",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/specs/{name}/versions": {
+      "get": {
+        "operationId": "listVersions",
+        "tags": [
+          "specs"
+        ],
+        "summary": "List all versions of a spec",
+        "description": "Returns versions ordered newest first.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/specName"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 25
+            },
+            "description": "Maximum number of versions to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            },
+            "description": "Number of versions to skip"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of versions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VersionsPage"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "ver-uuid-1",
+                      "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "semver": "1.2.0",
+                      "checksum": "sha256-abc123",
+                      "gitRef": "a1b2c3d4",
+                      "pushedBy": "github-actions[bot]",
+                      "previousVersion": "1.1.0",
+                      "isPrerelease": false,
+                      "createdAt": "2026-06-07T14:00:00.000Z"
+                    },
+                    {
+                      "id": "ver-uuid-0",
+                      "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "semver": "1.1.0",
+                      "checksum": "sha256-old456",
+                      "gitRef": "b2c3d4e5",
+                      "pushedBy": "github-actions[bot]",
+                      "previousVersion": "1.0.0",
+                      "isPrerelease": false,
+                      "createdAt": "2026-05-01T09:00:00.000Z"
+                    }
+                  ],
+                  "pagination": {
+                    "hasMore": false,
+                    "limit": 10,
+                    "offset": 0,
+                    "total": 2
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Spec not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Spec \"payments-api\" not found",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/specs/{name}/versions/{semver}": {
+      "get": {
+        "operationId": "getVersion",
+        "tags": [
+          "specs"
+        ],
+        "summary": "Get a specific version",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/specName"
+          },
+          {
+            "$ref": "#/components/parameters/semver"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Version detail including full spec content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetVersionResponse"
+                },
+                "example": {
+                  "data": {
+                    "id": "ver-uuid-1",
+                    "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "semver": "1.2.0",
+                    "checksum": "sha256-abc123",
+                    "gitRef": "a1b2c3d4",
+                    "pushedBy": "github-actions[bot]",
+                    "previousVersion": "1.1.0",
+                    "isPrerelease": false,
+                    "createdAt": "2026-06-07T14:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Spec or version not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Version 9.9.9 not found for spec \"payments-api\"",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/specs/{name}/spec.json": {
+      "get": {
+        "operationId": "getSpecJson",
+        "tags": [
+          "specs"
+        ],
+        "summary": "Get the latest spec as JSON",
+        "description": "Returns the latest version of the spec document as a parsed JSON object. The spec is converted to JSON regardless of the format it was pushed in. Content-Type reflects the spec type (OpenAPI or AsyncAPI).\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/specName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Spec document as JSON",
+            "content": {
+              "application/vnd.oai.openapi+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.aai.asyncapi+json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Spec not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Spec \"payments-api\" not found",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/specs/{name}/spec.yaml": {
+      "get": {
+        "operationId": "getSpecYaml",
+        "tags": [
+          "specs"
+        ],
+        "summary": "Get the latest spec as YAML",
+        "description": "Returns the latest version of the spec document as YAML text. The spec is converted to YAML regardless of the format it was pushed in. Content-Type reflects the spec type (OpenAPI or AsyncAPI).\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/specName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Spec document as YAML",
+            "content": {
+              "application/vnd.oai.openapi+yaml": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/vnd.aai.asyncapi+yaml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Spec not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Spec \"payments-api\" not found",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/specs/{name}/versions/{semver}/spec.json": {
+      "get": {
+        "operationId": "getVersionSpecJson",
+        "tags": [
+          "specs"
+        ],
+        "summary": "Get a specific version as JSON",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/specName"
+          },
+          {
+            "$ref": "#/components/parameters/semver"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Spec document as JSON",
+            "content": {
+              "application/vnd.oai.openapi+json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/vnd.aai.asyncapi+json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Spec or version not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Version 9.9.9 not found for spec \"payments-api\"",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/specs/{name}/versions/{semver}/spec.yaml": {
+      "get": {
+        "operationId": "getVersionSpecYaml",
+        "tags": [
+          "specs"
+        ],
+        "summary": "Get a specific version as YAML",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/specName"
+          },
+          {
+            "$ref": "#/components/parameters/semver"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Spec document as YAML",
+            "content": {
+              "application/vnd.oai.openapi+yaml": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/vnd.aai.asyncapi+yaml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Spec or version not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Version 9.9.9 not found for spec \"payments-api\"",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/specs/{name}/compat/{semver}": {
+      "get": {
+        "operationId": "getCompatReport",
+        "tags": [
+          "specs"
+        ],
+        "summary": "Get the compatibility report for a version",
+        "description": "Returns the compatibility report generated when this version was pushed. Not available for the first version of a spec (no previous version to diff against).\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/specName"
+          },
+          {
+            "$ref": "#/components/parameters/semver"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Compatibility report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCompatReportResponse"
+                },
+                "example": {
+                  "data": {
+                    "previousVersion": "1.1.0",
+                    "classification": "minor",
+                    "suggestedVersion": "1.2.0",
+                    "breakingChanges": [],
+                    "safeChanges": [
+                      {
+                        "id": "chg-1",
+                        "rule": "endpoint-added",
+                        "description": "Endpoint GET /payments/{id}/refunds added",
+                        "path": "/payments/{id}/refunds/GET"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Spec, version, or compat report not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Compat report not found for payments-api@1.0.0",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/specs/{name}/compare": {
+      "get": {
+        "operationId": "compareVersions",
+        "tags": [
+          "specs"
+        ],
+        "summary": "Compare two versions of a spec",
+        "description": "Returns an incremental comparison between two versions. All versions between the two endpoints are included, ordered oldest to newest. The response contains the precomputed compatibility report for each step.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/specName"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
+            },
+            "description": "Starting version (inclusive). If newer than `to`, the order is normalized.",
+            "example": "1.0.0"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
+            },
+            "description": "Ending version (inclusive). If older than `from`, the order is normalized.",
+            "example": "1.3.0"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Incremental comparison between versions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompareVersionsResponse"
+                },
+                "example": {
+                  "data": {
+                    "from": "1.0.0",
+                    "to": "1.3.0",
+                    "steps": [
+                      {
+                        "version": "1.1.0",
+                        "previousVersion": "1.0.0",
+                        "classification": "minor",
+                        "breakingChanges": [],
+                        "safeChanges": [
+                          {
+                            "id": "chg-1",
+                            "rule": "endpoint-added",
+                            "description": "Endpoint GET /payments/{id}/refunds added",
+                            "path": "/payments/{id}/refunds/GET",
+                            "category": "structural"
+                          }
+                        ]
+                      },
+                      {
+                        "version": "1.2.0",
+                        "previousVersion": "1.1.0",
+                        "classification": "patch",
+                        "breakingChanges": [],
+                        "safeChanges": []
+                      },
+                      {
+                        "version": "1.3.0",
+                        "previousVersion": "1.2.0",
+                        "classification": "major",
+                        "breakingChanges": [
+                          {
+                            "id": "chg-2",
+                            "rule": "response-property-removed",
+                            "description": "Response property 'userId' was removed from GET /users/{id}",
+                            "path": "/users/{id}/GET/response/200/userId",
+                            "category": "structural"
+                          }
+                        ],
+                        "safeChanges": []
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Spec or version not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Version 1.3.0 not found for spec \"payments-api\"",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/gateway-configs": {
+      "get": {
+        "operationId": "listGatewayConfigs",
+        "tags": [
+          "gateway-configs"
+        ],
+        "summary": "List all gateway configurations",
+        "responses": {
+          "200": {
+            "description": "List of gateway configurations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListGatewayConfigsResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "cfg-uuid-1",
+                      "name": "payments-api-gateway",
+                      "provider": "kong",
+                      "specName": "payments-api",
+                      "specSemver": "1.2.0",
+                      "createdAt": "2026-04-25T10:30:00.000Z",
+                      "updatedAt": "2026-06-07T14:00:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "pushGatewayConfig",
+        "tags": [
+          "gateway-configs"
+        ],
+        "summary": "Push a gateway configuration version",
+        "description": "Push a new gateway configuration version. On the first push for a given name, the config is created. On subsequent pushes, a new version is added and old versions are retained (up to 5).\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushGatewayConfigRequest"
+              },
+              "example": {
+                "name": "payments-api-gateway",
+                "provider": "kong",
+                "specName": "payments-api",
+                "specSemver": "1.2.0",
+                "routes": [
+                  {
+                    "path": "/payments",
+                    "methods": [
+                      "GET",
+                      "POST"
+                    ]
+                  },
+                  {
+                    "path": "/payments/{id}",
+                    "methods": [
+                      "GET",
+                      "PUT",
+                      "DELETE"
+                    ]
+                  }
+                ],
+                "environments": {
+                  "staging": {
+                    "kongAddr": "http://kong-staging:8001",
+                    "upstream": "http://payments-staging:8080",
+                    "plugins": [
+                      {
+                        "name": "rate-limiting",
+                        "config": {
+                          "minute": 1000
+                        },
+                        "order": 1
+                      },
+                      {
+                        "name": "jwt",
+                        "config": {
+                          "issuer": "https://auth.example.com"
+                        },
+                        "order": 2
+                      }
+                    ]
+                  }
+                },
+                "callerIdentification": {
+                  "strategy": "first-match",
+                  "rules": [
+                    {
+                      "source": "header:x-consumer-id",
+                      "confidence": "high"
+                    }
+                  ]
+                },
+                "content": "apiVersion: v1\nkind: GatewayConfig",
+                "pushedBy": "github-actions[bot]"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Gateway configuration version registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushGatewayConfigResponse"
+                },
+                "example": {
+                  "data": {
+                    "config": {
+                      "id": "cfg-uuid-1",
+                      "name": "payments-api-gateway",
+                      "provider": "kong",
+                      "specName": "payments-api",
+                      "specSemver": "1.2.0",
+                      "createdAt": "2026-04-25T10:30:00.000Z",
+                      "updatedAt": "2026-06-07T14:00:00.000Z"
+                    },
+                    "version": {
+                      "id": "ver-uuid-1",
+                      "gatewayConfigId": "cfg-uuid-1",
+                      "routes": [
+                        {
+                          "path": "/payments",
+                          "methods": [
+                            "GET",
+                            "POST"
+                          ]
+                        }
+                      ],
+                      "environments": [
+                        {
+                          "name": "staging",
+                          "kongAddr": "http://kong-staging:8001",
+                          "upstream": "http://payments-staging:8080",
+                          "plugins": [
+                            {
+                              "name": "rate-limiting",
+                              "config": {
+                                "minute": 1000
+                              },
+                              "order": 1
+                            }
+                          ]
+                        }
+                      ],
+                      "callerIdentification": {
+                        "strategy": "first-match",
+                        "rules": [
+                          {
+                            "source": "header:x-consumer-id",
+                            "confidence": "high"
+                          }
+                        ]
+                      },
+                      "content": "apiVersion: v1\nkind: GatewayConfig",
+                      "checksum": "sha256-abc123",
+                      "pushedBy": "github-actions[bot]",
+                      "createdAt": "2026-06-07T14:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "bad_request",
+                  "message": "Missing required field: name",
+                  "statusCode": 400
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Gateway config name already exists with different spec",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "name_exists",
+                  "message": "Gateway config name 'payments-api-gateway' already exists with a different spec",
+                  "statusCode": 409
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (unsupported provider, spec not found, route not found, or no environments)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unsupported_provider",
+                  "message": "Unsupported provider 'nginx'",
+                  "statusCode": 422
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/gateway-configs/{name}": {
+      "get": {
+        "operationId": "getGatewayConfig",
+        "tags": [
+          "gateway-configs"
+        ],
+        "summary": "Get a gateway configuration",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/gatewayConfigName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gateway configuration metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetGatewayConfigResponse"
+                },
+                "example": {
+                  "data": {
+                    "id": "cfg-uuid-1",
+                    "name": "payments-api-gateway",
+                    "provider": "kong",
+                    "specName": "payments-api",
+                    "specSemver": "1.2.0",
+                    "createdAt": "2026-04-25T10:30:00.000Z",
+                    "updatedAt": "2026-06-07T14:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Gateway config not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Gateway config \"payments-api-gateway\" not found",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/gateway-configs/{name}/versions": {
+      "get": {
+        "operationId": "listGatewayConfigVersions",
+        "tags": [
+          "gateway-configs"
+        ],
+        "summary": "List all versions of a gateway configuration",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/gatewayConfigName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of gateway config versions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListGatewayConfigVersionsResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "ver-uuid-1",
+                      "gatewayConfigId": "cfg-uuid-1",
+                      "routes": [
+                        {
+                          "path": "/payments",
+                          "methods": [
+                            "GET",
+                            "POST"
+                          ]
+                        }
+                      ],
+                      "environments": [
+                        {
+                          "name": "staging",
+                          "kongAddr": "http://kong-staging:8001",
+                          "upstream": "http://payments-staging:8080",
+                          "plugins": [
+                            {
+                              "name": "rate-limiting",
+                              "config": {
+                                "minute": 1000
+                              },
+                              "order": 1
+                            }
+                          ]
+                        }
+                      ],
+                      "callerIdentification": {
+                        "strategy": "first-match",
+                        "rules": [
+                          {
+                            "source": "header:x-consumer-id",
+                            "confidence": "high"
+                          }
+                        ]
+                      },
+                      "checksum": "sha256-abc123",
+                      "pushedBy": "github-actions[bot]",
+                      "createdAt": "2026-06-07T14:00:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Gateway config not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Gateway config \"payments-api-gateway\" not found",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/gateway-configs/{name}/versions/{versionId}": {
+      "get": {
+        "operationId": "getGatewayConfigVersion",
+        "tags": [
+          "gateway-configs"
+        ],
+        "summary": "Get a specific gateway configuration version",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/gatewayConfigName"
+          },
+          {
+            "$ref": "#/components/parameters/versionId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gateway configuration version detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetGatewayConfigVersionResponse"
+                },
+                "example": {
+                  "data": {
+                    "id": "ver-uuid-1",
+                    "gatewayConfigId": "cfg-uuid-1",
+                    "routes": [
+                      {
+                        "path": "/payments",
+                        "methods": [
+                          "GET",
+                          "POST"
+                        ]
+                      }
+                    ],
+                    "environments": [
+                      {
+                        "name": "staging",
+                        "kongAddr": "http://kong-staging:8001",
+                        "upstream": "http://payments-staging:8080",
+                        "plugins": [
+                          {
+                            "name": "rate-limiting",
+                            "config": {
+                              "minute": 1000
+                            },
+                            "order": 1
+                          }
+                        ]
+                      }
+                    ],
+                    "callerIdentification": {
+                      "strategy": "first-match",
+                      "rules": [
+                        {
+                          "source": "header:x-consumer-id",
+                          "confidence": "high"
+                        }
+                      ]
+                    },
+                    "content": "apiVersion: v1\nkind: GatewayConfig",
+                    "checksum": "sha256-abc123",
+                    "pushedBy": "github-actions[bot]",
+                    "createdAt": "2026-06-07T14:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Gateway config or version not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Version ver-uuid-99 not found for gateway config \"payments-api-gateway\"",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/gateway-logs/ingest/{provider}/{environment}": {
+      "post": {
+        "operationId": "ingestGatewayLog",
+        "tags": [
+          "gateway-logs"
+        ],
+        "summary": "Ingest a gateway access log",
+        "description": "Ingest a raw gateway access log entry. The payload format depends on the provider. For Kong, expects a Kong HTTP log payload.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/provider"
+          },
+          {
+            "$ref": "#/components/parameters/environment"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Provider-specific log payload"
+              },
+              "example": {
+                "service": {
+                  "name": "payments-api-gateway"
+                },
+                "request": {
+                  "method": "GET",
+                  "uri": "/payments",
+                  "headers": {
+                    "x-consumer-id": "consumer-123"
+                  }
+                },
+                "response": {
+                  "status": 200
+                },
+                "latencies": {
+                  "request": 42
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Log ingested successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    }
+                  }
+                },
+                "example": {
+                  "status": "ok"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid log payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "bad_request",
+                  "message": "Missing service.name in gateway log payload",
+                  "statusCode": 400
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/gateway-logs": {
+      "get": {
+        "operationId": "listGatewayLogs",
+        "tags": [
+          "gateway-logs"
+        ],
+        "summary": "Query gateway access logs",
+        "parameters": [
+          {
+            "name": "gatewayConfig",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by gateway config name"
+          },
+          {
+            "name": "environment",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by environment"
+          },
+          {
+            "name": "path",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by request path"
+          },
+          {
+            "name": "method",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by HTTP method"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by response status code"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Start of time range (ISO 8601)"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "End of time range (ISO 8601)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 50
+            },
+            "description": "Maximum number of logs to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            },
+            "description": "Number of logs to skip"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of gateway logs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListGatewayLogsResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "log-uuid-1",
+                      "provider": "kong",
+                      "gatewayConfigName": "payments-api-gateway",
+                      "environment": "staging",
+                      "method": "GET",
+                      "path": "/payments",
+                      "routePath": "/payments",
+                      "status": 200,
+                      "callerId": "consumer-123",
+                      "callerSource": "header:x-consumer-id",
+                      "callerConfidence": "high",
+                      "occurredAt": "2026-06-07T14:00:00.000Z",
+                      "createdAt": "2026-06-07T14:00:01.000Z"
+                    }
+                  ],
+                  "pagination": {
+                    "hasMore": false,
+                    "limit": 50,
+                    "offset": 0,
+                    "total": 1
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/gateway-logs/stats": {
+      "get": {
+        "operationId": "getGatewayLogStats",
+        "tags": [
+          "gateway-logs"
+        ],
+        "summary": "Get gateway log usage statistics",
+        "parameters": [
+          {
+            "name": "gatewayConfig",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by gateway config name"
+          },
+          {
+            "name": "environment",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by environment"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Start of time range (ISO 8601)"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "End of time range (ISO 8601)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usage statistics grouped by endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetGatewayLogStatsResponse"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "gatewayConfigName": "payments-api-gateway",
+                      "environment": "staging",
+                      "method": "GET",
+                      "routePath": "/payments",
+                      "lastSeenAt": "2026-06-07T14:00:00.000Z",
+                      "totalCalls": 15042,
+                      "uniqueCallerIds": 128
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/gateway-logs/{id}": {
+      "get": {
+        "operationId": "getGatewayLog",
+        "tags": [
+          "gateway-logs"
+        ],
+        "summary": "Get a single gateway log entry",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/logId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gateway log entry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetGatewayLogResponse"
+                },
+                "example": {
+                  "data": {
+                    "id": "log-uuid-1",
+                    "provider": "kong",
+                    "gatewayConfigName": "payments-api-gateway",
+                    "environment": "staging",
+                    "method": "GET",
+                    "path": "/payments",
+                    "routePath": "/payments",
+                    "status": 200,
+                    "callerId": "consumer-123",
+                    "callerSource": "header:x-consumer-id",
+                    "callerConfidence": "high",
+                    "occurredAt": "2026-06-07T14:00:00.000Z",
+                    "createdAt": "2026-06-07T14:00:01.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "unauthorized",
+                  "message": "Invalid API key",
+                  "statusCode": 401
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Log entry not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "not_found",
+                  "message": "Log not found",
+                  "statusCode": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "internal_error",
+                  "message": "Internal server error",
+                  "statusCode": 500
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "Required in remote mode (SaaS or self-hosted). Not required in local mode (`grapity serve` on localhost with auth: none).\n"
+      }
+    },
+    "parameters": {
+      "specName": {
+        "name": "name",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+        },
+        "description": "URL-friendly spec identifier",
+        "example": "payments-api"
+      },
+      "semver": {
+        "name": "semver",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
+        },
+        "description": "Semantic version",
+        "example": "1.2.0"
+      },
+      "gatewayConfigName": {
+        "name": "name",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+        },
+        "description": "URL-friendly gateway config identifier",
+        "example": "payments-api-gateway"
+      },
+      "versionId": {
+        "name": "versionId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": "Gateway config version UUID",
+        "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      },
+      "provider": {
+        "name": "provider",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Gateway provider (e.g., kong)",
+        "example": "kong"
+      },
+      "environment": {
+        "name": "environment",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Deployment environment (e.g., staging, production)",
+        "example": "staging"
+      },
+      "logId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": "Gateway log entry UUID",
+        "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      }
+    },
+    "schemas": {
+      "SpecListItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Spec"
+          }
+        ],
+        "type": "object",
+        "properties": {
+          "latestVersion": {
+            "$ref": "#/components/schemas/SpecVersion"
+          }
+        }
+      },
+      "ListSpecsResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecListItem"
+            }
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "required": [
+          "hasMore",
+          "limit",
+          "offset",
+          "total"
+        ],
+        "properties": {
+          "hasMore": {
+            "type": "boolean",
+            "example": true
+          },
+          "limit": {
+            "type": "integer",
+            "example": 10
+          },
+          "offset": {
+            "type": "integer",
+            "example": 0
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items",
+            "example": 42
+          }
+        }
+      },
+      "SpecType": {
+        "type": "string",
+        "enum": [
+          "openapi",
+          "asyncapi"
+        ]
+      },
+      "VersionClassification": {
+        "type": "string",
+        "enum": [
+          "initial",
+          "major",
+          "minor",
+          "patch"
+        ]
+      },
+      "Spec": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "type",
+          "tags",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "name": {
+            "type": "string",
+            "example": "payments-api"
+          },
+          "type": {
+            "$ref": "#/components/schemas/SpecType"
+          },
+          "description": {
+            "type": "string",
+            "example": "Payments service API"
+          },
+          "owner": {
+            "type": "string",
+            "example": "platform-team"
+          },
+          "sourceRepo": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://github.com/acme/payments-service"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "payments",
+              "public"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-25T10:30:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-06-07T14:00:00.000Z"
+          }
+        }
+      },
+      "SpecVersion": {
+        "type": "object",
+        "required": [
+          "id",
+          "specId",
+          "semver",
+          "checksum",
+          "isPrerelease",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "ver-uuid-1"
+          },
+          "specId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "semver": {
+            "type": "string",
+            "example": "1.2.0"
+          },
+          "checksum": {
+            "type": "string",
+            "description": "SHA-256 hash of the content",
+            "example": "sha256-abc123..."
+          },
+          "gitRef": {
+            "type": "string",
+            "description": "Git commit SHA at time of push",
+            "example": "a1b2c3d4"
+          },
+          "pushedBy": {
+            "type": "string",
+            "description": "User or CI identity that pushed this version",
+            "example": "github-actions[bot]"
+          },
+          "compatibility": {
+            "$ref": "#/components/schemas/CompatReport"
+          },
+          "previousVersion": {
+            "type": "string",
+            "description": "Semver of the previous version this was diffed against",
+            "example": "1.1.0"
+          },
+          "forceReason": {
+            "type": "string",
+            "description": "Reason provided when force-pushing a breaking change",
+            "example": "security fix CVE-2026-1234"
+          },
+          "isPrerelease": {
+            "type": "boolean",
+            "example": false
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-06-07T14:00:00.000Z"
+          }
+        }
+      },
+      "CompatReport": {
+        "type": "object",
+        "required": [
+          "previousVersion",
+          "classification",
+          "breakingChanges",
+          "safeChanges"
+        ],
+        "properties": {
+          "previousVersion": {
+            "type": "string",
+            "example": "1.1.0"
+          },
+          "classification": {
+            "$ref": "#/components/schemas/VersionClassification"
+          },
+          "breakingChanges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BreakingChange"
+            }
+          },
+          "safeChanges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SafeChange"
+            }
+          },
+          "suggestedVersion": {
+            "type": "string",
+            "description": "The version the registry suggests based on the classification",
+            "example": "2.0.0"
+          }
+        }
+      },
+      "BreakingChange": {
+        "title": "BreakingChange",
+        "type": "object",
+        "required": [
+          "id",
+          "rule",
+          "description",
+          "path",
+          "category"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "chg-2"
+          },
+          "rule": {
+            "type": "string",
+            "description": "Machine-readable rule identifier. Treat as an open string — new rules will be added as the compat engine evolves. Known values: endpoint-removed, endpoint-removed-without-deprecation, endpoint-removed-missing-sunset, endpoint-removed-before-sunset, required-request-param-added, response-property-removed, response-status-removed, stable-endpoint-marked-draft.\n",
+            "example": "response-property-removed"
+          },
+          "description": {
+            "type": "string",
+            "example": "Response property 'userId' was removed from GET /users/{id}"
+          },
+          "path": {
+            "type": "string",
+            "example": "/users/{id}/GET/response/200/userId"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "structural",
+              "documentation"
+            ],
+            "example": "structural"
+          },
+          "originalValue": {
+            "type": "string",
+            "example": "string"
+          },
+          "newValue": {
+            "type": "string",
+            "example": "null"
+          },
+          "affectedConsumers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "mobile-app",
+              "web-portal"
+            ]
+          }
+        }
+      },
+      "SafeChange": {
+        "title": "SafeChange",
+        "type": "object",
+        "required": [
+          "id",
+          "rule",
+          "description",
+          "path",
+          "category"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "chg-1"
+          },
+          "rule": {
+            "type": "string",
+            "description": "Machine-readable rule identifier. Treat as an open string — new rules will be added as the compat engine evolves. Known values: endpoint-added, endpoint-deprecated, optional-request-param-added, response-status-added, draft-endpoint-changed.\n",
+            "example": "endpoint-added"
+          },
+          "description": {
+            "type": "string",
+            "example": "Optional response property 'metadata' added to GET /users/{id}"
+          },
+          "path": {
+            "type": "string",
+            "example": "/users/{id}/GET/response/200/metadata"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "structural",
+              "documentation"
+            ],
+            "example": "structural"
+          }
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "required": [
+          "error",
+          "message",
+          "statusCode"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Machine-readable error code",
+            "example": "not_found"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error description",
+            "example": "Spec \"payments-api\" not found"
+          },
+          "statusCode": {
+            "type": "integer",
+            "example": 404
+          }
+        }
+      },
+      "BreakingChangeError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiError"
+          },
+          {
+            "type": "object",
+            "required": [
+              "compatReport"
+            ],
+            "properties": {
+              "compatReport": {
+                "$ref": "#/components/schemas/CompatReport"
+              }
+            },
+            "description": "Returned when a push is blocked due to breaking changes. The compatReport describes exactly what changed and suggests the correct next semver.\n"
+          }
+        ]
+      },
+      "HealthResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "version",
+          "uptime"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "example": "0.2.0"
+          },
+          "uptime": {
+            "type": "number",
+            "description": "Server uptime in seconds",
+            "example": 3600.42
+          }
+        }
+      },
+      "PushSpecRequest": {
+        "type": "object",
+        "required": [
+          "content",
+          "name"
+        ],
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Raw OpenAPI or AsyncAPI document (YAML or JSON)",
+            "example": "openapi: 3.1.0\ninfo:\n  title: Payments API\n  version: 1.0.0"
+          },
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$",
+            "example": "payments-api"
+          },
+          "type": {
+            "$ref": "#/components/schemas/SpecType"
+          },
+          "description": {
+            "type": "string",
+            "example": "Payments service API"
+          },
+          "owner": {
+            "type": "string",
+            "example": "platform-team"
+          },
+          "sourceRepo": {
+            "type": "string",
+            "format": "uri"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "payments",
+              "public"
+            ]
+          },
+          "gitRef": {
+            "type": "string",
+            "description": "Git commit SHA",
+            "example": "a1b2c3d4"
+          },
+          "pushedBy": {
+            "type": "string",
+            "description": "User or CI identity performing the push",
+            "example": "github-actions[bot]"
+          },
+          "prerelease": {
+            "type": "boolean",
+            "default": false,
+            "description": "Push as a prerelease version (0.x)"
+          },
+          "force": {
+            "type": "boolean",
+            "default": false,
+            "description": "Override breaking change block. Requires `reason`."
+          },
+          "reason": {
+            "type": "string",
+            "description": "Required when `force` is true. Recorded in the audit log.",
+            "example": "security fix CVE-2026-1234"
+          }
+        }
+      },
+      "PushSpecResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "isNewSpec",
+              "spec",
+              "version",
+              "compatReport"
+            ],
+            "properties": {
+              "compatReport": {
+                "$ref": "#/components/schemas/CompatReport"
+              },
+              "isNewSpec": {
+                "type": "boolean",
+                "description": "True if this is the first version of this spec"
+              },
+              "spec": {
+                "$ref": "#/components/schemas/Spec"
+              },
+              "version": {
+                "$ref": "#/components/schemas/SpecVersion"
+              }
+            }
+          }
+        }
+      },
+      "ValidateSpecRequest": {
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Raw OpenAPI or AsyncAPI document (YAML or JSON)",
+            "example": "openapi: 3.1.0\ninfo:\n  title: Payments API\n  version: 1.0.0"
+          }
+        }
+      },
+      "ValidateSpecResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "valid"
+            ],
+            "properties": {
+              "compatReport": {
+                "$ref": "#/components/schemas/CompatReport"
+              },
+              "errors": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "valid": {
+                "type": "boolean"
+              },
+              "warnings": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GetSpecResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "spec"
+            ],
+            "properties": {
+              "latestVersion": {
+                "$ref": "#/components/schemas/SpecVersion"
+              },
+              "spec": {
+                "$ref": "#/components/schemas/Spec"
+              }
+            }
+          }
+        }
+      },
+      "VersionsPage": {
+        "type": "object",
+        "required": [
+          "data",
+          "pagination"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SpecVersion"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "GetVersionResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/SpecVersion"
+          }
+        }
+      },
+      "GetCompatReportResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CompatReport"
+          }
+        }
+      },
+      "CompareStep": {
+        "type": "object",
+        "required": [
+          "version",
+          "previousVersion",
+          "classification",
+          "breakingChanges",
+          "safeChanges"
+        ],
+        "properties": {
+          "version": {
+            "type": "string",
+            "example": "1.1.0"
+          },
+          "previousVersion": {
+            "type": "string",
+            "example": "1.0.0"
+          },
+          "classification": {
+            "$ref": "#/components/schemas/VersionClassification"
+          },
+          "breakingChanges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BreakingChange"
+            }
+          },
+          "safeChanges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SafeChange"
+            }
+          }
+        }
+      },
+      "CompareVersionsResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "from",
+              "to",
+              "steps"
+            ],
+            "properties": {
+              "from": {
+                "type": "string",
+                "example": "1.0.0"
+              },
+              "to": {
+                "type": "string",
+                "example": "1.3.0"
+              },
+              "steps": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CompareStep"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GatewayConfig": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "provider",
+          "specName",
+          "specSemver",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "cfg-uuid-1"
+          },
+          "name": {
+            "type": "string",
+            "example": "payments-api-gateway"
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "kong"
+            ],
+            "example": "kong"
+          },
+          "specName": {
+            "type": "string",
+            "example": "payments-api"
+          },
+          "specSemver": {
+            "type": "string",
+            "example": "1.2.0"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-25T10:30:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-06-07T14:00:00.000Z"
+          }
+        }
+      },
+      "GatewayRoute": {
+        "type": "object",
+        "required": [
+          "path",
+          "methods"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "example": "/payments"
+          },
+          "methods": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "GET",
+              "POST"
+            ]
+          }
+        }
+      },
+      "GatewayPlugin": {
+        "type": "object",
+        "required": [
+          "name",
+          "config"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "rate-limiting"
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Plugin-specific configuration",
+            "example": {
+              "minute": 1000
+            }
+          },
+          "order": {
+            "type": "integer",
+            "description": "Execution order",
+            "example": 1
+          }
+        }
+      },
+      "GatewayEnvironment": {
+        "type": "object",
+        "required": [
+          "name",
+          "kongAddr",
+          "upstream",
+          "plugins"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "staging"
+          },
+          "kongAddr": {
+            "type": "string",
+            "example": "http://kong-staging:8001"
+          },
+          "upstream": {
+            "type": "string",
+            "example": "http://payments-staging:8080"
+          },
+          "plugins": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GatewayPlugin"
+            }
+          }
+        }
+      },
+      "CallerIdentificationRule": {
+        "type": "object",
+        "required": [
+          "source",
+          "confidence"
+        ],
+        "properties": {
+          "source": {
+            "type": "string",
+            "example": "header:x-consumer-id"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low",
+              "anonymous"
+            ],
+            "example": "high"
+          }
+        }
+      },
+      "CallerIdentification": {
+        "type": "object",
+        "required": [
+          "strategy",
+          "rules"
+        ],
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "enum": [
+              "first-match"
+            ],
+            "example": "first-match"
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CallerIdentificationRule"
+            }
+          }
+        }
+      },
+      "GatewayConfigVersion": {
+        "type": "object",
+        "required": [
+          "id",
+          "gatewayConfigId",
+          "routes",
+          "environments",
+          "content",
+          "checksum",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "ver-uuid-1"
+          },
+          "gatewayConfigId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "cfg-uuid-1"
+          },
+          "routes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GatewayRoute"
+            }
+          },
+          "environments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GatewayEnvironment"
+            }
+          },
+          "callerIdentification": {
+            "$ref": "#/components/schemas/CallerIdentification"
+          },
+          "content": {
+            "type": "string",
+            "description": "Raw gateway config document",
+            "example": "apiVersion: v1\nkind: GatewayConfig"
+          },
+          "checksum": {
+            "type": "string",
+            "description": "SHA-256 hash of the content",
+            "example": "sha256-abc123..."
+          },
+          "pushedBy": {
+            "type": "string",
+            "example": "github-actions[bot]"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-06-07T14:00:00.000Z"
+          }
+        }
+      },
+      "PublicGatewayConfigVersion": {
+        "type": "object",
+        "description": "Gateway config version without the content field",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/GatewayConfigVersion"
+          }
+        ],
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Content is omitted in list responses to keep them lightweight",
+            "nullable": true
+          }
+        }
+      },
+      "PushGatewayConfigRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "provider",
+          "specName",
+          "specSemver",
+          "routes",
+          "environments",
+          "content"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "payments-api-gateway"
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "kong"
+            ],
+            "example": "kong"
+          },
+          "specName": {
+            "type": "string",
+            "example": "payments-api"
+          },
+          "specSemver": {
+            "type": "string",
+            "example": "1.2.0"
+          },
+          "routes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GatewayRoute"
+            }
+          },
+          "environments": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": [
+                "name",
+                "kongAddr",
+                "upstream",
+                "plugins"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "kongAddr": {
+                  "type": "string"
+                },
+                "upstream": {
+                  "type": "string"
+                },
+                "plugins": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GatewayPlugin"
+                  }
+                }
+              }
+            },
+            "example": {
+              "staging": {
+                "name": "staging",
+                "kongAddr": "http://kong-staging:8001",
+                "upstream": "http://payments-staging:8080",
+                "plugins": [
+                  {
+                    "name": "rate-limiting",
+                    "config": {
+                      "minute": 1000
+                    },
+                    "order": 1
+                  }
+                ]
+              }
+            }
+          },
+          "callerIdentification": {
+            "$ref": "#/components/schemas/CallerIdentification"
+          },
+          "content": {
+            "type": "string",
+            "description": "Raw gateway config document",
+            "example": "apiVersion: v1\nkind: GatewayConfig"
+          },
+          "pushedBy": {
+            "type": "string",
+            "example": "github-actions[bot]"
+          }
+        }
+      },
+      "PushGatewayConfigResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "config",
+              "version"
+            ],
+            "properties": {
+              "config": {
+                "$ref": "#/components/schemas/GatewayConfig"
+              },
+              "version": {
+                "$ref": "#/components/schemas/GatewayConfigVersion"
+              }
+            }
+          }
+        }
+      },
+      "ListGatewayConfigsResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GatewayConfig"
+            }
+          }
+        }
+      },
+      "GetGatewayConfigResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/GatewayConfig"
+          }
+        }
+      },
+      "ListGatewayConfigVersionsResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicGatewayConfigVersion"
+            }
+          }
+        }
+      },
+      "GetGatewayConfigVersionResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/GatewayConfigVersion"
+          }
+        }
+      },
+      "GatewayLog": {
+        "type": "object",
+        "required": [
+          "id",
+          "provider",
+          "gatewayConfigName",
+          "environment",
+          "method",
+          "path",
+          "status",
+          "callerConfidence",
+          "occurredAt",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "log-uuid-1"
+          },
+          "provider": {
+            "type": "string",
+            "example": "kong"
+          },
+          "gatewayConfigName": {
+            "type": "string",
+            "example": "payments-api-gateway"
+          },
+          "environment": {
+            "type": "string",
+            "example": "staging"
+          },
+          "method": {
+            "type": "string",
+            "example": "GET"
+          },
+          "path": {
+            "type": "string",
+            "example": "/payments"
+          },
+          "routePath": {
+            "type": "string",
+            "example": "/payments"
+          },
+          "status": {
+            "type": "integer",
+            "example": 200
+          },
+          "callerId": {
+            "type": "string",
+            "example": "consumer-123"
+          },
+          "callerSource": {
+            "type": "string",
+            "example": "header:x-consumer-id"
+          },
+          "callerConfidence": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low",
+              "anonymous"
+            ],
+            "example": "high"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-06-07T14:00:00.000Z"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-06-07T14:00:01.000Z"
+          }
+        }
+      },
+      "ListGatewayLogsResponse": {
+        "type": "object",
+        "required": [
+          "data",
+          "pagination"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GatewayLog"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        }
+      },
+      "GatewayLogStatEntry": {
+        "type": "object",
+        "required": [
+          "gatewayConfigName",
+          "environment",
+          "method",
+          "routePath",
+          "lastSeenAt",
+          "totalCalls",
+          "uniqueCallerIds"
+        ],
+        "properties": {
+          "gatewayConfigName": {
+            "type": "string",
+            "example": "payments-api-gateway"
+          },
+          "environment": {
+            "type": "string",
+            "example": "staging"
+          },
+          "method": {
+            "type": "string",
+            "example": "GET"
+          },
+          "routePath": {
+            "type": "string",
+            "example": "/payments"
+          },
+          "lastSeenAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-06-07T14:00:00.000Z"
+          },
+          "totalCalls": {
+            "type": "integer",
+            "example": 15042
+          },
+          "uniqueCallerIds": {
+            "type": "integer",
+            "example": 128
+          }
+        }
+      },
+      "GetGatewayLogStatsResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GatewayLogStatEntry"
+            }
+          }
+        }
+      },
+      "GetGatewayLogResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/GatewayLog"
+          }
+        }
+      }
+    }
+  }
+}

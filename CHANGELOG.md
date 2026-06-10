@@ -4,6 +4,23 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.2.0](https://github.com/grapitydev/grapity/compare/v0.1.0...v0.2.0) (2026-06-10)
+
+
+### Features
+
+* unify @grapity/core, @grapity/registry, @grapity/hub, @grapity/cli into @grapity/grapity ([d0d6c74](https://github.com/grapitydev/grapity/commit/d0d6c74bfd11ef9c8648f11fe1c962c99641c10c))
+
+
+### Bug Fixes
+
+* add renovate.json with fix prefix for dependency bumps ([13a8699](https://github.com/grapitydev/grapity/commit/13a8699ea15ac5e813ae0cd6f0bbba1f8c516c6f))
+* drop bold Documentation prefix and link to Quickstart ([ebdad9b](https://github.com/grapitydev/grapity/commit/ebdad9b392ef401ff526dc78e7bdf52fe9f303ce))
+* improve documentation link in README ([ae4f7d8](https://github.com/grapitydev/grapity/commit/ae4f7d8b4d4f03d8d598177c4e329eb3df38cec3))
+* prevent vite build from clearing dist/ and removing core/registry output ([9d596d0](https://github.com/grapitydev/grapity/commit/9d596d0018fbb48447c2d68b6e1fc41bb02c0ceb))
+* remove Node.js version requirement from README ([35269e6](https://github.com/grapitydev/grapity/commit/35269e649df65a7df45ef54acffddfe9552c29ca))
+* remove redundant unified package description ([27dd33f](https://github.com/grapitydev/grapity/commit/27dd33fd3e05b0a48d47d6b6b576df7857015654))
+
 ## [0.1.0](https://github.com/grapitydev/grapity/releases/tag/v0.1.0) (2026-06-10)
 
 ### Features

@@ -4,7 +4,7 @@ grapity - API spec registry and compatibility guardian. Unified package containi
 
 Requires Node.js 20+.
 
-**Documentation:** [grapity.dev/docs/cli-reference/init](https://grapity.dev/docs/cli-reference/init) · [Quickstart](https://grapity.dev/docs/getting-started/quickstart)
+**Documentation:** [grapity.dev/docs](https://grapity.dev/docs) · [CLI Reference](https://grapity.dev/docs/cli-reference/init)
 
 ## Installation
 

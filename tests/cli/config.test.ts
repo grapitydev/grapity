@@ -54,12 +54,11 @@ describe("getConfig", () => {
     expect(config.local?.sqlitePath).toBe("/data/registry.db");
   });
 
-  test("returns remote config with url and apiKey", () => {
-    writeConfig({ mode: "remote", remote: { url: "https://api.grapity.dev", apiKey: "secret" } });
+  test("returns remote config with url", () => {
+    writeConfig({ mode: "remote", remote: { url: "https://api.grapity.dev" } });
     const config = getConfig();
     expect(config.mode).toBe("remote");
     expect(config.remote?.url).toBe("https://api.grapity.dev");
-    expect(config.remote?.apiKey).toBe("secret");
   });
 
   test("falls back to default port when local port is missing", () => {

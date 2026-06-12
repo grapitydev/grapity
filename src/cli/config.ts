@@ -7,7 +7,6 @@ export interface Config {
   mode: "local" | "remote";
   remote?: {
     url: string;
-    apiKey?: string;
   };
   local?: {
     port: number;

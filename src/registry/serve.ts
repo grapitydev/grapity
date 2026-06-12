@@ -9,19 +9,20 @@ import { SQLiteSpecStore } from "./storage/sqlite";
 export async function startServer(userConfig?: Partial<ServerConfig>) {
   const config: ServerConfig = { ...defaultConfig, ...userConfig };
 
-  if (!config.sqlitePath && config.database === "sqlite") {
-    const homeDir = process.env.HOME || process.env.USERPROFILE || ".";
-    config.sqlitePath = path.join(homeDir, ".grapity", "registry.db");
+  const sqlitePath =
+    config.sqlitePath ??
+    path.join(
+      process.env.HOME || process.env.USERPROFILE || ".",
+      ".grapity",
+      "registry.db"
+    );
+
+  const dir = path.dirname(sqlitePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
   }
 
-  if (config.database === "sqlite" && config.sqlitePath) {
-    const dir = path.dirname(config.sqlitePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-  }
-
-  const store = new SQLiteSpecStore(config.sqlitePath!);
+  const store = new SQLiteSpecStore(sqlitePath);
   await store.migrate();
 
   const app = createApp(config, store);

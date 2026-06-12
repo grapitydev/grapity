@@ -411,7 +411,6 @@ export function formatInitSuccess(params: {
   port?: number;
   dbPath?: string;
   url?: string;
-  hasApiKey?: boolean;
 }): string {
   const lines = [
     `  ${c.success("✓")} Configuration written to ${c.dim(params.configPath)}`,
@@ -426,7 +425,6 @@ export function formatInitSuccess(params: {
     lines.push(`  ${c.dim("›")} Start the server with:  ${c.primary("grapity serve")}`);
   } else {
     if (params.url) lines.push(`  ${c.label("URL")}  ${c.cyan(params.url)}`);
-    if (params.hasApiKey) lines.push(`  ${c.label("API key")}  ${c.dim("configured")}`);
     lines.push("");
     lines.push(`  ${c.dim("›")} Push a spec with:  ${c.primary("grapity registry push ./openapi.yaml --name my-api")}`);
   }
@@ -435,18 +433,14 @@ export function formatInitSuccess(params: {
 }
 
 export function formatServeConfig(params: {
-  mode: "sqlite" | "postgresql";
   port: number;
   dbPath?: string;
-  auth: string;
 }): string {
-  const modeLabel = `local ${c.label("·")} ${params.mode}`;
   const lines = [
-    `  ${c.label("Mode")}      ${c.primary(modeLabel)}`,
+    `  ${c.label("Mode")}      ${c.primary("local")}`,
     `  ${c.label("Port")}      ${c.cyan(String(params.port))}`,
   ];
   if (params.dbPath) lines.push(`  ${c.label("Database")}  ${c.dim(params.dbPath)}`);
-  lines.push(`  ${c.label("Auth")}      ${c.primary(params.auth)}`);
   return lines.join("\n");
 }
 

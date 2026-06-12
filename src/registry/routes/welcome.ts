@@ -415,6 +415,5 @@ function switchTab(tab) {
 
 export const welcomeRoute = new Hono<AppEnv>().get("/", (c) => {
   const config = c.get("config");
-  const mode = config.database === "sqlite" ? "local" : "remote";
-  return c.html(buildPage(config.port, mode));
+  return c.html(buildPage(config.port, "local"));
 });

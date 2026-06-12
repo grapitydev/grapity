@@ -3,7 +3,6 @@ import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { Wait } from "testcontainers";
 import { createApp } from "registry/server";
 import { PostgreSQLSpecStore } from "registry/storage/postgresql";
-import { defaultConfig } from "registry/config";
 
 export async function createTestApp() {
   const container = await new PostgreSqlContainer("postgres:16")
@@ -14,7 +13,7 @@ export async function createTestApp() {
   await store.migrate();
 
   const pool = new Pool({ connectionString: connectionUri });
-  const config = { ...defaultConfig, gracePeriodDays: 30 };
+  const config = { port: 3750 };
   const app = createApp(config, store);
 
   async function reset() {

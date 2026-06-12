@@ -1,3 +1,6 @@
+// CLI REFERENCE: grapity.dev/docs/cli-reference/gateway.md#grapity-gateway-preview
+// If you add or change flags/behavior, update the doc above.
+
 import { Command } from "commander";
 import fs from "node:fs";
 import path from "node:path";

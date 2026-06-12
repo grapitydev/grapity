@@ -1,3 +1,6 @@
+// CLI REFERENCE: grapity.dev/docs/cli-reference/init.md
+// If you add or change flags/behavior, update the doc above.
+
 import { Command } from "commander";
 import fs from "node:fs";
 import os from "node:os";
@@ -13,7 +16,6 @@ interface InitConfig {
   };
   remote?: {
     url: string;
-    apiKey?: string;
   };
 }
 
@@ -22,7 +24,6 @@ export const initCommand = new Command("init")
   .option("--local", "Use local mode (SQLite)")
   .option("--remote", "Use remote mode (connect to a grapity server)")
   .option("--url <url>", "Registry URL (for remote mode)")
-  .option("--api-key <key>", "API key (for remote mode)")
   .option("--port <port>", "Port for local server (default: 3750)")
   .option("--db <path>", "Path to SQLite database file (for local mode)")
   .action(async (options) => {
@@ -79,7 +80,6 @@ export const initCommand = new Command("init")
 
       config.remote = {
         url: options.url.replace(/\/$/, ""),
-        apiKey: options.apiKey,
       };
     }
 
@@ -97,7 +97,6 @@ export const initCommand = new Command("init")
         port: config.local?.port,
         dbPath: config.local?.sqlitePath,
         url: config.remote?.url,
-        hasApiKey: !!config.remote?.apiKey,
       })
     );
   });

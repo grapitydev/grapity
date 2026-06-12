@@ -1,3 +1,6 @@
+// CLI REFERENCE: grapity.dev/docs/cli-reference/serve.md
+// If you add or change flags/behavior, update the doc above.
+
 import { Command } from "commander";
 import os from "node:os";
 import path from "node:path";
@@ -29,36 +32,25 @@ export function createServeCommand(_version: string) {
   return new Command("serve")
     .description("Start the local grapity registry server")
     .option("-p, --port <port>", "Port to listen on", "3750")
-    .option("--db <url>", "Database URL (sqlite path or postgresql URL)")
-    .option("--auth <mode>", "Auth mode: none, api-key, jwt", "none")
     .option("--hub-port <port>", "Port for the developer portal (Hub)", "3000")
     .option("--no-hub", "Skip starting the developer portal")
     .action(async (options) => {
       const port = parseInt(options.port, 10);
       const hubPort = parseInt(options.hubPort, 10);
       const startHub = options.hub !== false;
-      const db = options.db;
-      const auth = options.auth;
-      const isPostgres = db?.startsWith("postgresql://");
-      const dbMode: "sqlite" | "postgresql" = isPostgres ? "postgresql" : "sqlite";
-      const dbPath = isPostgres
-        ? undefined
-        : (db ?? path.join(os.homedir(), ".grapity", "registry.db"));
+      const dbPath = path.join(os.homedir(), ".grapity", "registry.db");
 
       const version = getPackageVersion();
 
       // ── Registry ──
       console.log(formatHeader("grapity Registry", `v${version}`));
       console.log("");
-      console.log(formatServeConfig({ mode: dbMode, port, dbPath, auth }));
+      console.log(formatServeConfig({ port, dbPath }));
       console.log("");
 
       await startServer({
         port,
-        database: dbMode,
         sqlitePath: dbPath,
-        postgresUrl: isPostgres ? db : undefined,
-        auth: auth === "none" ? { mode: "none" } : { mode: auth },
       });
 
       console.log(formatReady(port));

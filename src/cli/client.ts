@@ -19,7 +19,7 @@ import type {
   GetGatewayLogStatsResponse,
   GetGatewayLogResponse,
 } from "core";
-import { getConfig, getRegistryUrl } from "./config";
+import { getRegistryUrl } from "./config";
 import type { CompatReport } from "core";
 
 export class BreakingChangeError extends Error {
@@ -36,19 +36,12 @@ export class BreakingChangeError extends Error {
   ): Promise<T> {
     const baseUrl = getRegistryUrl();
     const url = `${baseUrl}${path}`;
-    const config = getConfig();
-
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
-
-    if (config.mode === "remote" && config.remote?.apiKey) {
-      headers["X-API-Key"] = config.remote.apiKey;
-    }
 
     const response = await fetch(url, {
       method,
-      headers,
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: body ? JSON.stringify(body) : undefined,
     });
 
@@ -67,15 +60,8 @@ export class BreakingChangeError extends Error {
 async function requestText(method: string, path: string): Promise<{ text: string; headers: Headers }> {
   const baseUrl = getRegistryUrl();
   const url = `${baseUrl}${path}`;
-  const config = getConfig();
 
-  const headers: Record<string, string> = {};
-
-  if (config.mode === "remote" && config.remote?.apiKey) {
-    headers["X-API-Key"] = config.remote.apiKey;
-  }
-
-  const response = await fetch(url, { method, headers });
+  const response = await fetch(url, { method });
 
   if (!response.ok) {
     const error = await response.json() as { message?: string };

@@ -1,3 +1,6 @@
+// CLI REFERENCE: grapity.dev/docs/cli-reference/gateway.md#grapity-gateway-versions
+// If you add or change flags/behavior, update the doc above.
+
 import { Command } from "commander";
 import { client } from "../../client";
 import { formatError } from "../../output";

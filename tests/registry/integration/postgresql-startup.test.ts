@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from "bun:test";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { Wait } from "testcontainers";
 import { startServer } from "registry/serve";
+import { DatabaseConnectionError } from "registry/storage/postgresql";
 import type { ServerConfig } from "registry/config";
 
 describe("startServer with postgresql database", () => {
@@ -33,4 +34,14 @@ describe("startServer with postgresql database", () => {
     const body = (await res.json()) as { status: string };
     expect(body.status).toBe("ok");
   }, 120_000);
+
+  it("throws a DatabaseConnectionError when PostgreSQL is not reachable", async () => {
+    const config: ServerConfig = {
+      port: 0,
+      database: "postgresql",
+      postgresUrl: "postgresql://grapity:grapity@127.0.0.1:1/grapity",
+    };
+
+    await expect(startServer(config)).rejects.toBeInstanceOf(DatabaseConnectionError);
+  });
 });

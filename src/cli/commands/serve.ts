@@ -17,6 +17,7 @@ import { startServer } from "registry/serve";
 import { startHubServer } from "hub/serve";
 import { getConfig, isPostgresqlUrl, type Config } from "../config";
 import type { ServerConfig } from "registry/config";
+import { DatabaseConnectionError } from "registry/storage/postgresql";
 
 function resolveServerConfig(cliOptions: {
   port: number;
@@ -61,6 +62,27 @@ function resolveServerConfig(cliOptions: {
   };
 }
 
+function maskPostgresUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    if (parsed.password) parsed.password = "***";
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
+function formatDatabaseConnectionError(err: DatabaseConnectionError): string {
+  return formatError(
+    "PostgreSQL is not reachable",
+    err.message,
+    [
+      "Make sure PostgreSQL is running and accessible.",
+      "Check the database URL in ~/.grapity/config.yaml or GRAPITY_DATABASE_URL.",
+    ]
+  );
+}
+
 export function createServeCommand(version: string) {
   return new Command("serve")
     .description("Start the local grapity registry server")
@@ -99,7 +121,18 @@ export function createServeCommand(version: string) {
       );
       console.log("");
 
-      const { store } = await startServer(serverConfig);
+      let store;
+      try {
+        const started = await startServer(serverConfig);
+        store = started.store;
+      } catch (err) {
+        if (err instanceof DatabaseConnectionError) {
+          console.error(formatDatabaseConnectionError(err));
+        } else {
+          console.error(formatError("failed to start server", (err as Error).message));
+        }
+        process.exit(1);
+      }
 
       console.log(formatReady(port));
 

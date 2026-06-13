@@ -2,7 +2,6 @@ import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { eq, and, desc, sql } from "drizzle-orm";
-import path from "node:path";
 import { specs, specVersions, auditLog, gatewayConfigs, gatewayConfigVersions, provisions, httpLogs } from "./schema-pg";
 import type {
   Spec,
@@ -25,19 +24,70 @@ import { PG_MIGRATIONS_FOLDER } from "../paths";
 
 const MIGRATIONS_FOLDER = PG_MIGRATIONS_FOLDER;
 
+export class DatabaseConnectionError extends Error {
+  constructor(
+    message: string,
+    public readonly postgresUrl: string,
+    options?: ErrorOptions
+  ) {
+    super(message, options);
+    this.name = "DatabaseConnectionError";
+  }
+}
+
+function isConnectionError(err: unknown): boolean {
+  if (typeof err !== "object" || err === null) return false;
+  if ("code" in err) {
+    const code = (err as { code?: unknown }).code;
+    if (code === "ECONNREFUSED" || code === "ETIMEDOUT" || code === "ENOTFOUND") {
+      return true;
+    }
+  }
+  if (err instanceof AggregateError) {
+    if (err.errors.some(isConnectionError)) return true;
+  }
+  if ("cause" in err && (err as { cause?: unknown }).cause) {
+    return isConnectionError((err as { cause?: unknown }).cause);
+  }
+  return false;
+}
+
+function maskPostgresPassword(url: string): string {
+  try {
+    const parsed = new URL(url);
+    if (parsed.password) parsed.password = "***";
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
 export class PostgreSQLSpecStore implements SpecStore, GatewayConfigStore {
   private db: NodePgDatabase;
   private pool: Pool;
+  private postgresUrl: string;
 
   constructor(postgresUrl: string) {
+    this.postgresUrl = postgresUrl;
     this.pool = new Pool({ connectionString: postgresUrl });
     this.db = drizzle(this.pool);
   }
 
   async migrate(): Promise<void> {
-    await migrate(this.db, {
-      migrationsFolder: MIGRATIONS_FOLDER,
-    });
+    try {
+      await migrate(this.db, {
+        migrationsFolder: MIGRATIONS_FOLDER,
+      });
+    } catch (err) {
+      if (isConnectionError(err)) {
+        throw new DatabaseConnectionError(
+          `PostgreSQL is not reachable at ${maskPostgresPassword(this.postgresUrl)}`,
+          this.postgresUrl,
+          { cause: err }
+        );
+      }
+      throw err;
+    }
   }
 
   async end(): Promise<void> {

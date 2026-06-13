@@ -1,2 +1,2 @@
 [test]
-preload = ["./tests/hub/setup.ts"]
+preload = ["./tests/hub/setup.ts", "./tests/registry/integration/setup.ts"]

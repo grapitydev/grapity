@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { VersionBadge } from "../spec/VersionBadge";
-import type { PublicSpecVersion } from "@grapity/core";
+import type { PublicSpecVersion } from "core";
 
 interface VersionsTabProps {
   versions: PublicSpecVersion[];

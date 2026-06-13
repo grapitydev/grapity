@@ -1,5 +1,14 @@
 import { Window } from "happy-dom";
 
+// Some transitive dependencies (e.g. swagger-parser used by registry tests)
+// reference the global `location` object. Provide a minimal stub so the
+// happy-dom Window polyfill does not leak broken browser globals into
+// non-browser tests when this file is preloaded for the whole suite.
+if (typeof globalThis.location === "undefined") {
+  // @ts-ignore
+  globalThis.location = { href: "http://localhost/" };
+}
+
 const window = new Window();
 const document = window.document;
 
@@ -33,8 +42,6 @@ globalThis.DOMParser = window.DOMParser;
 globalThis.XMLSerializer = window.XMLSerializer;
 // @ts-ignore
 globalThis.URL = window.URL;
-// @ts-ignore
-globalThis.URLSearchParams = window.URLSearchParams;
 // @ts-ignore
 globalThis.localStorage = window.localStorage;
 // @ts-ignore

@@ -1,6 +1,7 @@
 import yaml from "js-yaml";
 
 export interface ParsedSpec {
+  openapi?: string;
   paths?: Record<string, Record<string, any>>;
   info?: Record<string, any>;
   servers?: any[];

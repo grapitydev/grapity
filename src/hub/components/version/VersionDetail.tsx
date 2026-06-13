@@ -4,7 +4,7 @@ import { OverviewTab } from "./OverviewTab";
 import { RawSpecTab } from "./RawSpecTab";
 import { VersionsTab } from "./VersionsTab";
 import { CompareTab } from "./CompareTab";
-import type { PublicSpecVersion, CompatReport as CompatReportType } from "@grapity/core";
+import type { PublicSpecVersion, CompatReport as CompatReportType } from "core";
 
 interface VersionDetailProps {
   version: PublicSpecVersion;

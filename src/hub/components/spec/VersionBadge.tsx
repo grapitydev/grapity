@@ -1,4 +1,4 @@
-import type { VersionClassification } from "@grapity/core";
+import type { VersionClassification } from "core";
 import { getClassificationPillStyle } from "../../lib/classificationStyles";
 
 interface VersionBadgeProps {

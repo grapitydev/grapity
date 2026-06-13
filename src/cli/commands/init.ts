@@ -7,12 +7,15 @@ import os from "node:os";
 import path from "node:path";
 import yaml from "js-yaml";
 import { formatError, formatInitSuccess } from "../output";
+import { isPostgresqlUrl } from "../config";
 
 interface InitConfig {
   mode: "local" | "remote";
   local?: {
     port: number;
+    database?: "sqlite" | "postgresql";
     sqlitePath?: string;
+    postgresUrl?: string;
   };
   remote?: {
     url: string;
@@ -21,11 +24,11 @@ interface InitConfig {
 
 export const initCommand = new Command("init")
   .description("Configure grapity registry (local or remote mode)")
-  .option("--local", "Use local mode (SQLite)")
+  .option("--local", "Use local mode (SQLite or PostgreSQL)")
   .option("--remote", "Use remote mode (connect to a grapity server)")
   .option("--url <url>", "Registry URL (for remote mode)")
   .option("--port <port>", "Port for local server (default: 3750)")
-  .option("--db <path>", "Path to SQLite database file (for local mode)")
+  .option("--db <path-or-url>", "SQLite path or postgresql:// URL (for local mode)")
   .action(async (options) => {
     const configDir = path.join(os.homedir(), ".grapity");
     const configPath = path.join(configDir, "config.yaml");
@@ -46,10 +49,10 @@ export const initCommand = new Command("init")
         formatError(
           "missing flag",
           "Select registry mode: use --local or --remote.",
-          [
-            "--local   Run a registry server on this machine (SQLite)",
-            "--remote  Connect to an existing grapity server",
-          ]
+      [
+        "--local   Run a registry server on this machine",
+        "--remote  Connect to an existing grapity server",
+      ]
         )
       );
       process.exit(1);
@@ -58,13 +61,20 @@ export const initCommand = new Command("init")
     const config: InitConfig = { mode };
 
     if (mode === "local") {
+      const dbValue = options.db ?? process.env.GRAPITY_DATABASE_URL;
+      const database: "sqlite" | "postgresql" =
+        dbValue && isPostgresqlUrl(dbValue) ? "postgresql" : "sqlite";
+
       config.local = {
         port: options.port ? parseInt(options.port, 10) : 3750,
-        sqlitePath: options.db,
+        database,
       };
 
-      if (!config.local.sqlitePath) {
-        config.local.sqlitePath = path.join(os.homedir(), ".grapity", "registry.db");
+      if (database === "postgresql") {
+        config.local.postgresUrl = dbValue;
+      } else {
+        config.local.sqlitePath =
+          dbValue ?? path.join(os.homedir(), ".grapity", "registry.db");
       }
     } else {
       if (!options.url) {
@@ -95,7 +105,9 @@ export const initCommand = new Command("init")
         configPath,
         mode,
         port: config.local?.port,
+        database: config.local?.database,
         dbPath: config.local?.sqlitePath,
+        postgresUrl: config.local?.postgresUrl,
         url: config.remote?.url,
       })
     );

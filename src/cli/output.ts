@@ -409,7 +409,9 @@ export function formatInitSuccess(params: {
   configPath: string;
   mode: "local" | "remote";
   port?: number;
+  database?: "sqlite" | "postgresql";
   dbPath?: string;
+  postgresUrl?: string;
   url?: string;
 }): string {
   const lines = [
@@ -420,7 +422,9 @@ export function formatInitSuccess(params: {
 
   if (params.mode === "local") {
     if (params.port) lines.push(`  ${c.label("Port")}  ${c.cyan(String(params.port))}`);
-    if (params.dbPath) lines.push(`  ${c.label("Database")}  ${c.dim(params.dbPath)}`);
+    if (params.database) lines.push(`  ${c.label("Database")}  ${c.primary(params.database)}`);
+    if (params.dbPath) lines.push(`  ${c.label("Path")}  ${c.dim(params.dbPath)}`);
+    if (params.postgresUrl) lines.push(`  ${c.label("PostgreSQL")}  ${c.dim(params.postgresUrl)}`);
     lines.push("");
     lines.push(`  ${c.dim("›")} Start the server with:  ${c.primary("grapity serve")}`);
   } else {
@@ -434,14 +438,34 @@ export function formatInitSuccess(params: {
 
 export function formatServeConfig(params: {
   port: number;
+  database: "sqlite" | "postgresql";
   dbPath?: string;
+  postgresUrl?: string;
 }): string {
   const lines = [
     `  ${c.label("Mode")}      ${c.primary("local")}`,
     `  ${c.label("Port")}      ${c.cyan(String(params.port))}`,
+    `  ${c.label("Database")}  ${c.primary(params.database)}`,
   ];
-  if (params.dbPath) lines.push(`  ${c.label("Database")}  ${c.dim(params.dbPath)}`);
+  if (params.database === "sqlite" && params.dbPath) {
+    lines.push(`  ${c.label("Path")}      ${c.dim(params.dbPath)}`);
+  }
+  if (params.database === "postgresql" && params.postgresUrl) {
+    lines.push(`  ${c.label("PostgreSQL")}  ${c.dim(maskPostgresUrl(params.postgresUrl))}`);
+  }
   return lines.join("\n");
+}
+
+function maskPostgresUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    if (parsed.password) {
+      parsed.password = "***";
+    }
+    return parsed.toString();
+  } catch {
+    return url;
+  }
 }
 
 export function formatHubConfig(params: {

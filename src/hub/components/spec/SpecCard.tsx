@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Badge } from "../ui/badge";
 import { Card } from "../ui/card";
-import type { Spec, VersionClassification } from "@grapity/core";
+import type { Spec, VersionClassification } from "core";
 import { getClassificationPillStyle } from "../../lib/classificationStyles";
 
 interface SpecCardProps {

@@ -5,7 +5,7 @@ import { Changelog } from "./Changelog";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { getClassificationPillStyle } from "../../lib/classificationStyles";
-import type { PublicSpecVersion } from "@grapity/core";
+import type { PublicSpecVersion } from "core";
 
 interface CompareTabProps {
   versions: PublicSpecVersion[];

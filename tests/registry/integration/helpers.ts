@@ -13,7 +13,7 @@ export async function createTestApp() {
   await store.migrate();
 
   const pool = new Pool({ connectionString: connectionUri });
-  const config = { port: 3750 };
+  const config = { port: 3750, database: "postgresql" as const };
   const app = createApp(config, store);
 
   async function reset() {

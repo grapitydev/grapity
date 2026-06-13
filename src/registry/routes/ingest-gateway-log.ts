@@ -13,7 +13,6 @@ export const ingestGatewayLogRoute = new Hono<AppEnv>().post("/ingest/:provider/
     await service.ingestLog(provider, environment, payload);
     return c.json({ status: "ok" }, 201);
   } catch (err) {
-    console.error("Gateway log ingest error:", err);
     return c.json({
       error: "bad_request",
       message: err instanceof Error ? err.message : "Invalid log payload",

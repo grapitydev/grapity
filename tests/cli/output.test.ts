@@ -18,7 +18,7 @@ function strip(str: string): string {
 const CREATED_AT = "2026-04-25T10:30:00.000Z";
 const UPDATED_AT = "2026-04-25T11:00:00.000Z";
 
-function makeSpec(overrides: Partial<Spec> = {}): Spec {
+function makeSpec(overrides: Partial<Spec & { latestVersion?: PublicSpecVersion }> = {}): Spec & { latestVersion?: PublicSpecVersion } {
   return {
     id: "spec-1",
     name: "payments-api",
@@ -206,6 +206,7 @@ describe("formatPushResult", () => {
       spec: makeSpec(),
       version: makeVersion(),
       isNewSpec: false,
+      compatReport: makeCompatReport(),
     }));
     expect(result).toContain("validated");
   });
@@ -215,6 +216,7 @@ describe("formatPushResult", () => {
       spec: makeSpec({ name: "payments-api" }),
       version: makeVersion(),
       isNewSpec: true,
+      compatReport: makeCompatReport(),
     }));
     expect(result).toContain("payments-api");
     expect(result).toContain("created");
@@ -225,6 +227,7 @@ describe("formatPushResult", () => {
       spec: makeSpec(),
       version: makeVersion(),
       isNewSpec: false,
+      compatReport: makeCompatReport(),
     }));
     expect(result).not.toContain("created");
   });
@@ -285,6 +288,7 @@ describe("formatPushResult", () => {
       spec: makeSpec(),
       version: makeVersion(),
       isNewSpec: false,
+      compatReport: makeCompatReport(),
     }));
     expect(result).not.toContain("breaking");
   });
@@ -294,13 +298,14 @@ describe("formatPushResult", () => {
       spec: makeSpec(),
       version: makeVersion({ semver: "1.3.0" }),
       isNewSpec: false,
+      compatReport: makeCompatReport(),
     }));
     expect(result).toContain("Version 1.3.0 registered");
   });
 
   test("renders force push warning when force option is true", () => {
     const result = strip(formatPushResult(
-      { spec: makeSpec(), version: makeVersion(), isNewSpec: false },
+      { spec: makeSpec(), version: makeVersion(), isNewSpec: false, compatReport: makeCompatReport() },
       { force: true, reason: "security fix" }
     ));
     expect(result).toContain("Force push");

@@ -4,7 +4,7 @@ import { OverviewFooter } from "./OverviewFooter";
 import { Skeleton } from "../ui/skeleton";
 import { useSpecExplorer } from "../../context/SpecExplorerContext";
 import { useActiveEndpoint } from "../../hooks/useActiveEndpoint";
-import type { PublicSpecVersion } from "@grapity/core";
+import type { PublicSpecVersion } from "core";
 
 interface OverviewTabProps {
   version: PublicSpecVersion;

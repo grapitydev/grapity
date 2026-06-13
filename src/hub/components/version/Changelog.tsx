@@ -1,6 +1,6 @@
 import { Badge } from "../ui/badge";
 import { Plus, Pencil, Minus } from "lucide-react";
-import type { CompatReport as CompatReportType, BreakingChange, SafeChange } from "@grapity/core";
+import type { CompatReport as CompatReportType, BreakingChange, SafeChange } from "core";
 
 interface ChangelogProps {
   report: CompatReportType | null;

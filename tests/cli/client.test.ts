@@ -30,7 +30,7 @@ type FetchCall = { url: string; method: string; body?: unknown; headers: Record<
 let lastCall: FetchCall;
 
 function mockFetch(status: number, responseBody: unknown) {
-  global.fetch = async (input: string | URL | Request, init?: RequestInit) => {
+  global.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
     const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
     let parsedBody: unknown;
     if (init?.body && typeof init.body === "string") {
@@ -46,7 +46,7 @@ function mockFetch(status: number, responseBody: unknown) {
       status,
       headers: { "Content-Type": "application/json" },
     });
-  };
+  }) as typeof fetch;
 }
 
 const BASE = "http://localhost:3750";
@@ -123,7 +123,7 @@ describe("client.getVersion", () => {
 describe("client.pushSpec", () => {
   test("calls POST /v1/specs with spec content and name in body", async () => {
     mockFetch(201, { data: { spec: {}, version: {}, isNewSpec: true } });
-    await client.pushSpec({ content: "openapi: 3.1.0", name: "payments-api" });
+    await client.pushSpec({ content: "openapi: 3.1.0", name: "payments-api", prerelease: false, force: false });
     expect(lastCall.url).toBe(`${BASE}/v1/specs`);
     expect(lastCall.method).toBe("POST");
     expect((lastCall.body as { name: string }).name).toBe("payments-api");
@@ -135,6 +135,7 @@ describe("client.pushSpec", () => {
     await client.pushSpec({
       content: "openapi: 3.1.0",
       name: "payments-api",
+      prerelease: false,
       force: true,
       reason: "security fix",
     });
@@ -149,7 +150,7 @@ describe("client.pushSpec", () => {
       statusCode: 409,
     });
     await expect(
-      client.pushSpec({ content: "openapi: 3.1.0", name: "payments-api" })
+      client.pushSpec({ content: "openapi: 3.1.0", name: "payments-api", prerelease: false, force: false })
     ).rejects.toThrow("Breaking changes detected");
   });
 });
@@ -181,7 +182,7 @@ describe("client.getCompatReport", () => {
 
 describe("client.deleteSpec", () => {
   test("calls DELETE /v1/specs/:name and resolves on 204", async () => {
-    global.fetch = async (input: string | URL | Request, init?: RequestInit) => {
+    global.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
       const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
       lastCall = {
         url,
@@ -190,7 +191,7 @@ describe("client.deleteSpec", () => {
         headers: (init?.headers ?? {}) as Record<string, string>,
       };
       return new Response(null, { status: 204 });
-    };
+    }) as typeof fetch;
 
     await client.deleteSpec("payments-api");
     expect(lastCall.url).toBe(`${BASE}/v1/specs/payments-api`);
@@ -211,7 +212,7 @@ describe("error handling", () => {
 });
 
 function mockFetchText(status: number, body: string, responseHeaders?: Record<string, string>) {
-  global.fetch = async (input: string | URL | Request, init?: RequestInit) => {
+  global.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
     const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
     lastCall = {
       url,
@@ -223,7 +224,7 @@ function mockFetchText(status: number, body: string, responseHeaders?: Record<st
       status,
       headers: { "Content-Type": "text/plain", ...responseHeaders },
     });
-  };
+  }) as typeof fetch;
 }
 
 describe("client.fetchSpec", () => {
@@ -283,6 +284,7 @@ describe("client.pushGatewayConfig", () => {
       routes: [{ path: "/payments", methods: ["GET"] }],
       environments: {
         staging: {
+          name: "staging",
           kongAddr: "http://kong:8001",
           upstream: "http://payments:8080",
           plugins: [

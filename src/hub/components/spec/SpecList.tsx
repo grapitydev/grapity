@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SpecCard } from "../spec/SpecCard";
 import { Skeleton } from "../ui/skeleton";
-import type { SpecListItem } from "@grapity/core";
+import type { SpecListItem } from "core";
 
 interface SpecListProps {
   specs: SpecListItem[];

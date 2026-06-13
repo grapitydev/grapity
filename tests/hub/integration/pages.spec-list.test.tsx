@@ -48,6 +48,9 @@ describe("SpecListPage — / (Browse All Specs)", () => {
     render(<SpecListPage />, { wrapper });
 
     expect(screen.getByText(/Browse All Specs/i)).toBeTruthy();
+    await waitFor(() => {
+      expect(screen.getByText(/Push your first spec with/i)).toBeTruthy();
+    });
   });
 
   test("renders empty state when no specs exist", async () => {

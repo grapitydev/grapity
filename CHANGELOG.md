@@ -4,6 +4,14 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.3.0](https://github.com/grapitydev/grapity/compare/v0.2.0...v0.3.0) (2026-06-13)
+
+
+### Features
+
+* add PostgreSQL support to registry with selectable backend ([cb3d6e4](https://github.com/grapitydev/grapity/commit/cb3d6e42aa788b29d8f8ae3bd4c42d17713f32d2))
+* remove unimplemented CLI options and simplify server config ([10399aa](https://github.com/grapitydev/grapity/commit/10399aa8d3c648ee21d1163d1b7d36ac314dde5c))
+
 ## [0.2.0](https://github.com/grapitydev/grapity/compare/v0.1.0...v0.2.0) (2026-06-10)
 
 

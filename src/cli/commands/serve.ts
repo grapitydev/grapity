@@ -4,8 +4,6 @@
 import { Command } from "commander";
 import os from "node:os";
 import path from "node:path";
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import {
   formatError,
   formatServeConfig,
@@ -19,16 +17,6 @@ import { startServer } from "registry/serve";
 import { startHubServer } from "hub/serve";
 import { getConfig, isPostgresqlUrl, type Config } from "../config";
 import type { ServerConfig } from "registry/config";
-
-function getPackageVersion(): string {
-  try {
-    const pkgPath = new URL("../../../../package.json", import.meta.url);
-    const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
-    return pkg.version;
-  } catch {
-    return "unknown";
-  }
-}
 
 function resolveServerConfig(cliOptions: {
   port: number;
@@ -73,7 +61,7 @@ function resolveServerConfig(cliOptions: {
   };
 }
 
-export function createServeCommand(_version: string) {
+export function createServeCommand(version: string) {
   return new Command("serve")
     .description("Start the local grapity registry server")
     .option("-p, --port <port>", "Port to listen on", "3750")
@@ -85,7 +73,6 @@ export function createServeCommand(_version: string) {
       const hubPort = parseInt(options.hubPort, 10);
       const startHub = options.hub !== false;
 
-      const version = getPackageVersion();
       const cliConfig = getConfig();
 
       let serverConfig: Partial<ServerConfig>;
@@ -96,8 +83,11 @@ export function createServeCommand(_version: string) {
         process.exit(1);
       }
 
+      console.log(formatHeader("grapity", `v${version}`));
+      console.log("");
+
       // ── Registry ──
-      console.log(formatHeader("grapity Registry", `v${version}`));
+      console.log(formatHeader("grapity Registry"));
       console.log("");
       console.log(
         formatServeConfig({
@@ -116,7 +106,7 @@ export function createServeCommand(_version: string) {
       // ── Hub ──
       if (startHub) {
         console.log("");
-        console.log(formatHeader("grapity Hub", `v${version}`));
+        console.log(formatHeader("grapity Hub"));
         console.log("");
         console.log(
           formatHubConfig({

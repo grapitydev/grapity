@@ -25,16 +25,8 @@ import { listGatewayLogsRoute } from "./routes/list-gateway-logs";
 import { getGatewayLogRoute } from "./routes/get-gateway-log";
 import { gatewayLogStatsRoute } from "./routes/gateway-log-stats";
 import type { ServerConfig } from "./config";
-import { createAuthMiddleware, parseRouteScopes, AuthError } from "./auth/middleware";
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import yaml from "js-yaml";
-
-function loadOpenApiSpec(): Record<string, unknown> {
-  const path = fileURLToPath(new URL("../../openapi.yaml", import.meta.url));
-  const content = readFileSync(path, "utf-8");
-  return yaml.load(content) as Record<string, unknown>;
-}
+import { createAuthMiddleware, AuthError } from "./auth/middleware";
+import { routeScopes } from "./generated/route-scopes";
 
 export type AppEnv = {
   Variables: {
@@ -58,8 +50,8 @@ export function createApp(config: ServerConfig, store: SpecStore & GatewayConfig
     await next();
   });
 
-  const routeScopes = parseRouteScopes(loadOpenApiSpec());
-  app.use("*", createAuthMiddleware(config, routeScopes));
+  const authRouteScopes = config.auth?.mode === "keycloak" ? routeScopes : [];
+  app.use("*", createAuthMiddleware(config, authRouteScopes));
 
   app.onError((err, c) => {
     if (err instanceof AuthError) {

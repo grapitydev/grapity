@@ -4,6 +4,19 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.4.0](https://github.com/grapitydev/grapity/compare/v0.3.0...v0.4.0) (2026-06-14)
+
+
+### Features
+
+* **auth,cli,hub,registry:** add Keycloak OIDC/JWT auth and scope enforcement ([1b525d6](https://github.com/grapitydev/grapity/commit/1b525d6a750859715f6b9c575b6aeb2ae8cd2b09))
+
+
+### Bug Fixes
+
+* **cli,registry:** surface friendly PostgreSQL connection errors on serve ([a8c55f3](https://github.com/grapitydev/grapity/commit/a8c55f30b6fafd39d0f8dce7fd9104b08c5303ea))
+* **cli:** use package version from index and drop per-component version labels in serve output ([7feed64](https://github.com/grapitydev/grapity/commit/7feed641dc9b4d6ad60f67f0f7836d24ec68840a))
+
 ## [0.3.0](https://github.com/grapitydev/grapity/compare/v0.2.0...v0.3.0) (2026-06-13)
 
 

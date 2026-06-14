@@ -413,6 +413,10 @@ export function formatInitSuccess(params: {
   dbPath?: string;
   postgresUrl?: string;
   url?: string;
+  authMode?: string;
+  keycloakServer?: string;
+  keycloakRealm?: string;
+  keycloakClientId?: string;
 }): string {
   const lines = [
     `  ${c.success("✓")} Configuration written to ${c.dim(params.configPath)}`,
@@ -425,12 +429,25 @@ export function formatInitSuccess(params: {
     if (params.database) lines.push(`  ${c.label("Database")}  ${c.primary(params.database)}`);
     if (params.dbPath) lines.push(`  ${c.label("Path")}  ${c.dim(params.dbPath)}`);
     if (params.postgresUrl) lines.push(`  ${c.label("PostgreSQL")}  ${c.dim(params.postgresUrl)}`);
-    lines.push("");
-    lines.push(`  ${c.dim("›")} Start the server with:  ${c.primary("grapity serve")}`);
   } else {
     if (params.url) lines.push(`  ${c.label("URL")}  ${c.cyan(params.url)}`);
+  }
+
+  if (params.authMode && params.authMode !== "none") {
     lines.push("");
-    lines.push(`  ${c.dim("›")} Push a spec with:  ${c.primary("grapity registry push ./openapi.yaml --name my-api")}`);
+    lines.push(`  ${c.label("Auth")}  ${c.primary(params.authMode)}`);
+    if (params.keycloakServer) lines.push(`  ${c.label("Keycloak")}  ${c.dim(params.keycloakServer)}`);
+    if (params.keycloakRealm) lines.push(`  ${c.label("Realm")}  ${c.dim(params.keycloakRealm)}`);
+    if (params.keycloakClientId) lines.push(`  ${c.label("Client ID")}  ${c.dim(params.keycloakClientId)}`);
+    lines.push("");
+    lines.push(`  ${c.dim("›")} Set the client secret in GRAPITY_CLIENT_SECRET before running commands.`);
+  } else {
+    lines.push("");
+    if (params.mode === "local") {
+      lines.push(`  ${c.dim("›")} Start the server with:  ${c.primary("grapity serve")}`);
+    } else {
+      lines.push(`  ${c.dim("›")} Push a spec with:  ${c.primary("grapity registry push ./openapi.yaml --name my-api")}`);
+    }
   }
 
   return lines.join("\n");
@@ -441,6 +458,10 @@ export function formatServeConfig(params: {
   database: "sqlite" | "postgresql";
   dbPath?: string;
   postgresUrl?: string;
+  authMode?: string;
+  keycloakServer?: string;
+  keycloakRealm?: string;
+  keycloakAudience?: string;
 }): string {
   const lines = [
     `  ${c.label("Mode")}      ${c.primary("local")}`,
@@ -452,6 +473,16 @@ export function formatServeConfig(params: {
   }
   if (params.database === "postgresql" && params.postgresUrl) {
     lines.push(`  ${c.label("PostgreSQL")}  ${c.dim(maskPostgresUrl(params.postgresUrl))}`);
+  }
+  lines.push(`  ${c.label("Auth")}      ${c.primary(params.authMode ?? "none")}`);
+  if (params.keycloakServer) {
+    lines.push(`  ${c.label("Keycloak")}  ${c.dim(params.keycloakServer)}`);
+  }
+  if (params.keycloakRealm) {
+    lines.push(`  ${c.label("Realm")}     ${c.dim(params.keycloakRealm)}`);
+  }
+  if (params.keycloakAudience) {
+    lines.push(`  ${c.label("Audience")}  ${c.dim(params.keycloakAudience)}`);
   }
   return lines.join("\n");
 }
@@ -504,6 +535,59 @@ export function formatEmptyState(message: string, hints?: string[]): string {
 
 export function formatReady(port: number): string {
   return `  ${c.success("●")}  Server ready  ${c.label("·")}  ${c.cyan(`http://localhost:${port}`)}`;
+}
+
+export function formatAuthStatus(params: {
+  mode: string;
+  configured: boolean;
+  serverUrl?: string;
+  realm?: string;
+  clientId?: string;
+  audience?: string;
+  valid?: boolean;
+  sub?: string;
+  exp?: number;
+  expired?: boolean;
+  cleared?: boolean;
+}): string {
+  const lines: string[] = [];
+
+  if (params.cleared) {
+    lines.push(`  ${c.success("✓")} Cached access token cleared`);
+    return lines.join("\n");
+  }
+
+  lines.push(`  ${c.label("Mode")}  ${c.primary(params.mode)}`);
+
+  if (!params.configured) {
+    lines.push(`  ${c.dim("·")} No remote authentication configured`);
+    return lines.join("\n");
+  }
+
+  if (params.serverUrl) lines.push(`  ${c.label("Server")}  ${c.dim(params.serverUrl)}`);
+  if (params.realm) lines.push(`  ${c.label("Realm")}  ${c.dim(params.realm)}`);
+  if (params.clientId) lines.push(`  ${c.label("Client ID")}  ${c.dim(params.clientId)}`);
+  if (params.audience) lines.push(`  ${c.label("Audience")}  ${c.dim(params.audience)}`);
+
+  lines.push("");
+
+  if (params.valid === false) {
+    lines.push(`  ${c.error("✗")} Token is not a valid JWT`);
+  } else if (params.sub) {
+    lines.push(`  ${c.success("✓")} Authenticated as ${c.primary(params.sub)}`);
+    if (params.exp) {
+      const date = new Date(params.exp * 1000).toISOString();
+      if (params.expired) {
+        lines.push(`  ${c.error("✗")} Token expired at ${c.dim(date)}`);
+      } else {
+        lines.push(`  ${c.success("✓")} Token valid until ${c.dim(date)}`);
+      }
+    }
+  } else {
+    lines.push(`  ${c.dim("·")} No token fetched yet`);
+  }
+
+  return lines.join("\n");
 }
 
 export function formatHubReady(port: number): string {

@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, LogIn, LogOut } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
+import { useAuth } from "../../context/AuthContext";
+import { useConfig } from "../../context/ConfigContext";
 
 export function Header() {
   const { theme, toggle } = useTheme();
+  const { isAuthenticated, isLoading, login, logout } = useAuth();
+  const { auth } = useConfig();
 
   return (
     <header className="sticky top-0 z-50 border-b border-surface-border bg-surface-base/80 backdrop-blur-xl">
@@ -26,6 +30,24 @@ export function Header() {
         </Link>
 
         <div className="flex items-center gap-2">
+          {auth && !isLoading && (
+            <button
+              onClick={isAuthenticated ? logout : login}
+              className="flex items-center gap-2 rounded-sm px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary hover:bg-surface-hover"
+            >
+              {isAuthenticated ? (
+                <>
+                  <LogOut className="h-4 w-4" />
+                  Sign out
+                </>
+              ) : (
+                <>
+                  <LogIn className="h-4 w-4" />
+                  Sign in
+                </>
+              )}
+            </button>
+          )}
           <button
             onClick={toggle}
             className="rounded-sm p-2 text-text-secondary transition-colors hover:text-text-primary hover:bg-surface-hover"

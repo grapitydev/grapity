@@ -15,51 +15,103 @@ import {
 } from "../output";
 import { startServer } from "registry/serve";
 import { startHubServer } from "hub/serve";
-import { getConfig, isPostgresqlUrl, type Config } from "../config";
+import {
+  getConfig,
+  configExists,
+  isPostgresqlUrl,
+  type Config,
+  type LocalAuthConfig,
+} from "../config";
 import type { ServerConfig } from "registry/config";
 import { DatabaseConnectionError } from "registry/storage/postgresql";
 
-function resolveServerConfig(cliOptions: {
-  port: number;
-  db?: string;
-}, cliConfig: Config): Partial<ServerConfig> {
+function resolveServerConfig(
+  cliOptions: { port: number; noAuth: boolean },
+  cliConfig: Config
+): Partial<ServerConfig> {
+  if (cliConfig.mode === "remote") {
+    throw new Error(
+      "grapity serve is for local mode only. " +
+        `Your config is set to remote (${cliConfig.remote?.url ?? "no URL"}). ` +
+        "Use grapity serve on the machine running the local registry."
+    );
+  }
+
   const envUrl = process.env.GRAPITY_DATABASE_URL;
+  const local = cliConfig.local;
 
-  const dbValue = envUrl ?? cliOptions.db;
+  const dbValue = envUrl ?? local?.postgresUrl;
+  const base: Partial<ServerConfig> = { port: cliOptions.port };
 
-  if (dbValue) {
-    if (isPostgresqlUrl(dbValue)) {
-      return { port: cliOptions.port, database: "postgresql", postgresUrl: dbValue };
-    }
-    return { port: cliOptions.port, database: "sqlite", sqlitePath: dbValue };
+  if (dbValue && isPostgresqlUrl(dbValue)) {
+    base.database = "postgresql";
+    base.postgresUrl = dbValue;
+  } else {
+    base.database = "sqlite";
+    base.sqlitePath =
+      dbValue ??
+      local?.sqlitePath ??
+      path.join(os.homedir(), ".grapity", "registry.db");
   }
 
-  if (cliConfig.mode === "local") {
-    const local = cliConfig.local;
-    if (local?.database === "postgresql") {
-      if (!local.postgresUrl) {
-        throw new Error(
-          "PostgreSQL is configured but no postgresUrl is set. " +
-            "Run grapity init --local --db postgresql://... or set GRAPITY_DATABASE_URL."
-        );
-      }
-      return { port: cliOptions.port, database: "postgresql", postgresUrl: local.postgresUrl };
-    }
-
-    return {
-      port: cliOptions.port,
-      database: "sqlite",
-      sqlitePath:
-        local?.sqlitePath ?? path.join(os.homedir(), ".grapity", "registry.db"),
-    };
+  if (cliOptions.noAuth) {
+    base.auth = { mode: "none" };
+  } else {
+    base.auth = resolveAuthConfig(local?.auth);
   }
 
-  // Remote mode: no local database; fall back to default SQLite path.
+  return base;
+}
+
+function resolveAuthConfig(
+  authConfig: LocalAuthConfig | undefined
+): ServerConfig["auth"] {
+  if (!authConfig || authConfig.mode === "none") {
+    throw new Error(
+      "Authentication is required by default. " +
+        "Configure it with: grapity init --local --auth keycloak ...\n" +
+        "Or run with: grapity serve --no-auth"
+    );
+  }
+
+  if (!authConfig.serverUrl) {
+    throw new Error(
+      "Keycloak auth is configured but serverUrl is missing. " +
+        "Run grapity init --local --auth keycloak --keycloak-server <url> ..."
+    );
+  }
+
+  if (!authConfig.realm) {
+    throw new Error(
+      "Keycloak auth is configured but realm is missing. " +
+        "Run grapity init --local --auth keycloak --keycloak-realm <realm> ..."
+    );
+  }
+
   return {
-    port: cliOptions.port,
-    database: "sqlite",
-    sqlitePath: path.join(os.homedir(), ".grapity", "registry.db"),
+    mode: "keycloak",
+    serverUrl: authConfig.serverUrl.replace(/\/$/, ""),
+    realm: authConfig.realm,
+    audience: authConfig.audience,
+    roleSource: authConfig.roleSource,
   };
+}
+
+async function verifyKeycloakReachable(serverUrl: string, realm: string): Promise<void> {
+  const url = `${serverUrl}/realms/${realm}/.well-known/openid-configuration`;
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) {
+      throw new Error(`Keycloak returned ${res.status}`);
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(
+      `Keycloak is not reachable at ${url}: ${message}\n` +
+        "See https://grapity.dev/docs/cli-reference/init#local-mode-with-keycloak to set up a local Keycloak server.\n" +
+        "Or run with: grapity serve --no-auth"
+    );
+  }
 }
 
 function maskPostgresUrl(url: string): string {
@@ -89,20 +141,44 @@ export function createServeCommand(version: string) {
     .option("-p, --port <port>", "Port to listen on", "3750")
     .option("--hub-port <port>", "Port for the developer portal (Hub)", "3000")
     .option("--no-hub", "Skip starting the developer portal")
-    .option("--db <path-or-url>", "SQLite path or postgresql:// URL")
+    .option("--no-auth", "Start without authentication")
     .action(async (options) => {
       const port = parseInt(options.port, 10);
       const hubPort = parseInt(options.hubPort, 10);
       const startHub = options.hub !== false;
+      const noAuth = options.auth === false;
+
+      if (!configExists()) {
+        console.error(
+          formatError(
+            "not initialized",
+            "Run grapity init first to configure the local registry.",
+            ["Example: grapity init --local"]
+          )
+        );
+        process.exit(1);
+      }
 
       const cliConfig = getConfig();
 
       let serverConfig: Partial<ServerConfig>;
       try {
-        serverConfig = resolveServerConfig({ port, db: options.db }, cliConfig);
+        serverConfig = resolveServerConfig({ port, noAuth }, cliConfig);
       } catch (err) {
         console.error(formatError("invalid config", (err as Error).message));
         process.exit(1);
+      }
+
+      if (serverConfig.auth?.mode === "keycloak" && !noAuth) {
+        try {
+          await verifyKeycloakReachable(
+            serverConfig.auth.serverUrl,
+            serverConfig.auth.realm
+          );
+        } catch (err) {
+          console.error(formatError("keycloak unreachable", (err as Error).message));
+          process.exit(1);
+        }
       }
 
       console.log(formatHeader("grapity", `v${version}`));
@@ -117,6 +193,19 @@ export function createServeCommand(version: string) {
           database: serverConfig.database!,
           dbPath: serverConfig.sqlitePath,
           postgresUrl: serverConfig.postgresUrl,
+          authMode: serverConfig.auth?.mode,
+          keycloakServer:
+            serverConfig.auth?.mode === "keycloak"
+              ? serverConfig.auth.serverUrl
+              : undefined,
+          keycloakRealm:
+            serverConfig.auth?.mode === "keycloak"
+              ? serverConfig.auth.realm
+              : undefined,
+          keycloakAudience:
+            serverConfig.auth?.mode === "keycloak"
+              ? serverConfig.auth.audience
+              : undefined,
         })
       );
       console.log("");
@@ -152,6 +241,16 @@ export function createServeCommand(version: string) {
         await startHubServer({
           port: hubPort,
           registryUrl: `http://localhost:${port}`,
+          auth:
+            serverConfig.auth?.mode === "keycloak"
+              ? {
+                  mode: "keycloak",
+                  serverUrl: serverConfig.auth.serverUrl,
+                  realm: serverConfig.auth.realm,
+                  clientId: "grapity-hub",
+                  audience: serverConfig.auth.audience,
+                }
+              : undefined,
         });
 
         console.log(formatHubReady(hubPort));

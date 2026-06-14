@@ -2,6 +2,7 @@ import "@testing-library/jest-dom";
 import "../setup";
 import { beforeEach, afterEach, describe, expect, test } from "bun:test";
 import { render, screen, waitFor, cleanup } from "@testing-library/react";
+import { AuthProvider } from "hub/context/AuthContext";
 import { MemoryRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ConfigProvider } from "hub/context/ConfigContext";
 import { ThemeProvider } from "hub/context/ThemeContext";
@@ -18,14 +19,16 @@ function Wrapper({ children }: { children: React.ReactNode }) {
   return (
     <MemoryRouter initialEntries={["/specs/payments-api"]}>
       <ConfigProvider>
-        <ThemeProvider>
-          <SpecExplorerProvider>
-            <Routes>
-              <Route path="/specs/:name" element={children} />
-              <Route path="/specs/:name/versions/:semver" element={<LocationDisplay />} />
-            </Routes>
-          </SpecExplorerProvider>
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <SpecExplorerProvider>
+              <Routes>
+                <Route path="/specs/:name" element={children} />
+                <Route path="/specs/:name/versions/:semver" element={<LocationDisplay />} />
+              </Routes>
+            </SpecExplorerProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </ConfigProvider>
     </MemoryRouter>
   );

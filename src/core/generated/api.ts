@@ -1019,8 +1019,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -1133,8 +1149,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -1283,8 +1315,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -1418,8 +1466,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -1490,8 +1554,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -1611,8 +1691,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -1724,8 +1820,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -1818,8 +1930,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -1893,8 +2021,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -1968,8 +2112,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -2048,8 +2208,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -2128,8 +2304,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -2225,8 +2417,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -2357,8 +2565,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -2440,8 +2664,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -2627,8 +2867,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -2730,8 +2986,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -2851,8 +3123,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -2976,8 +3264,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -3103,8 +3407,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -3201,8 +3521,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -3277,8 +3613,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];
@@ -3354,8 +3706,24 @@ export interface operations {
                     /**
                      * @example {
                      *       "error": "unauthorized",
-                     *       "message": "Invalid API key",
+                     *       "message": "Invalid or missing bearer token",
                      *       "statusCode": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "forbidden",
+                     *       "message": "Missing required scope: specs:write",
+                     *       "statusCode": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiError"];

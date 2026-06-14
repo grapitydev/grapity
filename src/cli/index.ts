@@ -2,6 +2,7 @@ import { Command } from "commander";
 import { registryCommand } from "./commands/registry/index";
 import { gatewayCommand } from "./commands/gateway/index";
 import { initCommand } from "./commands/init";
+import { authCommand } from "./commands/auth";
 import { createServeCommand } from "./commands/serve";
 import { createRequire } from "node:module";
 
@@ -22,6 +23,7 @@ program
 program.addCommand(registryCommand);
 program.addCommand(gatewayCommand);
 program.addCommand(initCommand);
+program.addCommand(authCommand);
 program.addCommand(createServeCommand(version));
 
 program.parse();

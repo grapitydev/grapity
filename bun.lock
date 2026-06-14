@@ -12,6 +12,7 @@
         "commander": "^13.1.0",
         "drizzle-orm": "^0.44.0",
         "hono": "^4.12.22",
+        "jose": "^6.2.3",
         "js-yaml": "^4.1.0",
         "lucide-react": "^0.475.0",
         "ora": "^8.2.0",
@@ -43,6 +44,7 @@
         "openapi-typescript": "^7.13.0",
         "postcss": "^8.5.3",
         "tailwindcss": "^4.0.0",
+        "testcontainers": "11.14.0",
         "tsup": "^8.4.0",
         "tsx": "^4.19.0",
         "typescript": "^5.8.0",
@@ -624,6 +626,8 @@
     "jackspeak": ["jackspeak@3.4.3", "", { "dependencies": { "@isaacs/cliui": "^8.0.2" }, "optionalDependencies": { "@pkgjs/parseargs": "^0.11.0" } }, "sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw=="],
 
     "jiti": ["jiti@2.7.0", "", { "bin": { "jiti": "lib/jiti-cli.mjs" } }, "sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ=="],
+
+    "jose": ["jose@6.2.3", "", {}, "sha512-YYVDInQKFJfR/xa3ojUTl8c2KoTwiL1R5Wg9YCydwH0x0B9grbzlg5HC7mMjCtUJjbQ/YnGEZIhI5tCgfTb4Hw=="],
 
     "joycon": ["joycon@3.1.1", "", {}, "sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw=="],
 

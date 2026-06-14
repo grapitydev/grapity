@@ -1,7 +1,7 @@
 import "../setup";
+import { Providers } from "../test-utils";
 import { beforeEach, describe, expect, test } from "bun:test";
 import { renderHook } from "@testing-library/react";
-import { ConfigProvider } from "hub/context/ConfigContext";
 import { useApiClient } from "hub/api/client";
 import type { Spec, PublicSpecVersion, CompatReport } from "core";
 
@@ -32,7 +32,7 @@ function mockFetchText(status: number, body: string) {
 }
 
 function wrapper({ children }: { children: React.ReactNode }) {
-  return <ConfigProvider>{children}</ConfigProvider>;
+  return <Providers>{children}</Providers>;
 }
 
 const BASE = "";

@@ -17,9 +17,8 @@
   ],
   "security": [
     {
-      "apiKey": []
-    },
-    {}
+      "keycloak": []
+    }
   ],
   "tags": [
     {
@@ -28,7 +27,7 @@
     },
     {
       "name": "specs",
-      "description": "Spec management — push, list, retrieve, validate, versions, delete, and compatibility"
+      "description": "Spec management \u2014 push, list, retrieve, validate, versions, delete, and compatibility"
     },
     {
       "name": "gateway-configs",
@@ -72,7 +71,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -92,8 +91,24 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": []
       }
     },
     "/v1/specs": {
@@ -200,7 +215,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -220,8 +235,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "specs:read"
+            ]
+          }
+        ]
       },
       "post": {
         "operationId": "pushSpec",
@@ -349,7 +386,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -413,8 +450,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "specs:write"
+            ]
+          }
+        ]
       }
     },
     "/v1/specs/{name}": {
@@ -478,7 +537,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -513,8 +572,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "specs:read"
+            ]
+          }
+        ]
       },
       "delete": {
         "operationId": "deleteSpec",
@@ -541,7 +622,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -576,8 +657,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "specs:write"
+            ]
+          }
+        ]
       }
     },
     "/v1/specs/{name}/validate": {
@@ -661,7 +764,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -696,8 +799,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "specs:write"
+            ]
+          }
+        ]
       }
     },
     "/v1/specs/{name}/versions": {
@@ -786,7 +911,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -821,8 +946,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "specs:read"
+            ]
+          }
+        ]
       }
     },
     "/v1/specs/{name}/versions/{semver}": {
@@ -873,7 +1020,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -908,8 +1055,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "specs:read"
+            ]
+          }
+        ]
       }
     },
     "/v1/specs/{name}/spec.json": {
@@ -950,7 +1119,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -985,8 +1154,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "specs:read"
+            ]
+          }
+        ]
       }
     },
     "/v1/specs/{name}/spec.yaml": {
@@ -1027,7 +1218,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -1062,8 +1253,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "specs:read"
+            ]
+          }
+        ]
       }
     },
     "/v1/specs/{name}/versions/{semver}/spec.json": {
@@ -1106,7 +1319,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -1141,8 +1354,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "specs:read"
+            ]
+          }
+        ]
       }
     },
     "/v1/specs/{name}/versions/{semver}/spec.yaml": {
@@ -1185,7 +1420,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -1220,8 +1455,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "specs:read"
+            ]
+          }
+        ]
       }
     },
     "/v1/specs/{name}/compat/{semver}": {
@@ -1276,7 +1533,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -1311,8 +1568,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "specs:read"
+            ]
+          }
+        ]
       }
     },
     "/v1/specs/{name}/compare": {
@@ -1415,7 +1694,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -1450,8 +1729,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "specs:read"
+            ]
+          }
+        ]
       }
     },
     "/v1/gateway-configs": {
@@ -1494,7 +1795,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -1514,8 +1815,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "gateway-configs:read"
+            ]
+          }
+        ]
       },
       "post": {
         "operationId": "pushGatewayConfig",
@@ -1680,7 +2003,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -1730,8 +2053,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "gateway-configs:write"
+            ]
+          }
+        ]
       }
     },
     "/v1/gateway-configs/{name}": {
@@ -1777,7 +2122,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -1812,8 +2157,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "gateway-configs:read"
+            ]
+          }
+        ]
       }
     },
     "/v1/gateway-configs/{name}/versions": {
@@ -1893,7 +2260,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -1928,8 +2295,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "gateway-configs:read"
+            ]
+          }
+        ]
       }
     },
     "/v1/gateway-configs/{name}/versions/{versionId}": {
@@ -2011,7 +2400,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -2046,8 +2435,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "gateway-configs:read"
+            ]
+          }
+        ]
       }
     },
     "/v1/gateway-logs/ingest/{provider}/{environment}": {
@@ -2139,7 +2550,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -2159,8 +2570,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "gateway-logs:write"
+            ]
+          }
+        ]
       }
     },
     "/v1/gateway-logs": {
@@ -2293,7 +2726,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -2313,8 +2746,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "gateway-logs:read"
+            ]
+          }
+        ]
       }
     },
     "/v1/gateway-logs/stats": {
@@ -2393,7 +2848,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -2413,8 +2868,30 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "gateway-logs:read"
+            ]
+          }
+        ]
       }
     },
     "/v1/gateway-logs/{id}": {
@@ -2466,7 +2943,7 @@
                 },
                 "example": {
                   "error": "unauthorized",
-                  "message": "Invalid API key",
+                  "message": "Invalid or missing bearer token",
                   "statusCode": 401
                 }
               }
@@ -2501,18 +2978,51 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "example": {
+                  "error": "forbidden",
+                  "message": "Missing required scope: specs:write",
+                  "statusCode": 403
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "gateway-logs:read"
+            ]
+          }
+        ]
       }
     }
   },
   "components": {
     "securitySchemes": {
-      "apiKey": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "X-API-Key",
-        "description": "Required in remote mode (SaaS or self-hosted). Not required in local mode (`grapity serve` on localhost with auth: none).\n"
+      "keycloak": {
+        "type": "oauth2",
+        "description": "Keycloak client credentials flow. The actual tokenUrl and JWKS URI are derived at runtime from the configured Keycloak serverUrl and realm.",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://keycloak.example.com/realms/{realm}/protocol/openid-connect/token",
+            "scopes": {
+              "specs:read": "Read specs, versions, and compatibility reports",
+              "specs:write": "Push, validate, and delete specs",
+              "gateway-configs:read": "Read gateway configurations",
+              "gateway-configs:write": "Push gateway configurations",
+              "gateway-logs:read": "Read gateway access logs and stats",
+              "gateway-logs:write": "Ingest gateway access logs"
+            }
+          }
+        }
       }
     },
     "parameters": {
@@ -2838,7 +3348,7 @@
           },
           "rule": {
             "type": "string",
-            "description": "Machine-readable rule identifier. Treat as an open string — new rules will be added as the compat engine evolves. Known values: endpoint-removed, endpoint-removed-without-deprecation, endpoint-removed-missing-sunset, endpoint-removed-before-sunset, required-request-param-added, response-property-removed, response-status-removed, stable-endpoint-marked-draft.\n",
+            "description": "Machine-readable rule identifier. Treat as an open string \u2014 new rules will be added as the compat engine evolves. Known values: endpoint-removed, endpoint-removed-without-deprecation, endpoint-removed-missing-sunset, endpoint-removed-before-sunset, required-request-param-added, response-property-removed, response-status-removed, stable-endpoint-marked-draft.\n",
             "example": "response-property-removed"
           },
           "description": {
@@ -2894,7 +3404,7 @@
           },
           "rule": {
             "type": "string",
-            "description": "Machine-readable rule identifier. Treat as an open string — new rules will be added as the compat engine evolves. Known values: endpoint-added, endpoint-deprecated, optional-request-param-added, response-status-added, draft-endpoint-changed.\n",
+            "description": "Machine-readable rule identifier. Treat as an open string \u2014 new rules will be added as the compat engine evolves. Known values: endpoint-added, endpoint-deprecated, optional-request-param-added, response-status-added, draft-endpoint-changed.\n",
             "example": "endpoint-added"
           },
           "description": {

@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ConfigProvider } from "./context/ConfigContext";
+import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { SpecExplorerProvider } from "./context/SpecExplorerContext";
 import { Layout } from "./components/layout/Layout";
@@ -9,6 +9,8 @@ import { SpecDetailPage } from "./pages/SpecDetailPage";
 import { VersionPage } from "./pages/VersionPage";
 import { DiffPage } from "./pages/DiffPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { CallbackPage } from "./pages/CallbackPage";
+import { useState } from "react";
 
 export default function App() {
   const [filters, setFilters] = useState<{
@@ -20,19 +22,22 @@ export default function App() {
 
   return (
     <ConfigProvider>
-      <ThemeProvider>
-        <SpecExplorerProvider>
-          <Layout sidebarFilters={{ ...filters, onFilterChange: setFilters }}>
-            <Routes>
-              <Route path="/" element={<SpecListPage filters={filters} />} />
-              <Route path="/specs/:name" element={<SpecDetailPage />} />
-              <Route path="/specs/:name/versions/:semver" element={<VersionPage />} />
-              <Route path="/specs/:name/diff" element={<DiffPage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </Layout>
-        </SpecExplorerProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <SpecExplorerProvider>
+            <Layout sidebarFilters={{ ...filters, onFilterChange: setFilters }}>
+              <Routes>
+                <Route path="/" element={<SpecListPage filters={filters} />} />
+                <Route path="/specs/:name" element={<SpecDetailPage />} />
+                <Route path="/specs/:name/versions/:semver" element={<VersionPage />} />
+                <Route path="/specs/:name/diff" element={<DiffPage />} />
+                <Route path="/callback" element={<CallbackPage />} />
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </Layout>
+          </SpecExplorerProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </ConfigProvider>
   );
 }

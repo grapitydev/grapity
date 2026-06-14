@@ -25,11 +25,23 @@ import { listGatewayLogsRoute } from "./routes/list-gateway-logs";
 import { getGatewayLogRoute } from "./routes/get-gateway-log";
 import { gatewayLogStatsRoute } from "./routes/gateway-log-stats";
 import type { ServerConfig } from "./config";
+import { createAuthMiddleware, parseRouteScopes, AuthError } from "./auth/middleware";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import yaml from "js-yaml";
+
+function loadOpenApiSpec(): Record<string, unknown> {
+  const path = fileURLToPath(new URL("../../openapi.yaml", import.meta.url));
+  const content = readFileSync(path, "utf-8");
+  return yaml.load(content) as Record<string, unknown>;
+}
 
 export type AppEnv = {
   Variables: {
     store: SpecStore & GatewayConfigStore;
     config: ServerConfig;
+    actor?: string;
+    claims?: Record<string, unknown>;
   };
 };
 
@@ -44,6 +56,23 @@ export function createApp(config: ServerConfig, store: SpecStore & GatewayConfig
     c.set("store", store);
     c.set("config", config);
     await next();
+  });
+
+  const routeScopes = parseRouteScopes(loadOpenApiSpec());
+  app.use("*", createAuthMiddleware(config, routeScopes));
+
+  app.onError((err, c) => {
+    if (err instanceof AuthError) {
+      return c.json(
+        { error: err.code, message: err.message, statusCode: err.statusCode },
+        err.statusCode as 401 | 403
+      );
+    }
+    console.error("Unhandled error:", err);
+    return c.json(
+      { error: "internal_error", message: "Internal server error", statusCode: 500 },
+      500
+    );
   });
 
   app.route("/v1/specs", pushRoute);

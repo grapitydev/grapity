@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, beforeEach, afterAll } from "bun:test";
 import { createTestApp, makeSpec, pushSpec } from "./helpers";
+import { fetchToken, startKeycloak, REALM } from "./keycloak";
 import type { createApp } from "registry/server";
 
 const baseSpec = makeSpec();
@@ -34,56 +35,133 @@ const validGatewayConfig = {
 let app: ReturnType<typeof createApp>;
 let reset: () => Promise<void>;
 let cleanup: () => Promise<void>;
+let readToken: string;
+let writeToken: string;
+
+let keycloakServerUrl: string;
 
 beforeAll(async () => {
-  ({ app, reset, cleanup } = await createTestApp());
-}, 120_000);
+  if (process.env.SKIP_KEYCLOAK_INTEGRATION) {
+    return;
+  }
 
-beforeEach(async () => {
-  await reset();
-});
+  const keycloak = await startKeycloak();
+  keycloakServerUrl = keycloak.serverUrl;
 
-afterAll(async () => {
-  await cleanup();
-});
+  writeToken = await fetchToken(keycloakServerUrl, "grapity-cli", "grapity-cli-secret");
+  readToken = await fetchToken(
+    keycloakServerUrl,
+    "grapity-cli-limited",
+    "grapity-cli-limited-secret"
+  );
 
-async function pushGatewayConfig() {
-  await pushSpec(app, { content: baseSpec, name: "payments-api" });
-  const res = await app.request("/v1/gateway-configs", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(validGatewayConfig),
+  const testApp = await createTestApp({
+    auth: {
+      mode: "keycloak",
+      serverUrl: keycloakServerUrl,
+      realm: REALM,
+      audience: "grapity-cli",
+      roleSource: "scope",
+    },
   });
-  expect(res.status).toBe(201);
-}
 
-const kongLogPayload = {
-  service: { name: "payments-api-gateway" },
-  route: { name: "payments-api-gateway-payments-id-get-0", paths: ["/payments/(?<id>[^/]+)"] },
-  request: { method: "GET", uri: "/payments/123", headers: { "user-agent": "test-agent" } },
-  response: { status: 200 },
-  consumer: { id: "consumer-abc-123" },
-  client_ip: "10.0.0.1",
-  started_at: Date.now(),
-};
+  app = testApp.app;
+  reset = testApp.reset;
+
+  const originalCleanup = testApp.cleanup;
+  cleanup = async () => {
+    await originalCleanup();
+    await keycloak.stop();
+  };
+}, 300_000);
 
 describe("Gateway Log Ingestion", () => {
-  it("ingests a Kong log and stores it", async () => {
-    await pushGatewayConfig();
+  beforeEach(async () => {
+    if (process.env.SKIP_KEYCLOAK_INTEGRATION) {
+      return;
+    }
+    await reset();
+  });
 
-    const res = await app.request("/v1/gateway-logs/ingest/kong/staging", {
+  afterAll(async () => {
+    if (process.env.SKIP_KEYCLOAK_INTEGRATION) {
+      return;
+    }
+    await cleanup();
+  });
+
+  async function pushGatewayConfig(token: string) {
+    await pushSpec(app, { content: baseSpec, name: "payments-api" }, token);
+    const res = await app.request("/v1/gateway-configs", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(validGatewayConfig),
+    });
+    expect(res.status).toBe(201);
+  }
+
+  async function ingestLog(token?: string) {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    return app.request("/v1/gateway-logs/ingest/kong/staging", {
+      method: "POST",
+      headers,
       body: JSON.stringify(kongLogPayload),
     });
+  }
 
+  const kongLogPayload = {
+    service: { name: "payments-api-gateway" },
+    route: { name: "payments-api-gateway-payments-id-get-0", paths: ["/payments/(?<id>[^/]+)"] },
+    request: { method: "GET", uri: "/payments/123", headers: { "user-agent": "test-agent" } },
+    response: { status: 200 },
+    consumer: { id: "consumer-abc-123" },
+    client_ip: "10.0.0.1",
+    started_at: Date.now(),
+  };
+
+  it("rejects ingest requests without a Bearer token", async () => {
+    const res = await ingestLog();
+    expect(res.status).toBe(401);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toBe("unauthorized");
+  });
+
+  it("rejects ingest requests when token is missing gateway-logs:write", async () => {
+    await pushGatewayConfig(writeToken);
+    const res = await ingestLog(readToken);
+    expect(res.status).toBe(403);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toBe("forbidden");
+  });
+
+  it("ingests a Kong log and stores it with a valid gateway token", async () => {
+    await pushGatewayConfig(writeToken);
+
+    const res = await ingestLog(writeToken);
     expect(res.status).toBe(201);
-    const body = await res.json() as any;
+    const body = (await res.json()) as { status: string };
     expect(body.status).toBe("ok");
 
-    // Query it back
-    const listRes = await app.request("/v1/gateway-logs?gatewayConfig=payments-api-gateway");
-    const listBody = await listRes.json() as any;
+    const listRes = await app.request("/v1/gateway-logs?gatewayConfig=payments-api-gateway", {
+      headers: { Authorization: `Bearer ${writeToken}` },
+    });
+    const listBody = (await listRes.json()) as {
+      data: Array<{
+        gatewayConfigName: string;
+        method: string;
+        path: string;
+        status: number;
+        callerId: string;
+        callerSource: string;
+        callerConfidence: string;
+      }>;
+    };
 
     expect(listRes.status).toBe(200);
     expect(listBody.data).toHaveLength(1);
@@ -97,7 +175,7 @@ describe("Gateway Log Ingestion", () => {
   });
 
   it("falls back to ip+ua when no consumer and no configured header", async () => {
-    await pushGatewayConfig();
+    await pushGatewayConfig(writeToken);
 
     const payload = {
       service: { name: "payments-api-gateway" },
@@ -110,14 +188,25 @@ describe("Gateway Log Ingestion", () => {
 
     const res = await app.request("/v1/gateway-logs/ingest/kong/staging", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${writeToken}`,
+      },
       body: JSON.stringify(payload),
     });
 
     expect(res.status).toBe(201);
 
-    const listRes = await app.request("/v1/gateway-logs?gatewayConfig=payments-api-gateway");
-    const listBody = await listRes.json() as any;
+    const listRes = await app.request("/v1/gateway-logs?gatewayConfig=payments-api-gateway", {
+      headers: { Authorization: `Bearer ${writeToken}` },
+    });
+    const listBody = (await listRes.json()) as {
+      data: Array<{
+        callerId: string;
+        callerSource: string;
+        callerConfidence: string;
+      }>;
+    };
 
     expect(listBody.data).toHaveLength(1);
     expect(listBody.data[0].callerId).toBe("192.168.1.1::test-agent");
@@ -126,13 +215,15 @@ describe("Gateway Log Ingestion", () => {
   });
 
   it("returns stats aggregated by endpoint", async () => {
-    await pushGatewayConfig();
+    await pushGatewayConfig(writeToken);
 
-    // Ingest 3 logs
     for (let i = 0; i < 3; i++) {
       await app.request("/v1/gateway-logs/ingest/kong/staging", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${writeToken}`,
+        },
         body: JSON.stringify({
           ...kongLogPayload,
           consumer: { id: i === 0 ? "consumer-abc-123" : `consumer-${i}` },
@@ -141,8 +232,16 @@ describe("Gateway Log Ingestion", () => {
       });
     }
 
-    const statsRes = await app.request("/v1/gateway-logs/stats?gatewayConfig=payments-api-gateway");
-    const statsBody = await statsRes.json() as any;
+    const statsRes = await app.request("/v1/gateway-logs/stats?gatewayConfig=payments-api-gateway", {
+      headers: { Authorization: `Bearer ${writeToken}` },
+    });
+    const statsBody = (await statsRes.json()) as {
+      data: Array<{
+        totalCalls: number | string;
+        uniqueCallerIds: number | string;
+        method: string;
+      }>;
+    };
 
     expect(statsRes.status).toBe(200);
     expect(statsBody.data).toHaveLength(1);
@@ -152,27 +251,35 @@ describe("Gateway Log Ingestion", () => {
   });
 
   it("filters logs by environment", async () => {
-    await pushGatewayConfig();
+    await pushGatewayConfig(writeToken);
 
     await app.request("/v1/gateway-logs/ingest/kong/staging", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${writeToken}`,
+      },
       body: JSON.stringify(kongLogPayload),
     });
 
-    const res = await app.request("/v1/gateway-logs?gatewayConfig=payments-api-gateway&environment=staging");
-    const body = await res.json() as any;
+    const res = await app.request("/v1/gateway-logs?gatewayConfig=payments-api-gateway&environment=staging", {
+      headers: { Authorization: `Bearer ${writeToken}` },
+    });
+    const body = (await res.json()) as { data: unknown[] };
 
     expect(res.status).toBe(200);
     expect(body.data).toHaveLength(1);
   });
 
   it("returns 400 for missing service.name in payload", async () => {
-    await pushGatewayConfig();
+    await pushGatewayConfig(writeToken);
 
     const res = await app.request("/v1/gateway-logs/ingest/kong/staging", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${writeToken}`,
+      },
       body: JSON.stringify({ request: { method: "GET" } }),
     });
 

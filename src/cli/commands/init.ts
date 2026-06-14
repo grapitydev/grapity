@@ -16,9 +16,25 @@ interface InitConfig {
     database?: "sqlite" | "postgresql";
     sqlitePath?: string;
     postgresUrl?: string;
+    auth?: {
+      mode: "none" | "keycloak";
+      serverUrl?: string;
+      realm?: string;
+      clientId?: string;
+      audience?: string;
+      roleSource?: "scope" | "realm_access.roles";
+    };
   };
   remote?: {
     url: string;
+    auth?: {
+      mode: "keycloak";
+      serverUrl: string;
+      realm: string;
+      clientId: string;
+      audience?: string;
+      roleSource?: "scope" | "realm_access.roles";
+    };
   };
 }
 
@@ -29,6 +45,12 @@ export const initCommand = new Command("init")
   .option("--url <url>", "Registry URL (for remote mode)")
   .option("--port <port>", "Port for local server (default: 3750)")
   .option("--db <path-or-url>", "SQLite path or postgresql:// URL (for local mode)")
+  .option("--auth <mode>", "Auth mode: none | keycloak (default: none)")
+  .option("--keycloak-server <url>", "Keycloak server URL")
+  .option("--keycloak-realm <realm>", "Keycloak realm")
+  .option("--keycloak-client-id <id>", "Keycloak client ID (for CLI client credentials)")
+  .option("--keycloak-audience <audience>", "Keycloak token audience to validate")
+  .option("--keycloak-role-source <source>", "Where to read roles from: scope | realm_access.roles (default: scope)")
   .action(async (options) => {
     const configDir = path.join(os.homedir(), ".grapity");
     const configPath = path.join(configDir, "config.yaml");
@@ -58,6 +80,14 @@ export const initCommand = new Command("init")
       process.exit(1);
     }
 
+    const authMode = options.auth ?? "none";
+    if (authMode !== "none" && authMode !== "keycloak") {
+      console.error(formatError("invalid auth mode", "--auth must be one of: none, keycloak"));
+      process.exit(1);
+    }
+
+    const keycloakAuth = authMode === "keycloak" ? parseKeycloakOptions(options, mode) : undefined;
+
     const config: InitConfig = { mode };
 
     if (mode === "local") {
@@ -76,6 +106,23 @@ export const initCommand = new Command("init")
         config.local.sqlitePath =
           dbValue ?? path.join(os.homedir(), ".grapity", "registry.db");
       }
+
+    if (keycloakAuth) {
+      if (!options.keycloakClientId) {
+        console.error(
+          formatError(
+            "missing flag",
+            "--keycloak-client-id is required when using Keycloak auth."
+          )
+        );
+        process.exit(1);
+      }
+      config.local.auth = {
+        mode: "keycloak",
+        clientId: options.keycloakClientId,
+        ...keycloakAuth,
+      };
+    }
     } else {
       if (!options.url) {
         console.error(
@@ -91,6 +138,17 @@ export const initCommand = new Command("init")
       config.remote = {
         url: options.url.replace(/\/$/, ""),
       };
+
+      if (keycloakAuth) {
+        config.remote.auth = {
+          mode: "keycloak",
+          serverUrl: keycloakAuth.serverUrl!,
+          realm: keycloakAuth.realm!,
+          clientId: keycloakAuth.clientId!,
+          audience: keycloakAuth.audience,
+          roleSource: keycloakAuth.roleSource,
+        };
+      }
     }
 
     if (!fs.existsSync(configDir)) {
@@ -109,6 +167,58 @@ export const initCommand = new Command("init")
         dbPath: config.local?.sqlitePath,
         postgresUrl: config.local?.postgresUrl,
         url: config.remote?.url,
+        authMode,
+        keycloakServer: keycloakAuth?.serverUrl,
+        keycloakRealm: keycloakAuth?.realm,
+        keycloakClientId:
+          config.local?.auth?.clientId ?? config.remote?.auth?.clientId,
       })
     );
   });
+
+function parseKeycloakOptions(
+  options: Record<string, string | undefined>,
+  _mode: "local" | "remote"
+): {
+  serverUrl: string;
+  realm: string;
+  clientId?: string;
+  audience?: string;
+  roleSource?: "scope" | "realm_access.roles";
+} {
+  if (!options.keycloakServer) {
+    console.error(
+      formatError(
+        "missing flag",
+        "--keycloak-server is required when auth mode is keycloak.",
+        ["Example:  --keycloak-server https://keycloak.example.com"]
+      )
+    );
+    process.exit(1);
+  }
+
+  if (!options.keycloakRealm) {
+    console.error(
+      formatError(
+        "missing flag",
+        "--keycloak-realm is required when auth mode is keycloak.",
+        ["Example:  --keycloak-realm grapity"]
+      )
+    );
+    process.exit(1);
+  }
+
+  const roleSource = options.keycloakRoleSource as "scope" | "realm_access.roles" | undefined;
+  if (roleSource && roleSource !== "scope" && roleSource !== "realm_access.roles") {
+    console.error(formatError("invalid role source", "--keycloak-role-source must be one of: scope, realm_access.roles"));
+    process.exit(1);
+  }
+
+  return {
+    serverUrl: options.keycloakServer.replace(/\/$/, ""),
+    realm: options.keycloakRealm,
+    clientId: options.keycloakClientId,
+    audience: options.keycloakAudience,
+    roleSource,
+  };
+}

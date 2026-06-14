@@ -1,28 +1,51 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 
+export interface HubAuthConfig {
+  mode: "keycloak";
+  serverUrl: string;
+  realm: string;
+  clientId: string;
+  audience?: string;
+}
+
 interface ConfigContextValue {
   registryUrl: string;
+  auth?: HubAuthConfig;
 }
 
 const ConfigContext = createContext<ConfigContextValue | null>(null);
 
-function getRegistryUrl(): string {
+interface WindowConfig {
+  registryUrl?: string;
+  auth?: HubAuthConfig;
+  remote?: { url?: string };
+}
+
+declare global {
+  interface Window {
+    __GRAPITY_CONFIG__?: WindowConfig;
+  }
+}
+
+function getConfig(): ConfigContextValue {
   const params = new URLSearchParams(window.location.search);
   const override = params.get("registry");
-  if (override) return override;
+  const windowConfig = window.__GRAPITY_CONFIG__;
 
-  if ((window as any).__GRAPITY_CONFIG__?.remote?.url) {
-    return (window as any).__GRAPITY_CONFIG__.remote.url;
-  }
+  const registryUrl =
+    override ?? windowConfig?.registryUrl ?? windowConfig?.remote?.url ?? "";
 
-  return "";
+  return {
+    registryUrl,
+    auth: windowConfig?.auth,
+  };
 }
 
 export function ConfigProvider({ children }: { children: ReactNode }) {
-  const [registryUrl] = useState(() => getRegistryUrl());
+  const [config] = useState(() => getConfig());
 
   return (
-    <ConfigContext.Provider value={{ registryUrl }}>
+    <ConfigContext.Provider value={config}>
       {children}
     </ConfigContext.Provider>
   );

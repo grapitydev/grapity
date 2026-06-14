@@ -4,19 +4,45 @@ import path from "node:path";
 import yaml from "js-yaml";
 
 export type DatabaseBackend = "sqlite" | "postgresql";
+export type AuthMode = "none" | "keycloak";
+export type RoleSource = "scope" | "realm_access.roles";
+
+export interface KeycloakAuthConfig {
+  mode: "keycloak";
+  serverUrl: string;
+  realm: string;
+  clientId: string;
+  audience?: string;
+  roleSource?: RoleSource;
+}
+
+export type RemoteAuthConfig = { mode: "none" } | KeycloakAuthConfig;
+
+export interface LocalAuthConfig {
+  mode: AuthMode;
+  serverUrl?: string;
+  realm?: string;
+  clientId?: string;
+  audience?: string;
+  roleSource?: RoleSource;
+}
 
 export interface Config {
   mode: "local" | "remote";
   remote?: {
     url: string;
+    auth?: RemoteAuthConfig;
   };
   local?: {
     port: number;
     database?: DatabaseBackend;
     sqlitePath?: string;
     postgresUrl?: string;
+    auth?: LocalAuthConfig;
   };
 }
+
+export const CONFIG_PATH = () => path.join(os.homedir(), ".grapity", "config.yaml");
 
 const DEFAULT_CONFIG: Config = {
   mode: "local",
@@ -26,8 +52,12 @@ const DEFAULT_CONFIG: Config = {
   },
 };
 
+export function configExists(): boolean {
+  return fs.existsSync(CONFIG_PATH());
+}
+
 export function getConfig(): Config {
-  const configPath = path.join(os.homedir(), ".grapity", "config.yaml");
+  const configPath = CONFIG_PATH();
 
   if (!fs.existsSync(configPath)) {
     return DEFAULT_CONFIG;
@@ -62,6 +92,7 @@ export function getConfig(): Config {
       database,
       sqlitePath: config.local?.sqlitePath,
       postgresUrl: config.local?.postgresUrl,
+      auth: config.local?.auth,
     },
   };
 }

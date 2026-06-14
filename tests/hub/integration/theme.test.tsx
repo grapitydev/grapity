@@ -2,6 +2,7 @@ import "@testing-library/jest-dom";
 import "../setup";
 import { beforeEach, afterEach, describe, expect, test } from "bun:test";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { AuthProvider } from "hub/context/AuthContext";
 import { BrowserRouter } from "react-router-dom";
 import { ConfigProvider } from "hub/context/ConfigContext";
 import { ThemeProvider } from "hub/context/ThemeContext";
@@ -19,9 +20,11 @@ describe("Theme toggle", () => {
     render(
       <BrowserRouter>
         <ConfigProvider>
-          <ThemeProvider>
-            <Header />
-          </ThemeProvider>
+          <AuthProvider>
+            <ThemeProvider>
+              <Header />
+            </ThemeProvider>
+          </AuthProvider>
         </ConfigProvider>
       </BrowserRouter>
     );
@@ -33,9 +36,11 @@ describe("Theme toggle", () => {
     render(
       <BrowserRouter>
         <ConfigProvider>
-          <ThemeProvider>
-            <Header />
-          </ThemeProvider>
+          <AuthProvider>
+            <ThemeProvider>
+              <Header />
+            </ThemeProvider>
+          </AuthProvider>
         </ConfigProvider>
       </BrowserRouter>
     );

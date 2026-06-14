@@ -41,6 +41,8 @@ export const pushGatewayConfigRoute = new Hono<AppEnv>().post("/", async (c) => 
   const store = c.get("store");
   const service = new GatewayService(store, store);
 
+  const actor = c.get("actor") ?? body.pushedBy;
+
   try {
     const result = await service.pushGatewayConfig({
       name: body.name,
@@ -51,7 +53,7 @@ export const pushGatewayConfigRoute = new Hono<AppEnv>().post("/", async (c) => 
       environments: body.environments as Record<string, any> ?? {},
       callerIdentification: body.callerIdentification,
       content: body.content,
-      pushedBy: body.pushedBy as string | undefined,
+      pushedBy: actor,
     });
     return c.json({ data: result }, 201);
   } catch (err) {

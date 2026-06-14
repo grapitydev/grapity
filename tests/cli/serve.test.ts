@@ -1,8 +1,9 @@
 import { test, expect, describe, beforeAll, afterAll } from "bun:test";
 import os from "node:os";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+import yaml from "js-yaml";
 
 const tmpHome = mkdtempSync(join(tmpdir(), "grapity-serve-test-"));
 const realHomedir = os.homedir.bind(os);
@@ -15,6 +16,12 @@ afterAll(() => {
   os.homedir = realHomedir;
   rmSync(tmpHome, { recursive: true, force: true });
 });
+
+function writeConfig(config: object) {
+  const dir = join(tmpHome, ".grapity");
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "config.yaml"), yaml.dump(config), "utf-8");
+}
 
 async function runServe(
   args: string[],
@@ -39,10 +46,16 @@ function strip(str: string): string {
 
 describe("grapity serve", () => {
   test("exits with a friendly error when PostgreSQL is unreachable", async () => {
-    const { exitCode, stderr } = await runServe([
-      "--db",
-      "postgresql://grapity:grapity@127.0.0.1:1/grapity",
-    ]);
+    writeConfig({
+      mode: "local",
+      local: {
+        port: 3750,
+        database: "postgresql",
+        postgresUrl: "postgresql://grapity:grapity@127.0.0.1:1/grapity",
+      },
+    });
+
+    const { exitCode, stderr } = await runServe(["--no-auth"]);
 
     expect(exitCode).toBe(1);
     const plain = strip(stderr);

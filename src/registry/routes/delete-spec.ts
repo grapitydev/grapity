@@ -9,7 +9,8 @@ export const deleteSpecRoute = new Hono<AppEnv>().delete(
     const store = c.get("store");
     const service = new RegistryService(store);
 
-    const deleted = await service.deleteSpec(name);
+    const actor = c.get("actor");
+    const deleted = await service.deleteSpec(name, actor);
     if (!deleted) {
       return c.json({ error: "not_found", message: `Spec "${name}" not found`, statusCode: 404 }, 404);
     }

@@ -25,6 +25,7 @@ describe("startServer with postgresql database", () => {
       port: 0,
       database: "postgresql",
       postgresUrl: connectionUri,
+      auth: { mode: "none" },
     };
 
     const { app } = await startServer(config);
@@ -40,6 +41,7 @@ describe("startServer with postgresql database", () => {
       port: 0,
       database: "postgresql",
       postgresUrl: "postgresql://grapity:grapity@127.0.0.1:1/grapity",
+      auth: { mode: "none" },
     };
 
     await expect(startServer(config)).rejects.toBeInstanceOf(DatabaseConnectionError);

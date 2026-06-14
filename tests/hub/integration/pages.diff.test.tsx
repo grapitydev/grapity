@@ -2,6 +2,7 @@ import "@testing-library/jest-dom";
 import "../setup";
 import { beforeEach, afterEach, describe, expect, test } from "bun:test";
 import { render, screen, waitFor, cleanup, fireEvent } from "@testing-library/react";
+import { AuthProvider } from "hub/context/AuthContext";
 import { BrowserRouter } from "react-router-dom";
 import { ConfigProvider } from "hub/context/ConfigContext";
 import { ThemeProvider } from "hub/context/ThemeContext";
@@ -12,7 +13,9 @@ function wrapper({ children }: { children: React.ReactNode }) {
   return (
     <BrowserRouter>
       <ConfigProvider>
-        <ThemeProvider>{children}</ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </AuthProvider>
       </ConfigProvider>
     </BrowserRouter>
   );

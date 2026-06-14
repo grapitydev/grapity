@@ -21,10 +21,24 @@ grapity init --local
 grapity serve
 ```
 
-### Self-hosted (PostgreSQL)
+For local development without Keycloak, use `--no-auth`:
 
 ```bash
-grapity serve --db postgresql://user:pass@host:5432/grapity --auth jwt
+grapity serve --no-auth
+```
+
+### Self-hosted (PostgreSQL + Keycloak)
+
+```bash
+grapity init --local \
+  --db postgresql://user:pass@host:5432/grapity \
+  --auth keycloak \
+  --keycloak-server https://keycloak.example.com \
+  --keycloak-realm grapity \
+  --keycloak-client-id grapity-cli
+
+export GRAPITY_CLIENT_SECRET="your-client-secret"
+grapity serve
 ```
 
 ### Remote / SaaS
@@ -32,7 +46,13 @@ grapity serve --db postgresql://user:pass@host:5432/grapity --auth jwt
 Connect to a hosted Grapity instance. No server to run.
 
 ```bash
-grapity init --remote --url https://api.grapity.dev --api-key <key>
+grapity init --remote --url https://api.grapity.dev \
+  --auth keycloak \
+  --keycloak-server https://keycloak.example.com \
+  --keycloak-realm grapity \
+  --keycloak-client-id grapity-cli
+
+export GRAPITY_CLIENT_SECRET="your-client-secret"
 ```
 
 ## Commands
@@ -42,12 +62,17 @@ grapity init --remote --url https://api.grapity.dev --api-key <key>
 Configure the registry. Writes `~/.grapity/config.yaml`.
 
 ```
---local               Use local mode (SQLite)
---remote              Use remote mode
---url <url>           Registry URL (required for remote)
---api-key <key>       API key (optional, for remote)
---port <port>         Port for local server (default: 3750)
---db <path>           SQLite database path (default: ~/.grapity/registry.db)
+--local                     Use local mode (SQLite or PostgreSQL)
+--remote                    Use remote mode
+--url <url>                 Registry URL (required for remote)
+--port <port>               Port for local server (default: 3750)
+--db <path-or-url>          SQLite path or postgresql:// URL (for local mode)
+--auth <mode>               Auth mode: none | keycloak (default: none)
+--keycloak-server <url>     Keycloak server URL
+--keycloak-realm <realm>    Keycloak realm
+--keycloak-client-id <id>   Keycloak client ID for CLI client credentials
+--keycloak-audience <aud>   Keycloak token audience to validate
+--keycloak-role-source <s>  Where to read roles from: scope | realm_access.roles
 ```
 
 ### `grapity serve`
@@ -55,14 +80,22 @@ Configure the registry. Writes `~/.grapity/config.yaml`.
 Start the registry server and the Hub developer portal. Use `--no-hub` to skip the portal.
 
 ```
--p, --port <port>     Port to listen on (default: 3750)
---db <url>            SQLite path or postgresql:// URL
---auth <mode>         Auth mode: none | api-key | jwt (default: none)
+-p, --port <port>       Port to listen on (default: 3750)
+--hub-port <port>       Port for the developer portal (default: 3000)
+--no-hub                Skip starting the developer portal
+--no-auth               Start without authentication (local development only)
 ```
 
-The database backend is inferred from `--db`: a `postgresql://` URL uses PostgreSQL, anything else (or omitted) uses SQLite.
+### `grapity auth`
 
-### `grapity registry push <file>`
+Check or clear the cached Keycloak access token.
+
+```bash
+grapity auth status    # Show current authentication status
+grapity auth clear     # Clear the cached token
+```
+
+Client secrets are never written to `~/.grapity/config.yaml`. Set `GRAPITY_CLIENT_SECRET` (or `GRAPITY_TOKEN` for automation) before running commands.
 
 Push a spec file to the registry. Validates structure, checks backward compatibility against the latest version, assigns a semver, and stores the result.
 

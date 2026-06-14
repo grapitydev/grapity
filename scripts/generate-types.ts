@@ -16,7 +16,7 @@ const ast = await openapiTS(new URL("../openapi.yaml", import.meta.url), {
 
 const contents = astToString(ast);
 fs.writeFileSync(
-  new URL("../src/generated/api.ts", import.meta.url),
+  new URL("../src/core/generated/api.ts", import.meta.url),
   contents
 );
-console.log("Generated types written to src/generated/api.ts");
+console.log("Generated types written to src/core/generated/api.ts");

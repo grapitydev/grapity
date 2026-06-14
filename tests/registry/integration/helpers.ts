@@ -3,8 +3,9 @@ import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { Wait } from "testcontainers";
 import { createApp } from "registry/server";
 import { PostgreSQLSpecStore } from "registry/storage/postgresql";
+import type { ServerConfig } from "registry/config";
 
-export async function createTestApp() {
+export async function createTestApp(extraConfig?: Partial<ServerConfig>) {
   const container = await new PostgreSqlContainer("postgres:16")
     .withWaitStrategy(Wait.forLogMessage("database system is ready to accept connections", 2))
     .start();
@@ -13,7 +14,12 @@ export async function createTestApp() {
   await store.migrate();
 
   const pool = new Pool({ connectionString: connectionUri });
-  const config = { port: 3750, database: "postgresql" as const };
+  const config: ServerConfig = {
+    port: 3750,
+    database: "postgresql",
+    auth: { mode: "none" },
+    ...extraConfig,
+  };
   const app = createApp(config, store);
 
   async function reset() {
@@ -83,11 +89,16 @@ export function makeSpec(overrides: {
 
 export async function pushSpec(
   app: ReturnType<typeof createApp>,
-  body: Record<string, unknown>
+  body: Record<string, unknown>,
+  token?: string
 ) {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
   const res = await app.request("/v1/specs", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(body),
   });
   return { res, body: await res.json() };

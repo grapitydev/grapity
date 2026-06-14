@@ -19,14 +19,33 @@ import type {
   GetGatewayLogStatsResponse,
   GetGatewayLogResponse,
 } from "core";
-import { getRegistryUrl } from "./config";
+import { getRegistryUrl, getConfig, type KeycloakAuthConfig } from "./config";
 import type { CompatReport } from "core";
+import { getAccessToken } from "./auth";
 
 export class BreakingChangeError extends Error {
   constructor(public readonly compatReport: CompatReport) {
     super("Breaking changes detected");
     this.name = "BreakingChangeError";
   }
+}
+
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const config = getConfig();
+  const authConfig = config.mode === "remote" ? config.remote?.auth : config.local?.auth;
+  const headers: Record<string, string> = {};
+
+  if (authConfig?.mode === "keycloak") {
+    if (!authConfig.clientId) {
+      throw new Error(
+        "Keycloak auth is configured but clientId is missing. Run grapity init with --keycloak-client-id."
+      );
+    }
+    const token = await getAccessToken(authConfig as KeycloakAuthConfig);
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  return headers;
 }
 
   async function request<T>(
@@ -37,10 +56,12 @@ export class BreakingChangeError extends Error {
     const baseUrl = getRegistryUrl();
     const url = `${baseUrl}${path}`;
 
+    const authHeaders = await getAuthHeaders();
     const response = await fetch(url, {
       method,
       headers: {
         "Content-Type": "application/json",
+        ...authHeaders,
       },
       body: body ? JSON.stringify(body) : undefined,
     });
@@ -61,7 +82,11 @@ async function requestText(method: string, path: string): Promise<{ text: string
   const baseUrl = getRegistryUrl();
   const url = `${baseUrl}${path}`;
 
-  const response = await fetch(url, { method });
+  const authHeaders = await getAuthHeaders();
+  const response = await fetch(url, {
+    method,
+    headers: authHeaders,
+  });
 
   if (!response.ok) {
     const error = await response.json() as { message?: string };

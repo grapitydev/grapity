@@ -32,6 +32,8 @@ export const pushRoute = new Hono<AppEnv>().post("/", async (c) => {
   const store = c.get("store");
   const service = new RegistryService(store);
 
+  const actor = c.get("actor") ?? body.pushedBy;
+
   try {
     const result = await service.pushSpec(body.content, body.name, {
       type: body.type as "openapi" | "asyncapi" | undefined,
@@ -40,7 +42,7 @@ export const pushRoute = new Hono<AppEnv>().post("/", async (c) => {
       sourceRepo: body.sourceRepo as string | undefined,
       tags: Array.isArray(body.tags) ? body.tags as string[] : undefined,
       gitRef: body.gitRef as string | undefined,
-      pushedBy: body.pushedBy as string | undefined,
+      pushedBy: actor,
       prerelease: body.prerelease as boolean | undefined,
       force: body.force as boolean | undefined,
       reason: body.reason as string | undefined,

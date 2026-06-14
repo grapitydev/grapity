@@ -1,17 +1,21 @@
-import { test, expect, describe, beforeEach, afterAll, beforeAll } from "bun:test";
+import { test, expect, describe, beforeEach, afterEach, afterAll, beforeAll } from "bun:test";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import yaml from "js-yaml";
+import { client } from "cli/client";
+import { resetTokenCache } from "cli/auth";
 
 // Isolate config reads from the developer's real ~/.grapity/config.yaml.
 // The default config (no file) points to http://localhost:3750, which is what
 // getRegistryUrl() will return and what we assert on in URL checks.
 const tmpHome = mkdtempSync(join(tmpdir(), "grapity-client-test-"));
 const originalHome = process.env.HOME;
+const originalFetch = global.fetch;
 
 beforeAll(() => {
   process.env.HOME = tmpHome;
+  process.env.GRAPITY_TOKEN = "test-token";
   // Write a predictable local config
   const dir = join(tmpHome, ".grapity");
   mkdirSync(dir, { recursive: true });
@@ -20,10 +24,14 @@ beforeAll(() => {
 
 afterAll(() => {
   process.env.HOME = originalHome;
+  global.fetch = originalFetch;
   rmSync(tmpHome, { recursive: true, force: true });
 });
 
-import { client } from "cli/client";
+afterEach(() => {
+  global.fetch = originalFetch;
+  resetTokenCache();
+});
 
 type FetchCall = { url: string; method: string; body?: unknown; headers: Record<string, string> };
 

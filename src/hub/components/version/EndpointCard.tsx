@@ -1,6 +1,8 @@
 import type { Endpoint } from "../../context/SpecExplorerContext";
 import { SchemaPropertyTree } from "./SchemaPropertyTree";
 import { CodeBlock } from "./CodeBlock";
+import { Badge } from "../ui/badge";
+import { Lock } from "lucide-react";
 
 const METHOD_COLORS: Record<string, string> = {
   GET: "bg-blue-500/10 text-blue-400 border-blue-500/30",
@@ -56,12 +58,47 @@ function buildCurl(endpoint: Endpoint): string {
   const url = `${endpoint.serverUrl}${endpoint.path}`;
   const lines = [`curl -X ${endpoint.method} ${url} \\n  -H "Content-Type: application/json" \\n`];
 
+  if (endpoint.security && endpoint.security.length > 0) {
+    lines.push('  -H "Authorization: Bearer <token>" \\n');
+  }
+
   if (endpoint.exampleRequest) {
     const body = endpoint.exampleRequest.replace(/'/g, "'\\''");
     lines.push(`  -d '${body}'`);
   }
 
   return lines.join("");
+}
+
+function SecurityRow({ security }: { security: Endpoint["security"] }) {
+  if (!security || security.length === 0) {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs text-text-muted">
+        <Lock className="h-3.5 w-3.5" />
+        No authentication required
+      </span>
+    );
+  }
+
+  const { schemeName, scopes } = security[0];
+  return (
+    <span className="inline-flex flex-wrap items-center gap-2">
+      <span className="inline-flex items-center gap-1.5 text-xs text-text-secondary">
+        <Lock className="h-3.5 w-3.5" />
+        Auth:
+      </span>
+      <Badge variant="indigo">{schemeName}</Badge>
+      {scopes.length > 0 && (
+        <span className="inline-flex flex-wrap items-center gap-1">
+          {scopes.map((scope) => (
+            <Badge key={scope} variant="default">
+              {scope}
+            </Badge>
+          ))}
+        </span>
+      )}
+    </span>
+  );
 }
 
 function statusBadgeClass(status: string): string {
@@ -101,6 +138,9 @@ export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
       {endpoint.summary && (
         <p className="text-sm text-text-secondary mb-2">{endpoint.summary}</p>
       )}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3">
+        <SecurityRow security={endpoint.security} />
+      </div>
       {endpoint.description && (
         <p className="text-sm text-text-muted mb-3">{endpoint.description}</p>
       )}

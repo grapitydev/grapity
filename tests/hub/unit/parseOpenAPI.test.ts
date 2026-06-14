@@ -488,4 +488,90 @@ describe("parseOpenAPI", () => {
     expect(endpoint.parameters[0].name).toBe("type");
     expect(endpoint.parameters[0].type).toBe("string (openapi, asyncapi)");
   });
+
+  it("inherits global security when operation has no security field", () => {
+    const spec = {
+      openapi: "3.1.0",
+      info: { title: "Test API", version: "1.0.0" },
+      servers: [{ url: "https://api.example.com" }],
+      security: [{ keycloak: ["specs:read"] }],
+      paths: {
+        "/test": {
+          get: {
+            operationId: "testGet",
+            responses: { "200": { description: "OK" } },
+          },
+        },
+      },
+    };
+
+    const result = parseOpenAPI(JSON.stringify(spec));
+    const endpoint = result[0].endpoints[0];
+    expect(endpoint.security).toEqual([{ schemeName: "keycloak", scopes: ["specs:read"] }]);
+  });
+
+  it("uses operation-level security over global security", () => {
+    const spec = {
+      openapi: "3.1.0",
+      info: { title: "Test API", version: "1.0.0" },
+      servers: [{ url: "https://api.example.com" }],
+      security: [{ keycloak: ["specs:read"] }],
+      paths: {
+        "/test": {
+          post: {
+            operationId: "testPost",
+            security: [{ keycloak: ["specs:write"] }],
+            responses: { "201": { description: "Created" } },
+          },
+        },
+      },
+    };
+
+    const result = parseOpenAPI(JSON.stringify(spec));
+    const endpoint = result[0].endpoints[0];
+    expect(endpoint.security).toEqual([{ schemeName: "keycloak", scopes: ["specs:write"] }]);
+  });
+
+  it("treats empty operation security as public", () => {
+    const spec = {
+      openapi: "3.1.0",
+      info: { title: "Test API", version: "1.0.0" },
+      servers: [{ url: "https://api.example.com" }],
+      security: [{ keycloak: ["specs:read"] }],
+      paths: {
+        "/test": {
+          get: {
+            operationId: "testGet",
+            security: [],
+            responses: { "200": { description: "OK" } },
+          },
+        },
+      },
+    };
+
+    const result = parseOpenAPI(JSON.stringify(spec));
+    const endpoint = result[0].endpoints[0];
+    expect(endpoint.security).toBeUndefined();
+  });
+
+  it("parses security without scopes", () => {
+    const spec = {
+      openapi: "3.1.0",
+      info: { title: "Test API", version: "1.0.0" },
+      servers: [{ url: "https://api.example.com" }],
+      paths: {
+        "/test": {
+          get: {
+            operationId: "testGet",
+            security: [{ apiKey: [] }],
+            responses: { "200": { description: "OK" } },
+          },
+        },
+      },
+    };
+
+    const result = parseOpenAPI(JSON.stringify(spec));
+    const endpoint = result[0].endpoints[0];
+    expect(endpoint.security).toEqual([{ schemeName: "apiKey", scopes: [] }]);
+  });
 });

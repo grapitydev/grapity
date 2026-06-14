@@ -33,6 +33,11 @@ export interface ResponseInfo {
   exampleBody?: string;
 }
 
+export interface EndpointSecurity {
+  schemeName: string;
+  scopes: string[];
+}
+
 export interface Endpoint {
   method: string;
   path: string;
@@ -47,6 +52,7 @@ export interface Endpoint {
   id: string;
   deprecated?: boolean;
   xSunset?: string;
+  security?: EndpointSecurity[];
 }
 
 export interface EndpointGroup {

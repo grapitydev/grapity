@@ -1,4 +1,4 @@
-import type { Endpoint, EndpointGroup, EndpointParam, SchemaProperty, RequestBody, ResponseInfo } from "../context/SpecExplorerContext";
+import type { Endpoint, EndpointGroup, EndpointParam, SchemaProperty, RequestBody, ResponseInfo, EndpointSecurity } from "../context/SpecExplorerContext";
 
 function extractGroupName(path: string): string {
   const parts = path.split("/").filter(Boolean);
@@ -345,6 +345,34 @@ function extractExample(content: Record<string, unknown> | undefined): string | 
   return undefined;
 }
 
+function extractSecurity(
+  operation: Record<string, unknown>,
+  globalSecurity: unknown[] | undefined,
+): EndpointSecurity[] | undefined {
+  const opSecurity = operation.security;
+  const source = Array.isArray(opSecurity) ? opSecurity : globalSecurity;
+  if (!Array.isArray(source) || source.length === 0) {
+    return undefined;
+  }
+
+  const first = source[0];
+  if (!first || typeof first !== "object") {
+    return undefined;
+  }
+
+  const entries = Object.entries(first as Record<string, unknown>);
+  if (entries.length === 0) {
+    return undefined;
+  }
+
+  const [schemeName, rawScopes] = entries[0];
+  const scopes = Array.isArray(rawScopes)
+    ? rawScopes.filter((s): s is string => typeof s === "string")
+    : [];
+
+  return [{ schemeName, scopes }];
+}
+
 export function parseOpenAPI(json: string): EndpointGroup[] {
   try {
     const spec = JSON.parse(json);
@@ -352,6 +380,7 @@ export function parseOpenAPI(json: string): EndpointGroup[] {
     if (!paths || typeof paths !== "object") return [];
 
     const serverUrl = (spec.servers as { url?: string }[] | undefined)?.[0]?.url ?? "https://api.example.com";
+    const globalSecurity = spec.security as unknown[] | undefined;
 
     const endpoints: Endpoint[] = [];
 
@@ -437,6 +466,7 @@ export function parseOpenAPI(json: string): EndpointGroup[] {
           id,
           deprecated: Boolean(op.deprecated),
           xSunset: op["x-sunset"] ? String(op["x-sunset"]) : undefined,
+          security: extractSecurity(op, globalSecurity),
         });
       }
     }

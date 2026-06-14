@@ -7,6 +7,9 @@ import yaml from "js-yaml";
 
 const tmpHome = mkdtempSync(join(tmpdir(), "grapity-serve-test-"));
 const realHomedir = os.homedir.bind(os);
+const repoRoot = import.meta.dirname
+  ? join(import.meta.dirname, "../..")
+  : process.cwd();
 
 beforeAll(() => {
   os.homedir = () => tmpHome;
@@ -28,7 +31,7 @@ async function runServe(
   envOverrides?: Record<string, string>
 ): Promise<{ exitCode: number; stdout: string; stderr: string }> {
   const proc = Bun.spawn(["bun", "run", "src/cli/index.ts", "serve", "--no-hub", ...args], {
-    cwd: "/Users/marcos/workspace/grapity/grapity",
+    cwd: repoRoot,
     env: { ...process.env, HOME: tmpHome, USERPROFILE: tmpHome, ...envOverrides },
     stdout: "pipe",
     stderr: "pipe",

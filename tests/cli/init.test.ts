@@ -1,6 +1,6 @@
 import { test, expect, describe, beforeAll, afterAll, beforeEach } from "bun:test";
 import os from "node:os";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
+import { mkdtempSync, rmSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import yaml from "js-yaml";
@@ -8,6 +8,9 @@ import yaml from "js-yaml";
 // init.ts writes to os.homedir(); monkey-patch it to a temp dir.
 const tmpHome = mkdtempSync(join(tmpdir(), "grapity-init-test-"));
 const realHomedir = os.homedir.bind(os);
+const repoRoot = import.meta.dirname
+  ? join(import.meta.dirname, "../..")
+  : process.cwd();
 
 beforeAll(() => {
   os.homedir = () => tmpHome;
@@ -27,7 +30,7 @@ async function runInit(
   envOverrides?: Record<string, string>
 ): Promise<{ exitCode: number; stdout: string; stderr: string }> {
   const proc = Bun.spawn(["bun", "run", "src/cli/index.ts", "init", ...args], {
-    cwd: "/Users/marcos/workspace/grapity/grapity",
+    cwd: repoRoot,
     env: { ...process.env, HOME: tmpHome, USERPROFILE: tmpHome, ...envOverrides },
     stdout: "pipe",
     stderr: "pipe",

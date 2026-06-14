@@ -3008,21 +3008,9 @@
   "components": {
     "securitySchemes": {
       "keycloak": {
-        "type": "oauth2",
-        "description": "Keycloak client credentials flow. The actual tokenUrl and JWKS URI are derived at runtime from the configured Keycloak serverUrl and realm.",
-        "flows": {
-          "clientCredentials": {
-            "tokenUrl": "https://keycloak.example.com/realms/{realm}/protocol/openid-connect/token",
-            "scopes": {
-              "specs:read": "Read specs, versions, and compatibility reports",
-              "specs:write": "Push, validate, and delete specs",
-              "gateway-configs:read": "Read gateway configurations",
-              "gateway-configs:write": "Push gateway configurations",
-              "gateway-logs:read": "Read gateway access logs and stats",
-              "gateway-logs:write": "Ingest gateway access logs"
-            }
-          }
-        }
+        "type": "openIdConnect",
+        "description": "Keycloak OpenID Connect. The actual discovery URL is derived at runtime from the configured Keycloak serverUrl and realm: {serverUrl}/realms/{realm}/.well-known/openid-configuration.",
+        "openIdConnectUrl": "https://keycloak.example.com/realms/{realm}/.well-known/openid-configuration"
       }
     },
     "parameters": {

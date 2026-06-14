@@ -54,10 +54,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/HealthResponse"
                 },
-                "example": {
-                  "status": "ok",
-                  "version": "0.2.0",
-                  "uptime": 3600.42
+                "examples": {
+                  "default": {
+                    "value": {
+                      "status": "ok",
+                      "version": "0.2.0",
+                      "uptime": 3600.42
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -69,10 +74,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -84,10 +94,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -99,10 +114,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -142,7 +162,12 @@
               "type": "string"
             },
             "description": "Comma-separated list of tags to filter by",
-            "example": "payments,public"
+            "examples": {
+              "default": {
+                "value": "payments,public",
+                "summary": "Default"
+              }
+            }
           }
         ],
         "responses": {
@@ -153,55 +178,60 @@
                 "schema": {
                   "$ref": "#/components/schemas/ListSpecsResponse"
                 },
-                "example": {
-                  "data": [
-                    {
-                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                      "name": "payments-api",
-                      "type": "openapi",
-                      "description": "Payments service API",
-                      "owner": "platform-team",
-                      "sourceRepo": "https://github.com/acme/payments-service",
-                      "tags": [
-                        "payments",
-                        "public"
-                      ],
-                      "createdAt": "2026-04-25T10:30:00.000Z",
-                      "updatedAt": "2026-06-07T14:00:00.000Z",
-                      "latestVersion": {
-                        "id": "ver-uuid-1",
-                        "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                        "semver": "1.2.0",
-                        "checksum": "sha256-abc123",
-                        "gitRef": "a1b2c3d4",
-                        "pushedBy": "github-actions[bot]",
-                        "previousVersion": "1.1.0",
-                        "isPrerelease": false,
-                        "createdAt": "2026-06-07T14:00:00.000Z"
-                      }
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": [
+                        {
+                          "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "name": "payments-api",
+                          "type": "openapi",
+                          "description": "Payments service API",
+                          "owner": "platform-team",
+                          "sourceRepo": "https://github.com/acme/payments-service",
+                          "tags": [
+                            "payments",
+                            "public"
+                          ],
+                          "createdAt": "2026-04-25T10:30:00.000Z",
+                          "updatedAt": "2026-06-07T14:00:00.000Z",
+                          "latestVersion": {
+                            "id": "ver-uuid-1",
+                            "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                            "semver": "1.2.0",
+                            "checksum": "sha256-abc123",
+                            "gitRef": "a1b2c3d4",
+                            "pushedBy": "github-actions[bot]",
+                            "previousVersion": "1.1.0",
+                            "isPrerelease": false,
+                            "createdAt": "2026-06-07T14:00:00.000Z"
+                          }
+                        },
+                        {
+                          "id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+                          "name": "notifications-api",
+                          "type": "asyncapi",
+                          "description": "Event-driven notifications",
+                          "owner": "messaging-team",
+                          "tags": [
+                            "events",
+                            "internal"
+                          ],
+                          "createdAt": "2026-05-01T09:00:00.000Z",
+                          "updatedAt": "2026-05-15T11:30:00.000Z",
+                          "latestVersion": {
+                            "id": "ver-uuid-2",
+                            "specId": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+                            "semver": "0.3.0",
+                            "checksum": "sha256-def456",
+                            "isPrerelease": true,
+                            "createdAt": "2026-05-15T11:30:00.000Z"
+                          }
+                        }
+                      ]
                     },
-                    {
-                      "id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
-                      "name": "notifications-api",
-                      "type": "asyncapi",
-                      "description": "Event-driven notifications",
-                      "owner": "messaging-team",
-                      "tags": [
-                        "events",
-                        "internal"
-                      ],
-                      "createdAt": "2026-05-01T09:00:00.000Z",
-                      "updatedAt": "2026-05-15T11:30:00.000Z",
-                      "latestVersion": {
-                        "id": "ver-uuid-2",
-                        "specId": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
-                        "semver": "0.3.0",
-                        "checksum": "sha256-def456",
-                        "isPrerelease": true,
-                        "createdAt": "2026-05-15T11:30:00.000Z"
-                      }
-                    }
-                  ]
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -213,10 +243,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -228,10 +263,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -243,10 +283,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -274,21 +319,26 @@
               "schema": {
                 "$ref": "#/components/schemas/PushSpecRequest"
               },
-              "example": {
-                "content": "openapi: 3.1.0\ninfo:\n  title: Payments API\n  version: 1.0.0\npaths:\n  /payments:\n    get:\n      operationId: listPayments\n      responses:\n        '200':\n          description: OK\n",
-                "name": "payments-api",
-                "type": "openapi",
-                "description": "Payments service API",
-                "owner": "platform-team",
-                "sourceRepo": "https://github.com/acme/payments-service",
-                "tags": [
-                  "payments",
-                  "public"
-                ],
-                "gitRef": "a1b2c3d4",
-                "pushedBy": "github-actions[bot]",
-                "prerelease": false,
-                "force": false
+              "examples": {
+                "default": {
+                  "value": {
+                    "content": "openapi: 3.1.0\ninfo:\n  title: Payments API\n  version: 1.0.0\npaths:\n  /payments:\n    get:\n      operationId: listPayments\n      responses:\n        '200':\n          description: OK\n",
+                    "name": "payments-api",
+                    "type": "openapi",
+                    "description": "Payments service API",
+                    "owner": "platform-team",
+                    "sourceRepo": "https://github.com/acme/payments-service",
+                    "tags": [
+                      "payments",
+                      "public"
+                    ],
+                    "gitRef": "a1b2c3d4",
+                    "pushedBy": "github-actions[bot]",
+                    "prerelease": false,
+                    "force": false
+                  },
+                  "summary": "Default"
+                }
               }
             }
           }
@@ -301,62 +351,67 @@
                 "schema": {
                   "$ref": "#/components/schemas/PushSpecResponse"
                 },
-                "example": {
-                  "data": {
-                    "isNewSpec": false,
-                    "spec": {
-                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                      "name": "payments-api",
-                      "type": "openapi",
-                      "description": "Payments service API",
-                      "owner": "platform-team",
-                      "sourceRepo": "https://github.com/acme/payments-service",
-                      "tags": [
-                        "payments",
-                        "public"
-                      ],
-                      "createdAt": "2026-04-25T10:30:00.000Z",
-                      "updatedAt": "2026-06-07T14:00:00.000Z"
-                    },
-                    "version": {
-                      "id": "ver-uuid-3",
-                      "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                      "semver": "1.2.0",
-                      "checksum": "sha256-ghi789",
-                      "gitRef": "a1b2c3d4",
-                      "pushedBy": "github-actions[bot]",
-                      "previousVersion": "1.1.0",
-                      "isPrerelease": false,
-                      "createdAt": "2026-06-07T14:00:00.000Z",
-                      "compatibility": {
-                        "previousVersion": "1.1.0",
-                        "classification": "minor",
-                        "suggestedVersion": "1.2.0",
-                        "breakingChanges": [],
-                        "safeChanges": [
-                          {
-                            "id": "chg-1",
-                            "rule": "endpoint-added",
-                            "description": "Endpoint GET /payments/{id}/refunds added",
-                            "path": "/payments/{id}/refunds/GET"
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": {
+                        "isNewSpec": false,
+                        "spec": {
+                          "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "name": "payments-api",
+                          "type": "openapi",
+                          "description": "Payments service API",
+                          "owner": "platform-team",
+                          "sourceRepo": "https://github.com/acme/payments-service",
+                          "tags": [
+                            "payments",
+                            "public"
+                          ],
+                          "createdAt": "2026-04-25T10:30:00.000Z",
+                          "updatedAt": "2026-06-07T14:00:00.000Z"
+                        },
+                        "version": {
+                          "id": "ver-uuid-3",
+                          "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "semver": "1.2.0",
+                          "checksum": "sha256-ghi789",
+                          "gitRef": "a1b2c3d4",
+                          "pushedBy": "github-actions[bot]",
+                          "previousVersion": "1.1.0",
+                          "isPrerelease": false,
+                          "createdAt": "2026-06-07T14:00:00.000Z",
+                          "compatibility": {
+                            "previousVersion": "1.1.0",
+                            "classification": "minor",
+                            "suggestedVersion": "1.2.0",
+                            "breakingChanges": [],
+                            "safeChanges": [
+                              {
+                                "id": "chg-1",
+                                "rule": "endpoint-added",
+                                "description": "Endpoint GET /payments/{id}/refunds added",
+                                "path": "/payments/{id}/refunds/GET"
+                              }
+                            ]
                           }
-                        ]
+                        },
+                        "compatReport": {
+                          "previousVersion": "1.1.0",
+                          "classification": "minor",
+                          "suggestedVersion": "1.2.0",
+                          "breakingChanges": [],
+                          "safeChanges": [
+                            {
+                              "id": "chg-1",
+                              "rule": "endpoint-added",
+                              "description": "Endpoint GET /payments/{id}/refunds added",
+                              "path": "/payments/{id}/refunds/GET"
+                            }
+                          ]
+                        }
                       }
                     },
-                    "compatReport": {
-                      "previousVersion": "1.1.0",
-                      "classification": "minor",
-                      "suggestedVersion": "1.2.0",
-                      "breakingChanges": [],
-                      "safeChanges": [
-                        {
-                          "id": "chg-1",
-                          "rule": "endpoint-added",
-                          "description": "Endpoint GET /payments/{id}/refunds added",
-                          "path": "/payments/{id}/refunds/GET"
-                        }
-                      ]
-                    }
+                    "summary": "Default"
                   }
                 }
               }
@@ -369,10 +424,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "bad_request",
-                  "message": "Missing required field: content",
-                  "statusCode": 400
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "bad_request",
+                      "message": "Missing required field: content",
+                      "statusCode": 400
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -384,10 +444,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -399,23 +464,28 @@
                 "schema": {
                   "$ref": "#/components/schemas/BreakingChangeError"
                 },
-                "example": {
-                  "error": "breaking_change",
-                  "message": "Breaking changes detected. Use force: true with a reason to override.",
-                  "statusCode": 409,
-                  "compatReport": {
-                    "previousVersion": "1.1.0",
-                    "classification": "major",
-                    "suggestedVersion": "2.0.0",
-                    "breakingChanges": [
-                      {
-                        "id": "chg-2",
-                        "rule": "response-property-removed",
-                        "description": "Response property 'userId' was removed from GET /users/{id}",
-                        "path": "/users/{id}/GET/response/200/userId"
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "breaking_change",
+                      "message": "Breaking changes detected. Use force: true with a reason to override.",
+                      "statusCode": 409,
+                      "compatReport": {
+                        "previousVersion": "1.1.0",
+                        "classification": "major",
+                        "suggestedVersion": "2.0.0",
+                        "breakingChanges": [
+                          {
+                            "id": "chg-2",
+                            "rule": "response-property-removed",
+                            "description": "Response property 'userId' was removed from GET /users/{id}",
+                            "path": "/users/{id}/GET/response/200/userId"
+                          }
+                        ],
+                        "safeChanges": []
                       }
-                    ],
-                    "safeChanges": []
+                    },
+                    "summary": "Default"
                   }
                 }
               }
@@ -428,10 +498,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "prerelease_constraint",
-                  "message": "Cannot push pre-release version. payments-api@1.1.0 is already a release version.",
-                  "statusCode": 422
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "prerelease_constraint",
+                      "message": "Cannot push pre-release version. payments-api@1.1.0 is already a release version.",
+                      "statusCode": 422
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -443,10 +518,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -458,10 +538,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -496,33 +581,38 @@
                 "schema": {
                   "$ref": "#/components/schemas/GetSpecResponse"
                 },
-                "example": {
-                  "data": {
-                    "spec": {
-                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                      "name": "payments-api",
-                      "type": "openapi",
-                      "description": "Payments service API",
-                      "owner": "platform-team",
-                      "sourceRepo": "https://github.com/acme/payments-service",
-                      "tags": [
-                        "payments",
-                        "public"
-                      ],
-                      "createdAt": "2026-04-25T10:30:00.000Z",
-                      "updatedAt": "2026-06-07T14:00:00.000Z"
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": {
+                        "spec": {
+                          "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "name": "payments-api",
+                          "type": "openapi",
+                          "description": "Payments service API",
+                          "owner": "platform-team",
+                          "sourceRepo": "https://github.com/acme/payments-service",
+                          "tags": [
+                            "payments",
+                            "public"
+                          ],
+                          "createdAt": "2026-04-25T10:30:00.000Z",
+                          "updatedAt": "2026-06-07T14:00:00.000Z"
+                        },
+                        "latestVersion": {
+                          "id": "ver-uuid-1",
+                          "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "semver": "1.2.0",
+                          "checksum": "sha256-abc123",
+                          "gitRef": "a1b2c3d4",
+                          "pushedBy": "github-actions[bot]",
+                          "previousVersion": "1.1.0",
+                          "isPrerelease": false,
+                          "createdAt": "2026-06-07T14:00:00.000Z"
+                        }
+                      }
                     },
-                    "latestVersion": {
-                      "id": "ver-uuid-1",
-                      "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                      "semver": "1.2.0",
-                      "checksum": "sha256-abc123",
-                      "gitRef": "a1b2c3d4",
-                      "pushedBy": "github-actions[bot]",
-                      "previousVersion": "1.1.0",
-                      "isPrerelease": false,
-                      "createdAt": "2026-06-07T14:00:00.000Z"
-                    }
+                    "summary": "Default"
                   }
                 }
               }
@@ -535,10 +625,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -550,10 +645,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Spec \"payments-api\" not found",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Spec \"payments-api\" not found",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -565,10 +665,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -580,10 +685,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -620,10 +730,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -635,10 +750,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Spec \"payments-api\" not found",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Spec \"payments-api\" not found",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -650,10 +770,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -665,10 +790,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -703,8 +833,13 @@
               "schema": {
                 "$ref": "#/components/schemas/ValidateSpecRequest"
               },
-              "example": {
-                "content": "openapi: 3.1.0\ninfo:\n  title: Payments API\n  version: 1.0.0\npaths:\n  /payments:\n    get:\n      operationId: listPayments\n      responses:\n        '200':\n          description: OK\n"
+              "examples": {
+                "default": {
+                  "value": {
+                    "content": "openapi: 3.1.0\ninfo:\n  title: Payments API\n  version: 1.0.0\npaths:\n  /payments:\n    get:\n      operationId: listPayments\n      responses:\n        '200':\n          description: OK\n"
+                  },
+                  "summary": "Default"
+                }
               }
             }
           }
@@ -717,24 +852,29 @@
                 "schema": {
                   "$ref": "#/components/schemas/ValidateSpecResponse"
                 },
-                "example": {
-                  "data": {
-                    "valid": true,
-                    "compatReport": {
-                      "previousVersion": "1.1.0",
-                      "classification": "minor",
-                      "suggestedVersion": "1.2.0",
-                      "breakingChanges": [],
-                      "safeChanges": [
-                        {
-                          "id": "chg-1",
-                          "rule": "endpoint-added",
-                          "description": "Endpoint GET /payments/{id}/refunds added",
-                          "path": "/payments/{id}/refunds/GET"
-                        }
-                      ]
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": {
+                        "valid": true,
+                        "compatReport": {
+                          "previousVersion": "1.1.0",
+                          "classification": "minor",
+                          "suggestedVersion": "1.2.0",
+                          "breakingChanges": [],
+                          "safeChanges": [
+                            {
+                              "id": "chg-1",
+                              "rule": "endpoint-added",
+                              "description": "Endpoint GET /payments/{id}/refunds added",
+                              "path": "/payments/{id}/refunds/GET"
+                            }
+                          ]
+                        },
+                        "warnings": []
+                      }
                     },
-                    "warnings": []
+                    "summary": "Default"
                   }
                 }
               }
@@ -747,10 +887,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "bad_request",
-                  "message": "Request body must be valid JSON",
-                  "statusCode": 400
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "bad_request",
+                      "message": "Request body must be valid JSON",
+                      "statusCode": 400
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -762,10 +907,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -777,10 +927,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Spec \"payments-api\" not found",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Spec \"payments-api\" not found",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -792,10 +947,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -807,10 +967,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -867,36 +1032,41 @@
                 "schema": {
                   "$ref": "#/components/schemas/VersionsPage"
                 },
-                "example": {
-                  "data": [
-                    {
-                      "id": "ver-uuid-1",
-                      "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                      "semver": "1.2.0",
-                      "checksum": "sha256-abc123",
-                      "gitRef": "a1b2c3d4",
-                      "pushedBy": "github-actions[bot]",
-                      "previousVersion": "1.1.0",
-                      "isPrerelease": false,
-                      "createdAt": "2026-06-07T14:00:00.000Z"
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": [
+                        {
+                          "id": "ver-uuid-1",
+                          "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "semver": "1.2.0",
+                          "checksum": "sha256-abc123",
+                          "gitRef": "a1b2c3d4",
+                          "pushedBy": "github-actions[bot]",
+                          "previousVersion": "1.1.0",
+                          "isPrerelease": false,
+                          "createdAt": "2026-06-07T14:00:00.000Z"
+                        },
+                        {
+                          "id": "ver-uuid-0",
+                          "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "semver": "1.1.0",
+                          "checksum": "sha256-old456",
+                          "gitRef": "b2c3d4e5",
+                          "pushedBy": "github-actions[bot]",
+                          "previousVersion": "1.0.0",
+                          "isPrerelease": false,
+                          "createdAt": "2026-05-01T09:00:00.000Z"
+                        }
+                      ],
+                      "pagination": {
+                        "hasMore": false,
+                        "limit": 10,
+                        "offset": 0,
+                        "total": 2
+                      }
                     },
-                    {
-                      "id": "ver-uuid-0",
-                      "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                      "semver": "1.1.0",
-                      "checksum": "sha256-old456",
-                      "gitRef": "b2c3d4e5",
-                      "pushedBy": "github-actions[bot]",
-                      "previousVersion": "1.0.0",
-                      "isPrerelease": false,
-                      "createdAt": "2026-05-01T09:00:00.000Z"
-                    }
-                  ],
-                  "pagination": {
-                    "hasMore": false,
-                    "limit": 10,
-                    "offset": 0,
-                    "total": 2
+                    "summary": "Default"
                   }
                 }
               }
@@ -909,10 +1079,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -924,10 +1099,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Spec \"payments-api\" not found",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Spec \"payments-api\" not found",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -939,10 +1119,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -954,10 +1139,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -995,17 +1185,22 @@
                 "schema": {
                   "$ref": "#/components/schemas/GetVersionResponse"
                 },
-                "example": {
-                  "data": {
-                    "id": "ver-uuid-1",
-                    "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                    "semver": "1.2.0",
-                    "checksum": "sha256-abc123",
-                    "gitRef": "a1b2c3d4",
-                    "pushedBy": "github-actions[bot]",
-                    "previousVersion": "1.1.0",
-                    "isPrerelease": false,
-                    "createdAt": "2026-06-07T14:00:00.000Z"
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": {
+                        "id": "ver-uuid-1",
+                        "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                        "semver": "1.2.0",
+                        "checksum": "sha256-abc123",
+                        "gitRef": "a1b2c3d4",
+                        "pushedBy": "github-actions[bot]",
+                        "previousVersion": "1.1.0",
+                        "isPrerelease": false,
+                        "createdAt": "2026-06-07T14:00:00.000Z"
+                      }
+                    },
+                    "summary": "Default"
                   }
                 }
               }
@@ -1018,10 +1213,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1033,10 +1233,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Version 9.9.9 not found for spec \"payments-api\"",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Version 9.9.9 not found for spec \"payments-api\"",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1048,10 +1253,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1063,10 +1273,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1117,10 +1332,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1132,10 +1352,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Spec \"payments-api\" not found",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Spec \"payments-api\" not found",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1147,10 +1372,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1162,10 +1392,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1216,10 +1451,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1231,10 +1471,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Spec \"payments-api\" not found",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Spec \"payments-api\" not found",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1246,10 +1491,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1261,10 +1511,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1317,10 +1572,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1332,10 +1592,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Version 9.9.9 not found for spec \"payments-api\"",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Version 9.9.9 not found for spec \"payments-api\"",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1347,10 +1612,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1362,10 +1632,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1418,10 +1693,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1433,10 +1713,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Version 9.9.9 not found for spec \"payments-api\"",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Version 9.9.9 not found for spec \"payments-api\"",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1448,10 +1733,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1463,10 +1753,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1505,20 +1800,25 @@
                 "schema": {
                   "$ref": "#/components/schemas/GetCompatReportResponse"
                 },
-                "example": {
-                  "data": {
-                    "previousVersion": "1.1.0",
-                    "classification": "minor",
-                    "suggestedVersion": "1.2.0",
-                    "breakingChanges": [],
-                    "safeChanges": [
-                      {
-                        "id": "chg-1",
-                        "rule": "endpoint-added",
-                        "description": "Endpoint GET /payments/{id}/refunds added",
-                        "path": "/payments/{id}/refunds/GET"
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": {
+                        "previousVersion": "1.1.0",
+                        "classification": "minor",
+                        "suggestedVersion": "1.2.0",
+                        "breakingChanges": [],
+                        "safeChanges": [
+                          {
+                            "id": "chg-1",
+                            "rule": "endpoint-added",
+                            "description": "Endpoint GET /payments/{id}/refunds added",
+                            "path": "/payments/{id}/refunds/GET"
+                          }
+                        ]
                       }
-                    ]
+                    },
+                    "summary": "Default"
                   }
                 }
               }
@@ -1531,10 +1831,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1546,10 +1851,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Compat report not found for payments-api@1.0.0",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Compat report not found for payments-api@1.0.0",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1561,10 +1871,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1576,10 +1891,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1615,7 +1935,12 @@
               "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
             },
             "description": "Starting version (inclusive). If newer than `to`, the order is normalized.",
-            "example": "1.0.0"
+            "examples": {
+              "default": {
+                "value": "1.0.0",
+                "summary": "Default"
+              }
+            }
           },
           {
             "name": "to",
@@ -1626,7 +1951,12 @@
               "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
             },
             "description": "Ending version (inclusive). If older than `from`, the order is normalized.",
-            "example": "1.3.0"
+            "examples": {
+              "default": {
+                "value": "1.3.0",
+                "summary": "Default"
+              }
+            }
           }
         ],
         "responses": {
@@ -1637,49 +1967,54 @@
                 "schema": {
                   "$ref": "#/components/schemas/CompareVersionsResponse"
                 },
-                "example": {
-                  "data": {
-                    "from": "1.0.0",
-                    "to": "1.3.0",
-                    "steps": [
-                      {
-                        "version": "1.1.0",
-                        "previousVersion": "1.0.0",
-                        "classification": "minor",
-                        "breakingChanges": [],
-                        "safeChanges": [
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": {
+                        "from": "1.0.0",
+                        "to": "1.3.0",
+                        "steps": [
                           {
-                            "id": "chg-1",
-                            "rule": "endpoint-added",
-                            "description": "Endpoint GET /payments/{id}/refunds added",
-                            "path": "/payments/{id}/refunds/GET",
-                            "category": "structural"
+                            "version": "1.1.0",
+                            "previousVersion": "1.0.0",
+                            "classification": "minor",
+                            "breakingChanges": [],
+                            "safeChanges": [
+                              {
+                                "id": "chg-1",
+                                "rule": "endpoint-added",
+                                "description": "Endpoint GET /payments/{id}/refunds added",
+                                "path": "/payments/{id}/refunds/GET",
+                                "category": "structural"
+                              }
+                            ]
+                          },
+                          {
+                            "version": "1.2.0",
+                            "previousVersion": "1.1.0",
+                            "classification": "patch",
+                            "breakingChanges": [],
+                            "safeChanges": []
+                          },
+                          {
+                            "version": "1.3.0",
+                            "previousVersion": "1.2.0",
+                            "classification": "major",
+                            "breakingChanges": [
+                              {
+                                "id": "chg-2",
+                                "rule": "response-property-removed",
+                                "description": "Response property 'userId' was removed from GET /users/{id}",
+                                "path": "/users/{id}/GET/response/200/userId",
+                                "category": "structural"
+                              }
+                            ],
+                            "safeChanges": []
                           }
                         ]
-                      },
-                      {
-                        "version": "1.2.0",
-                        "previousVersion": "1.1.0",
-                        "classification": "patch",
-                        "breakingChanges": [],
-                        "safeChanges": []
-                      },
-                      {
-                        "version": "1.3.0",
-                        "previousVersion": "1.2.0",
-                        "classification": "major",
-                        "breakingChanges": [
-                          {
-                            "id": "chg-2",
-                            "rule": "response-property-removed",
-                            "description": "Response property 'userId' was removed from GET /users/{id}",
-                            "path": "/users/{id}/GET/response/200/userId",
-                            "category": "structural"
-                          }
-                        ],
-                        "safeChanges": []
                       }
-                    ]
+                    },
+                    "summary": "Default"
                   }
                 }
               }
@@ -1692,10 +2027,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1707,10 +2047,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Version 1.3.0 not found for spec \"payments-api\"",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Version 1.3.0 not found for spec \"payments-api\"",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1722,10 +2067,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1737,10 +2087,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1770,18 +2125,23 @@
                 "schema": {
                   "$ref": "#/components/schemas/ListGatewayConfigsResponse"
                 },
-                "example": {
-                  "data": [
-                    {
-                      "id": "cfg-uuid-1",
-                      "name": "payments-api-gateway",
-                      "provider": "kong",
-                      "specName": "payments-api",
-                      "specSemver": "1.2.0",
-                      "createdAt": "2026-04-25T10:30:00.000Z",
-                      "updatedAt": "2026-06-07T14:00:00.000Z"
-                    }
-                  ]
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": [
+                        {
+                          "id": "cfg-uuid-1",
+                          "name": "payments-api-gateway",
+                          "provider": "kong",
+                          "specName": "payments-api",
+                          "specSemver": "1.2.0",
+                          "createdAt": "2026-04-25T10:30:00.000Z",
+                          "updatedAt": "2026-06-07T14:00:00.000Z"
+                        }
+                      ]
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1793,10 +2153,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1808,10 +2173,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1823,10 +2193,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -1854,61 +2229,66 @@
               "schema": {
                 "$ref": "#/components/schemas/PushGatewayConfigRequest"
               },
-              "example": {
-                "name": "payments-api-gateway",
-                "provider": "kong",
-                "specName": "payments-api",
-                "specSemver": "1.2.0",
-                "routes": [
-                  {
-                    "path": "/payments",
-                    "methods": [
-                      "GET",
-                      "POST"
-                    ]
-                  },
-                  {
-                    "path": "/payments/{id}",
-                    "methods": [
-                      "GET",
-                      "PUT",
-                      "DELETE"
-                    ]
-                  }
-                ],
-                "environments": {
-                  "staging": {
-                    "kongAddr": "http://kong-staging:8001",
-                    "upstream": "http://payments-staging:8080",
-                    "plugins": [
+              "examples": {
+                "default": {
+                  "value": {
+                    "name": "payments-api-gateway",
+                    "provider": "kong",
+                    "specName": "payments-api",
+                    "specSemver": "1.2.0",
+                    "routes": [
                       {
-                        "name": "rate-limiting",
-                        "config": {
-                          "minute": 1000
-                        },
-                        "order": 1
+                        "path": "/payments",
+                        "methods": [
+                          "GET",
+                          "POST"
+                        ]
                       },
                       {
-                        "name": "jwt",
-                        "config": {
-                          "issuer": "https://auth.example.com"
-                        },
-                        "order": 2
+                        "path": "/payments/{id}",
+                        "methods": [
+                          "GET",
+                          "PUT",
+                          "DELETE"
+                        ]
                       }
-                    ]
-                  }
-                },
-                "callerIdentification": {
-                  "strategy": "first-match",
-                  "rules": [
-                    {
-                      "source": "header:x-consumer-id",
-                      "confidence": "high"
-                    }
-                  ]
-                },
-                "content": "apiVersion: v1\nkind: GatewayConfig",
-                "pushedBy": "github-actions[bot]"
+                    ],
+                    "environments": {
+                      "staging": {
+                        "kongAddr": "http://kong-staging:8001",
+                        "upstream": "http://payments-staging:8080",
+                        "plugins": [
+                          {
+                            "name": "rate-limiting",
+                            "config": {
+                              "minute": 1000
+                            },
+                            "order": 1
+                          },
+                          {
+                            "name": "jwt",
+                            "config": {
+                              "issuer": "https://auth.example.com"
+                            },
+                            "order": 2
+                          }
+                        ]
+                      }
+                    },
+                    "callerIdentification": {
+                      "strategy": "first-match",
+                      "rules": [
+                        {
+                          "source": "header:x-consumer-id",
+                          "confidence": "high"
+                        }
+                      ]
+                    },
+                    "content": "apiVersion: v1\nkind: GatewayConfig",
+                    "pushedBy": "github-actions[bot]"
+                  },
+                  "summary": "Default"
+                }
               }
             }
           }
@@ -1921,59 +2301,64 @@
                 "schema": {
                   "$ref": "#/components/schemas/PushGatewayConfigResponse"
                 },
-                "example": {
-                  "data": {
-                    "config": {
-                      "id": "cfg-uuid-1",
-                      "name": "payments-api-gateway",
-                      "provider": "kong",
-                      "specName": "payments-api",
-                      "specSemver": "1.2.0",
-                      "createdAt": "2026-04-25T10:30:00.000Z",
-                      "updatedAt": "2026-06-07T14:00:00.000Z"
-                    },
-                    "version": {
-                      "id": "ver-uuid-1",
-                      "gatewayConfigId": "cfg-uuid-1",
-                      "routes": [
-                        {
-                          "path": "/payments",
-                          "methods": [
-                            "GET",
-                            "POST"
-                          ]
-                        }
-                      ],
-                      "environments": [
-                        {
-                          "name": "staging",
-                          "kongAddr": "http://kong-staging:8001",
-                          "upstream": "http://payments-staging:8080",
-                          "plugins": [
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": {
+                        "config": {
+                          "id": "cfg-uuid-1",
+                          "name": "payments-api-gateway",
+                          "provider": "kong",
+                          "specName": "payments-api",
+                          "specSemver": "1.2.0",
+                          "createdAt": "2026-04-25T10:30:00.000Z",
+                          "updatedAt": "2026-06-07T14:00:00.000Z"
+                        },
+                        "version": {
+                          "id": "ver-uuid-1",
+                          "gatewayConfigId": "cfg-uuid-1",
+                          "routes": [
                             {
-                              "name": "rate-limiting",
-                              "config": {
-                                "minute": 1000
-                              },
-                              "order": 1
+                              "path": "/payments",
+                              "methods": [
+                                "GET",
+                                "POST"
+                              ]
                             }
-                          ]
+                          ],
+                          "environments": [
+                            {
+                              "name": "staging",
+                              "kongAddr": "http://kong-staging:8001",
+                              "upstream": "http://payments-staging:8080",
+                              "plugins": [
+                                {
+                                  "name": "rate-limiting",
+                                  "config": {
+                                    "minute": 1000
+                                  },
+                                  "order": 1
+                                }
+                              ]
+                            }
+                          ],
+                          "callerIdentification": {
+                            "strategy": "first-match",
+                            "rules": [
+                              {
+                                "source": "header:x-consumer-id",
+                                "confidence": "high"
+                              }
+                            ]
+                          },
+                          "content": "apiVersion: v1\nkind: GatewayConfig",
+                          "checksum": "sha256-abc123",
+                          "pushedBy": "github-actions[bot]",
+                          "createdAt": "2026-06-07T14:00:00.000Z"
                         }
-                      ],
-                      "callerIdentification": {
-                        "strategy": "first-match",
-                        "rules": [
-                          {
-                            "source": "header:x-consumer-id",
-                            "confidence": "high"
-                          }
-                        ]
-                      },
-                      "content": "apiVersion: v1\nkind: GatewayConfig",
-                      "checksum": "sha256-abc123",
-                      "pushedBy": "github-actions[bot]",
-                      "createdAt": "2026-06-07T14:00:00.000Z"
-                    }
+                      }
+                    },
+                    "summary": "Default"
                   }
                 }
               }
@@ -1986,10 +2371,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "bad_request",
-                  "message": "Missing required field: name",
-                  "statusCode": 400
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "bad_request",
+                      "message": "Missing required field: name",
+                      "statusCode": 400
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2001,10 +2391,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2016,10 +2411,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "name_exists",
-                  "message": "Gateway config name 'payments-api-gateway' already exists with a different spec",
-                  "statusCode": 409
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "name_exists",
+                      "message": "Gateway config name 'payments-api-gateway' already exists with a different spec",
+                      "statusCode": 409
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2031,10 +2431,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unsupported_provider",
-                  "message": "Unsupported provider 'nginx'",
-                  "statusCode": 422
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unsupported_provider",
+                      "message": "Unsupported provider 'nginx'",
+                      "statusCode": 422
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2046,10 +2451,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2061,10 +2471,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2099,15 +2514,20 @@
                 "schema": {
                   "$ref": "#/components/schemas/GetGatewayConfigResponse"
                 },
-                "example": {
-                  "data": {
-                    "id": "cfg-uuid-1",
-                    "name": "payments-api-gateway",
-                    "provider": "kong",
-                    "specName": "payments-api",
-                    "specSemver": "1.2.0",
-                    "createdAt": "2026-04-25T10:30:00.000Z",
-                    "updatedAt": "2026-06-07T14:00:00.000Z"
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": {
+                        "id": "cfg-uuid-1",
+                        "name": "payments-api-gateway",
+                        "provider": "kong",
+                        "specName": "payments-api",
+                        "specSemver": "1.2.0",
+                        "createdAt": "2026-04-25T10:30:00.000Z",
+                        "updatedAt": "2026-06-07T14:00:00.000Z"
+                      }
+                    },
+                    "summary": "Default"
                   }
                 }
               }
@@ -2120,10 +2540,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2135,10 +2560,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Gateway config \"payments-api-gateway\" not found",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Gateway config \"payments-api-gateway\" not found",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2150,10 +2580,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2165,10 +2600,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2203,50 +2643,55 @@
                 "schema": {
                   "$ref": "#/components/schemas/ListGatewayConfigVersionsResponse"
                 },
-                "example": {
-                  "data": [
-                    {
-                      "id": "ver-uuid-1",
-                      "gatewayConfigId": "cfg-uuid-1",
-                      "routes": [
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": [
                         {
-                          "path": "/payments",
-                          "methods": [
-                            "GET",
-                            "POST"
-                          ]
-                        }
-                      ],
-                      "environments": [
-                        {
-                          "name": "staging",
-                          "kongAddr": "http://kong-staging:8001",
-                          "upstream": "http://payments-staging:8080",
-                          "plugins": [
+                          "id": "ver-uuid-1",
+                          "gatewayConfigId": "cfg-uuid-1",
+                          "routes": [
                             {
-                              "name": "rate-limiting",
-                              "config": {
-                                "minute": 1000
-                              },
-                              "order": 1
+                              "path": "/payments",
+                              "methods": [
+                                "GET",
+                                "POST"
+                              ]
                             }
-                          ]
+                          ],
+                          "environments": [
+                            {
+                              "name": "staging",
+                              "kongAddr": "http://kong-staging:8001",
+                              "upstream": "http://payments-staging:8080",
+                              "plugins": [
+                                {
+                                  "name": "rate-limiting",
+                                  "config": {
+                                    "minute": 1000
+                                  },
+                                  "order": 1
+                                }
+                              ]
+                            }
+                          ],
+                          "callerIdentification": {
+                            "strategy": "first-match",
+                            "rules": [
+                              {
+                                "source": "header:x-consumer-id",
+                                "confidence": "high"
+                              }
+                            ]
+                          },
+                          "checksum": "sha256-abc123",
+                          "pushedBy": "github-actions[bot]",
+                          "createdAt": "2026-06-07T14:00:00.000Z"
                         }
-                      ],
-                      "callerIdentification": {
-                        "strategy": "first-match",
-                        "rules": [
-                          {
-                            "source": "header:x-consumer-id",
-                            "confidence": "high"
-                          }
-                        ]
-                      },
-                      "checksum": "sha256-abc123",
-                      "pushedBy": "github-actions[bot]",
-                      "createdAt": "2026-06-07T14:00:00.000Z"
-                    }
-                  ]
+                      ]
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2258,10 +2703,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2273,10 +2723,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Gateway config \"payments-api-gateway\" not found",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Gateway config \"payments-api-gateway\" not found",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2288,10 +2743,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2303,10 +2763,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2344,48 +2809,53 @@
                 "schema": {
                   "$ref": "#/components/schemas/GetGatewayConfigVersionResponse"
                 },
-                "example": {
-                  "data": {
-                    "id": "ver-uuid-1",
-                    "gatewayConfigId": "cfg-uuid-1",
-                    "routes": [
-                      {
-                        "path": "/payments",
-                        "methods": [
-                          "GET",
-                          "POST"
-                        ]
-                      }
-                    ],
-                    "environments": [
-                      {
-                        "name": "staging",
-                        "kongAddr": "http://kong-staging:8001",
-                        "upstream": "http://payments-staging:8080",
-                        "plugins": [
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": {
+                        "id": "ver-uuid-1",
+                        "gatewayConfigId": "cfg-uuid-1",
+                        "routes": [
                           {
-                            "name": "rate-limiting",
-                            "config": {
-                              "minute": 1000
-                            },
-                            "order": 1
+                            "path": "/payments",
+                            "methods": [
+                              "GET",
+                              "POST"
+                            ]
                           }
-                        ]
+                        ],
+                        "environments": [
+                          {
+                            "name": "staging",
+                            "kongAddr": "http://kong-staging:8001",
+                            "upstream": "http://payments-staging:8080",
+                            "plugins": [
+                              {
+                                "name": "rate-limiting",
+                                "config": {
+                                  "minute": 1000
+                                },
+                                "order": 1
+                              }
+                            ]
+                          }
+                        ],
+                        "callerIdentification": {
+                          "strategy": "first-match",
+                          "rules": [
+                            {
+                              "source": "header:x-consumer-id",
+                              "confidence": "high"
+                            }
+                          ]
+                        },
+                        "content": "apiVersion: v1\nkind: GatewayConfig",
+                        "checksum": "sha256-abc123",
+                        "pushedBy": "github-actions[bot]",
+                        "createdAt": "2026-06-07T14:00:00.000Z"
                       }
-                    ],
-                    "callerIdentification": {
-                      "strategy": "first-match",
-                      "rules": [
-                        {
-                          "source": "header:x-consumer-id",
-                          "confidence": "high"
-                        }
-                      ]
                     },
-                    "content": "apiVersion: v1\nkind: GatewayConfig",
-                    "checksum": "sha256-abc123",
-                    "pushedBy": "github-actions[bot]",
-                    "createdAt": "2026-06-07T14:00:00.000Z"
+                    "summary": "Default"
                   }
                 }
               }
@@ -2398,10 +2868,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2413,10 +2888,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Version ver-uuid-99 not found for gateway config \"payments-api-gateway\"",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Version ver-uuid-99 not found for gateway config \"payments-api-gateway\"",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2428,10 +2908,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2443,10 +2928,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2485,22 +2975,27 @@
                 "type": "object",
                 "description": "Provider-specific log payload"
               },
-              "example": {
-                "service": {
-                  "name": "payments-api-gateway"
-                },
-                "request": {
-                  "method": "GET",
-                  "uri": "/payments",
-                  "headers": {
-                    "x-consumer-id": "consumer-123"
-                  }
-                },
-                "response": {
-                  "status": 200
-                },
-                "latencies": {
-                  "request": 42
+              "examples": {
+                "default": {
+                  "value": {
+                    "service": {
+                      "name": "payments-api-gateway"
+                    },
+                    "request": {
+                      "method": "GET",
+                      "uri": "/payments",
+                      "headers": {
+                        "x-consumer-id": "consumer-123"
+                      }
+                    },
+                    "response": {
+                      "status": 200
+                    },
+                    "latencies": {
+                      "request": 42
+                    }
+                  },
+                  "summary": "Default"
                 }
               }
             }
@@ -2516,12 +3011,19 @@
                   "properties": {
                     "status": {
                       "type": "string",
-                      "example": "ok"
+                      "examples": [
+                        "ok"
+                      ]
                     }
                   }
                 },
-                "example": {
-                  "status": "ok"
+                "examples": {
+                  "default": {
+                    "value": {
+                      "status": "ok"
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2533,10 +3035,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "bad_request",
-                  "message": "Missing service.name in gateway log payload",
-                  "statusCode": 400
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "bad_request",
+                      "message": "Missing service.name in gateway log payload",
+                      "statusCode": 400
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2548,10 +3055,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2563,10 +3075,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2578,10 +3095,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2689,29 +3211,34 @@
                 "schema": {
                   "$ref": "#/components/schemas/ListGatewayLogsResponse"
                 },
-                "example": {
-                  "data": [
-                    {
-                      "id": "log-uuid-1",
-                      "provider": "kong",
-                      "gatewayConfigName": "payments-api-gateway",
-                      "environment": "staging",
-                      "method": "GET",
-                      "path": "/payments",
-                      "routePath": "/payments",
-                      "status": 200,
-                      "callerId": "consumer-123",
-                      "callerSource": "header:x-consumer-id",
-                      "callerConfidence": "high",
-                      "occurredAt": "2026-06-07T14:00:00.000Z",
-                      "createdAt": "2026-06-07T14:00:01.000Z"
-                    }
-                  ],
-                  "pagination": {
-                    "hasMore": false,
-                    "limit": 50,
-                    "offset": 0,
-                    "total": 1
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": [
+                        {
+                          "id": "log-uuid-1",
+                          "provider": "kong",
+                          "gatewayConfigName": "payments-api-gateway",
+                          "environment": "staging",
+                          "method": "GET",
+                          "path": "/payments",
+                          "routePath": "/payments",
+                          "status": 200,
+                          "callerId": "consumer-123",
+                          "callerSource": "header:x-consumer-id",
+                          "callerConfidence": "high",
+                          "occurredAt": "2026-06-07T14:00:00.000Z",
+                          "createdAt": "2026-06-07T14:00:01.000Z"
+                        }
+                      ],
+                      "pagination": {
+                        "hasMore": false,
+                        "limit": 50,
+                        "offset": 0,
+                        "total": 1
+                      }
+                    },
+                    "summary": "Default"
                   }
                 }
               }
@@ -2724,10 +3251,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2739,10 +3271,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2754,10 +3291,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2823,18 +3365,23 @@
                 "schema": {
                   "$ref": "#/components/schemas/GetGatewayLogStatsResponse"
                 },
-                "example": {
-                  "data": [
-                    {
-                      "gatewayConfigName": "payments-api-gateway",
-                      "environment": "staging",
-                      "method": "GET",
-                      "routePath": "/payments",
-                      "lastSeenAt": "2026-06-07T14:00:00.000Z",
-                      "totalCalls": 15042,
-                      "uniqueCallerIds": 128
-                    }
-                  ]
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": [
+                        {
+                          "gatewayConfigName": "payments-api-gateway",
+                          "environment": "staging",
+                          "method": "GET",
+                          "routePath": "/payments",
+                          "lastSeenAt": "2026-06-07T14:00:00.000Z",
+                          "totalCalls": 15042,
+                          "uniqueCallerIds": 128
+                        }
+                      ]
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2846,10 +3393,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2861,10 +3413,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2876,10 +3433,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2914,21 +3476,26 @@
                 "schema": {
                   "$ref": "#/components/schemas/GetGatewayLogResponse"
                 },
-                "example": {
-                  "data": {
-                    "id": "log-uuid-1",
-                    "provider": "kong",
-                    "gatewayConfigName": "payments-api-gateway",
-                    "environment": "staging",
-                    "method": "GET",
-                    "path": "/payments",
-                    "routePath": "/payments",
-                    "status": 200,
-                    "callerId": "consumer-123",
-                    "callerSource": "header:x-consumer-id",
-                    "callerConfidence": "high",
-                    "occurredAt": "2026-06-07T14:00:00.000Z",
-                    "createdAt": "2026-06-07T14:00:01.000Z"
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": {
+                        "id": "log-uuid-1",
+                        "provider": "kong",
+                        "gatewayConfigName": "payments-api-gateway",
+                        "environment": "staging",
+                        "method": "GET",
+                        "path": "/payments",
+                        "routePath": "/payments",
+                        "status": 200,
+                        "callerId": "consumer-123",
+                        "callerSource": "header:x-consumer-id",
+                        "callerConfidence": "high",
+                        "occurredAt": "2026-06-07T14:00:00.000Z",
+                        "createdAt": "2026-06-07T14:00:01.000Z"
+                      }
+                    },
+                    "summary": "Default"
                   }
                 }
               }
@@ -2941,10 +3508,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "unauthorized",
-                  "message": "Invalid or missing bearer token",
-                  "statusCode": 401
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2956,10 +3528,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "not_found",
-                  "message": "Log not found",
-                  "statusCode": 404
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Log not found",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2971,10 +3548,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "internal_error",
-                  "message": "Internal server error",
-                  "statusCode": 500
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -2986,10 +3568,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 },
-                "example": {
-                  "error": "forbidden",
-                  "message": "Missing required scope: specs:write",
-                  "statusCode": 403
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
                 }
               }
             }
@@ -3023,7 +3610,12 @@
           "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
         },
         "description": "URL-friendly spec identifier",
-        "example": "payments-api"
+        "examples": {
+          "default": {
+            "value": "payments-api",
+            "summary": "Default"
+          }
+        }
       },
       "semver": {
         "name": "semver",
@@ -3034,7 +3626,12 @@
           "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
         },
         "description": "Semantic version",
-        "example": "1.2.0"
+        "examples": {
+          "default": {
+            "value": "1.2.0",
+            "summary": "Default"
+          }
+        }
       },
       "gatewayConfigName": {
         "name": "name",
@@ -3045,7 +3642,12 @@
           "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
         },
         "description": "URL-friendly gateway config identifier",
-        "example": "payments-api-gateway"
+        "examples": {
+          "default": {
+            "value": "payments-api-gateway",
+            "summary": "Default"
+          }
+        }
       },
       "versionId": {
         "name": "versionId",
@@ -3056,7 +3658,12 @@
           "format": "uuid"
         },
         "description": "Gateway config version UUID",
-        "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        "examples": {
+          "default": {
+            "value": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "summary": "Default"
+          }
+        }
       },
       "provider": {
         "name": "provider",
@@ -3066,7 +3673,12 @@
           "type": "string"
         },
         "description": "Gateway provider (e.g., kong)",
-        "example": "kong"
+        "examples": {
+          "default": {
+            "value": "kong",
+            "summary": "Default"
+          }
+        }
       },
       "environment": {
         "name": "environment",
@@ -3076,7 +3688,12 @@
           "type": "string"
         },
         "description": "Deployment environment (e.g., staging, production)",
-        "example": "staging"
+        "examples": {
+          "default": {
+            "value": "staging",
+            "summary": "Default"
+          }
+        }
       },
       "logId": {
         "name": "id",
@@ -3087,7 +3704,12 @@
           "format": "uuid"
         },
         "description": "Gateway log entry UUID",
-        "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        "examples": {
+          "default": {
+            "value": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "summary": "Default"
+          }
+        }
       }
     },
     "schemas": {
@@ -3129,20 +3751,28 @@
         "properties": {
           "hasMore": {
             "type": "boolean",
-            "example": true
+            "examples": [
+              true
+            ]
           },
           "limit": {
             "type": "integer",
-            "example": 10
+            "examples": [
+              10
+            ]
           },
           "offset": {
             "type": "integer",
-            "example": 0
+            "examples": [
+              0
+            ]
           },
           "total": {
             "type": "integer",
             "description": "Total number of items",
-            "example": 42
+            "examples": [
+              42
+            ]
           }
         }
       },
@@ -3176,47 +3806,63 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+            "examples": [
+              "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+            ]
           },
           "name": {
             "type": "string",
-            "example": "payments-api"
+            "examples": [
+              "payments-api"
+            ]
           },
           "type": {
             "$ref": "#/components/schemas/SpecType"
           },
           "description": {
             "type": "string",
-            "example": "Payments service API"
+            "examples": [
+              "Payments service API"
+            ]
           },
           "owner": {
             "type": "string",
-            "example": "platform-team"
+            "examples": [
+              "platform-team"
+            ]
           },
           "sourceRepo": {
             "type": "string",
             "format": "uri",
-            "example": "https://github.com/acme/payments-service"
+            "examples": [
+              "https://github.com/acme/payments-service"
+            ]
           },
           "tags": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "example": [
-              "payments",
-              "public"
+            "examples": [
+              [
+                "payments",
+                "public"
+              ]
             ]
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
-            "example": "2026-04-25T10:30:00.000Z"
+            "examples": [
+              "2026-04-25T10:30:00.000Z"
+            ]
           },
           "updatedAt": {
             "type": "string",
             "format": "date-time",
-            "example": "2026-06-07T14:00:00.000Z"
+            "examples": [
+              "2026-06-07T14:00:00.000Z"
+            ]
           }
         }
       },
@@ -3234,31 +3880,43 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "example": "ver-uuid-1"
+            "examples": [
+              "ver-uuid-1"
+            ]
           },
           "specId": {
             "type": "string",
             "format": "uuid",
-            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+            "examples": [
+              "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+            ]
           },
           "semver": {
             "type": "string",
-            "example": "1.2.0"
+            "examples": [
+              "1.2.0"
+            ]
           },
           "checksum": {
             "type": "string",
             "description": "SHA-256 hash of the content",
-            "example": "sha256-abc123..."
+            "examples": [
+              "sha256-abc123..."
+            ]
           },
           "gitRef": {
             "type": "string",
             "description": "Git commit SHA at time of push",
-            "example": "a1b2c3d4"
+            "examples": [
+              "a1b2c3d4"
+            ]
           },
           "pushedBy": {
             "type": "string",
             "description": "User or CI identity that pushed this version",
-            "example": "github-actions[bot]"
+            "examples": [
+              "github-actions[bot]"
+            ]
           },
           "compatibility": {
             "$ref": "#/components/schemas/CompatReport"
@@ -3266,21 +3924,29 @@
           "previousVersion": {
             "type": "string",
             "description": "Semver of the previous version this was diffed against",
-            "example": "1.1.0"
+            "examples": [
+              "1.1.0"
+            ]
           },
           "forceReason": {
             "type": "string",
             "description": "Reason provided when force-pushing a breaking change",
-            "example": "security fix CVE-2026-1234"
+            "examples": [
+              "security fix CVE-2026-1234"
+            ]
           },
           "isPrerelease": {
             "type": "boolean",
-            "example": false
+            "examples": [
+              false
+            ]
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
-            "example": "2026-06-07T14:00:00.000Z"
+            "examples": [
+              "2026-06-07T14:00:00.000Z"
+            ]
           }
         }
       },
@@ -3295,7 +3961,9 @@
         "properties": {
           "previousVersion": {
             "type": "string",
-            "example": "1.1.0"
+            "examples": [
+              "1.1.0"
+            ]
           },
           "classification": {
             "$ref": "#/components/schemas/VersionClassification"
@@ -3315,7 +3983,9 @@
           "suggestedVersion": {
             "type": "string",
             "description": "The version the registry suggests based on the classification",
-            "example": "2.0.0"
+            "examples": [
+              "2.0.0"
+            ]
           }
         }
       },
@@ -3332,20 +4002,28 @@
         "properties": {
           "id": {
             "type": "string",
-            "example": "chg-2"
+            "examples": [
+              "chg-2"
+            ]
           },
           "rule": {
             "type": "string",
             "description": "Machine-readable rule identifier. Treat as an open string \u2014 new rules will be added as the compat engine evolves. Known values: endpoint-removed, endpoint-removed-without-deprecation, endpoint-removed-missing-sunset, endpoint-removed-before-sunset, required-request-param-added, response-property-removed, response-status-removed, stable-endpoint-marked-draft.\n",
-            "example": "response-property-removed"
+            "examples": [
+              "response-property-removed"
+            ]
           },
           "description": {
             "type": "string",
-            "example": "Response property 'userId' was removed from GET /users/{id}"
+            "examples": [
+              "Response property 'userId' was removed from GET /users/{id}"
+            ]
           },
           "path": {
             "type": "string",
-            "example": "/users/{id}/GET/response/200/userId"
+            "examples": [
+              "/users/{id}/GET/response/200/userId"
+            ]
           },
           "category": {
             "type": "string",
@@ -3353,24 +4031,32 @@
               "structural",
               "documentation"
             ],
-            "example": "structural"
+            "examples": [
+              "structural"
+            ]
           },
           "originalValue": {
             "type": "string",
-            "example": "string"
+            "examples": [
+              "string"
+            ]
           },
           "newValue": {
             "type": "string",
-            "example": "null"
+            "examples": [
+              "null"
+            ]
           },
           "affectedConsumers": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "example": [
-              "mobile-app",
-              "web-portal"
+            "examples": [
+              [
+                "mobile-app",
+                "web-portal"
+              ]
             ]
           }
         }
@@ -3388,20 +4074,28 @@
         "properties": {
           "id": {
             "type": "string",
-            "example": "chg-1"
+            "examples": [
+              "chg-1"
+            ]
           },
           "rule": {
             "type": "string",
             "description": "Machine-readable rule identifier. Treat as an open string \u2014 new rules will be added as the compat engine evolves. Known values: endpoint-added, endpoint-deprecated, optional-request-param-added, response-status-added, draft-endpoint-changed.\n",
-            "example": "endpoint-added"
+            "examples": [
+              "endpoint-added"
+            ]
           },
           "description": {
             "type": "string",
-            "example": "Optional response property 'metadata' added to GET /users/{id}"
+            "examples": [
+              "Optional response property 'metadata' added to GET /users/{id}"
+            ]
           },
           "path": {
             "type": "string",
-            "example": "/users/{id}/GET/response/200/metadata"
+            "examples": [
+              "/users/{id}/GET/response/200/metadata"
+            ]
           },
           "category": {
             "type": "string",
@@ -3409,7 +4103,9 @@
               "structural",
               "documentation"
             ],
-            "example": "structural"
+            "examples": [
+              "structural"
+            ]
           }
         }
       },
@@ -3424,16 +4120,22 @@
           "error": {
             "type": "string",
             "description": "Machine-readable error code",
-            "example": "not_found"
+            "examples": [
+              "not_found"
+            ]
           },
           "message": {
             "type": "string",
             "description": "Human-readable error description",
-            "example": "Spec \"payments-api\" not found"
+            "examples": [
+              "Spec \"payments-api\" not found"
+            ]
           },
           "statusCode": {
             "type": "integer",
-            "example": 404
+            "examples": [
+              404
+            ]
           }
         }
       },
@@ -3472,12 +4174,16 @@
           },
           "version": {
             "type": "string",
-            "example": "0.2.0"
+            "examples": [
+              "0.2.0"
+            ]
           },
           "uptime": {
             "type": "number",
             "description": "Server uptime in seconds",
-            "example": 3600.42
+            "examples": [
+              3600.42
+            ]
           }
         }
       },
@@ -3491,23 +4197,31 @@
           "content": {
             "type": "string",
             "description": "Raw OpenAPI or AsyncAPI document (YAML or JSON)",
-            "example": "openapi: 3.1.0\ninfo:\n  title: Payments API\n  version: 1.0.0"
+            "examples": [
+              "openapi: 3.1.0\ninfo:\n  title: Payments API\n  version: 1.0.0"
+            ]
           },
           "name": {
             "type": "string",
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$",
-            "example": "payments-api"
+            "examples": [
+              "payments-api"
+            ]
           },
           "type": {
             "$ref": "#/components/schemas/SpecType"
           },
           "description": {
             "type": "string",
-            "example": "Payments service API"
+            "examples": [
+              "Payments service API"
+            ]
           },
           "owner": {
             "type": "string",
-            "example": "platform-team"
+            "examples": [
+              "platform-team"
+            ]
           },
           "sourceRepo": {
             "type": "string",
@@ -3518,20 +4232,26 @@
             "items": {
               "type": "string"
             },
-            "example": [
-              "payments",
-              "public"
+            "examples": [
+              [
+                "payments",
+                "public"
+              ]
             ]
           },
           "gitRef": {
             "type": "string",
             "description": "Git commit SHA",
-            "example": "a1b2c3d4"
+            "examples": [
+              "a1b2c3d4"
+            ]
           },
           "pushedBy": {
             "type": "string",
             "description": "User or CI identity performing the push",
-            "example": "github-actions[bot]"
+            "examples": [
+              "github-actions[bot]"
+            ]
           },
           "prerelease": {
             "type": "boolean",
@@ -3546,7 +4266,9 @@
           "reason": {
             "type": "string",
             "description": "Required when `force` is true. Recorded in the audit log.",
-            "example": "security fix CVE-2026-1234"
+            "examples": [
+              "security fix CVE-2026-1234"
+            ]
           }
         }
       },
@@ -3591,7 +4313,9 @@
           "content": {
             "type": "string",
             "description": "Raw OpenAPI or AsyncAPI document (YAML or JSON)",
-            "example": "openapi: 3.1.0\ninfo:\n  title: Payments API\n  version: 1.0.0"
+            "examples": [
+              "openapi: 3.1.0\ninfo:\n  title: Payments API\n  version: 1.0.0"
+            ]
           }
         }
       },
@@ -3703,11 +4427,15 @@
         "properties": {
           "version": {
             "type": "string",
-            "example": "1.1.0"
+            "examples": [
+              "1.1.0"
+            ]
           },
           "previousVersion": {
             "type": "string",
-            "example": "1.0.0"
+            "examples": [
+              "1.0.0"
+            ]
           },
           "classification": {
             "$ref": "#/components/schemas/VersionClassification"
@@ -3742,11 +4470,15 @@
             "properties": {
               "from": {
                 "type": "string",
-                "example": "1.0.0"
+                "examples": [
+                  "1.0.0"
+                ]
               },
               "to": {
                 "type": "string",
-                "example": "1.3.0"
+                "examples": [
+                  "1.3.0"
+                ]
               },
               "steps": {
                 "type": "array",
@@ -3773,36 +4505,50 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "example": "cfg-uuid-1"
+            "examples": [
+              "cfg-uuid-1"
+            ]
           },
           "name": {
             "type": "string",
-            "example": "payments-api-gateway"
+            "examples": [
+              "payments-api-gateway"
+            ]
           },
           "provider": {
             "type": "string",
             "enum": [
               "kong"
             ],
-            "example": "kong"
+            "examples": [
+              "kong"
+            ]
           },
           "specName": {
             "type": "string",
-            "example": "payments-api"
+            "examples": [
+              "payments-api"
+            ]
           },
           "specSemver": {
             "type": "string",
-            "example": "1.2.0"
+            "examples": [
+              "1.2.0"
+            ]
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
-            "example": "2026-04-25T10:30:00.000Z"
+            "examples": [
+              "2026-04-25T10:30:00.000Z"
+            ]
           },
           "updatedAt": {
             "type": "string",
             "format": "date-time",
-            "example": "2026-06-07T14:00:00.000Z"
+            "examples": [
+              "2026-06-07T14:00:00.000Z"
+            ]
           }
         }
       },
@@ -3815,16 +4561,20 @@
         "properties": {
           "path": {
             "type": "string",
-            "example": "/payments"
+            "examples": [
+              "/payments"
+            ]
           },
           "methods": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "example": [
-              "GET",
-              "POST"
+            "examples": [
+              [
+                "GET",
+                "POST"
+              ]
             ]
           }
         }
@@ -3838,20 +4588,26 @@
         "properties": {
           "name": {
             "type": "string",
-            "example": "rate-limiting"
+            "examples": [
+              "rate-limiting"
+            ]
           },
           "config": {
             "type": "object",
             "additionalProperties": true,
             "description": "Plugin-specific configuration",
-            "example": {
-              "minute": 1000
-            }
+            "examples": [
+              {
+                "minute": 1000
+              }
+            ]
           },
           "order": {
             "type": "integer",
             "description": "Execution order",
-            "example": 1
+            "examples": [
+              1
+            ]
           }
         }
       },
@@ -3866,15 +4622,21 @@
         "properties": {
           "name": {
             "type": "string",
-            "example": "staging"
+            "examples": [
+              "staging"
+            ]
           },
           "kongAddr": {
             "type": "string",
-            "example": "http://kong-staging:8001"
+            "examples": [
+              "http://kong-staging:8001"
+            ]
           },
           "upstream": {
             "type": "string",
-            "example": "http://payments-staging:8080"
+            "examples": [
+              "http://payments-staging:8080"
+            ]
           },
           "plugins": {
             "type": "array",
@@ -3893,7 +4655,9 @@
         "properties": {
           "source": {
             "type": "string",
-            "example": "header:x-consumer-id"
+            "examples": [
+              "header:x-consumer-id"
+            ]
           },
           "confidence": {
             "type": "string",
@@ -3903,7 +4667,9 @@
               "low",
               "anonymous"
             ],
-            "example": "high"
+            "examples": [
+              "high"
+            ]
           }
         }
       },
@@ -3919,7 +4685,9 @@
             "enum": [
               "first-match"
             ],
-            "example": "first-match"
+            "examples": [
+              "first-match"
+            ]
           },
           "rules": {
             "type": "array",
@@ -3944,12 +4712,16 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "example": "ver-uuid-1"
+            "examples": [
+              "ver-uuid-1"
+            ]
           },
           "gatewayConfigId": {
             "type": "string",
             "format": "uuid",
-            "example": "cfg-uuid-1"
+            "examples": [
+              "cfg-uuid-1"
+            ]
           },
           "routes": {
             "type": "array",
@@ -3969,21 +4741,29 @@
           "content": {
             "type": "string",
             "description": "Raw gateway config document",
-            "example": "apiVersion: v1\nkind: GatewayConfig"
+            "examples": [
+              "apiVersion: v1\nkind: GatewayConfig"
+            ]
           },
           "checksum": {
             "type": "string",
             "description": "SHA-256 hash of the content",
-            "example": "sha256-abc123..."
+            "examples": [
+              "sha256-abc123..."
+            ]
           },
           "pushedBy": {
             "type": "string",
-            "example": "github-actions[bot]"
+            "examples": [
+              "github-actions[bot]"
+            ]
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
-            "example": "2026-06-07T14:00:00.000Z"
+            "examples": [
+              "2026-06-07T14:00:00.000Z"
+            ]
           }
         }
       },
@@ -3997,9 +4777,11 @@
         ],
         "properties": {
           "content": {
-            "type": "string",
-            "description": "Content is omitted in list responses to keep them lightweight",
-            "nullable": true
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Content is omitted in list responses to keep them lightweight"
           }
         }
       },
@@ -4017,22 +4799,30 @@
         "properties": {
           "name": {
             "type": "string",
-            "example": "payments-api-gateway"
+            "examples": [
+              "payments-api-gateway"
+            ]
           },
           "provider": {
             "type": "string",
             "enum": [
               "kong"
             ],
-            "example": "kong"
+            "examples": [
+              "kong"
+            ]
           },
           "specName": {
             "type": "string",
-            "example": "payments-api"
+            "examples": [
+              "payments-api"
+            ]
           },
           "specSemver": {
             "type": "string",
-            "example": "1.2.0"
+            "examples": [
+              "1.2.0"
+            ]
           },
           "routes": {
             "type": "array",
@@ -4068,22 +4858,24 @@
                 }
               }
             },
-            "example": {
-              "staging": {
-                "name": "staging",
-                "kongAddr": "http://kong-staging:8001",
-                "upstream": "http://payments-staging:8080",
-                "plugins": [
-                  {
-                    "name": "rate-limiting",
-                    "config": {
-                      "minute": 1000
-                    },
-                    "order": 1
-                  }
-                ]
+            "examples": [
+              {
+                "staging": {
+                  "name": "staging",
+                  "kongAddr": "http://kong-staging:8001",
+                  "upstream": "http://payments-staging:8080",
+                  "plugins": [
+                    {
+                      "name": "rate-limiting",
+                      "config": {
+                        "minute": 1000
+                      },
+                      "order": 1
+                    }
+                  ]
+                }
               }
-            }
+            ]
           },
           "callerIdentification": {
             "$ref": "#/components/schemas/CallerIdentification"
@@ -4091,11 +4883,15 @@
           "content": {
             "type": "string",
             "description": "Raw gateway config document",
-            "example": "apiVersion: v1\nkind: GatewayConfig"
+            "examples": [
+              "apiVersion: v1\nkind: GatewayConfig"
+            ]
           },
           "pushedBy": {
             "type": "string",
-            "example": "github-actions[bot]"
+            "examples": [
+              "github-actions[bot]"
+            ]
           }
         }
       },
@@ -4190,43 +4986,63 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "example": "log-uuid-1"
+            "examples": [
+              "log-uuid-1"
+            ]
           },
           "provider": {
             "type": "string",
-            "example": "kong"
+            "examples": [
+              "kong"
+            ]
           },
           "gatewayConfigName": {
             "type": "string",
-            "example": "payments-api-gateway"
+            "examples": [
+              "payments-api-gateway"
+            ]
           },
           "environment": {
             "type": "string",
-            "example": "staging"
+            "examples": [
+              "staging"
+            ]
           },
           "method": {
             "type": "string",
-            "example": "GET"
+            "examples": [
+              "GET"
+            ]
           },
           "path": {
             "type": "string",
-            "example": "/payments"
+            "examples": [
+              "/payments"
+            ]
           },
           "routePath": {
             "type": "string",
-            "example": "/payments"
+            "examples": [
+              "/payments"
+            ]
           },
           "status": {
             "type": "integer",
-            "example": 200
+            "examples": [
+              200
+            ]
           },
           "callerId": {
             "type": "string",
-            "example": "consumer-123"
+            "examples": [
+              "consumer-123"
+            ]
           },
           "callerSource": {
             "type": "string",
-            "example": "header:x-consumer-id"
+            "examples": [
+              "header:x-consumer-id"
+            ]
           },
           "callerConfidence": {
             "type": "string",
@@ -4236,17 +5052,23 @@
               "low",
               "anonymous"
             ],
-            "example": "high"
+            "examples": [
+              "high"
+            ]
           },
           "occurredAt": {
             "type": "string",
             "format": "date-time",
-            "example": "2026-06-07T14:00:00.000Z"
+            "examples": [
+              "2026-06-07T14:00:00.000Z"
+            ]
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
-            "example": "2026-06-07T14:00:01.000Z"
+            "examples": [
+              "2026-06-07T14:00:01.000Z"
+            ]
           }
         }
       },
@@ -4282,32 +5104,46 @@
         "properties": {
           "gatewayConfigName": {
             "type": "string",
-            "example": "payments-api-gateway"
+            "examples": [
+              "payments-api-gateway"
+            ]
           },
           "environment": {
             "type": "string",
-            "example": "staging"
+            "examples": [
+              "staging"
+            ]
           },
           "method": {
             "type": "string",
-            "example": "GET"
+            "examples": [
+              "GET"
+            ]
           },
           "routePath": {
             "type": "string",
-            "example": "/payments"
+            "examples": [
+              "/payments"
+            ]
           },
           "lastSeenAt": {
             "type": "string",
             "format": "date-time",
-            "example": "2026-06-07T14:00:00.000Z"
+            "examples": [
+              "2026-06-07T14:00:00.000Z"
+            ]
           },
           "totalCalls": {
             "type": "integer",
-            "example": 15042
+            "examples": [
+              15042
+            ]
           },
           "uniqueCallerIds": {
             "type": "integer",
-            "example": 128
+            "examples": [
+              128
+            ]
           }
         }
       },

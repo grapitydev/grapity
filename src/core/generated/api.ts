@@ -943,40 +943,19 @@ export interface components {
     };
     responses: never;
     parameters: {
-        /**
-         * @description URL-friendly spec identifier
-         * @example payments-api
-         */
+        /** @description URL-friendly spec identifier */
         specName: string;
-        /**
-         * @description Semantic version
-         * @example 1.2.0
-         */
+        /** @description Semantic version */
         semver: string;
-        /**
-         * @description URL-friendly gateway config identifier
-         * @example payments-api-gateway
-         */
+        /** @description URL-friendly gateway config identifier */
         gatewayConfigName: string;
-        /**
-         * @description Gateway config version UUID
-         * @example a1b2c3d4-e5f6-7890-abcd-ef1234567890
-         */
+        /** @description Gateway config version UUID */
         versionId: string;
-        /**
-         * @description Gateway provider (e.g., kong)
-         * @example kong
-         */
+        /** @description Gateway provider (e.g., kong) */
         provider: string;
-        /**
-         * @description Deployment environment (e.g., staging, production)
-         * @example staging
-         */
+        /** @description Deployment environment (e.g., staging, production) */
         environment: string;
-        /**
-         * @description Gateway log entry UUID
-         * @example a1b2c3d4-e5f6-7890-abcd-ef1234567890
-         */
+        /** @description Gateway log entry UUID */
         logId: string;
     };
     requestBodies: never;
@@ -1000,13 +979,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "status": "ok",
-                     *       "version": "0.2.0",
-                     *       "uptime": 3600.42
-                     *     }
-                     */
                     "application/json": components["schemas"]["HealthResponse"];
                 };
             };
@@ -1016,13 +988,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1032,13 +997,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1048,13 +1006,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1067,10 +1018,7 @@ export interface operations {
                 type?: components["schemas"]["SpecType"];
                 /** @description Filter by owner */
                 owner?: string;
-                /**
-                 * @description Comma-separated list of tags to filter by
-                 * @example payments,public
-                 */
+                /** @description Comma-separated list of tags to filter by */
                 tags?: string;
             };
             header?: never;
@@ -1085,58 +1033,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": [
-                     *         {
-                     *           "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                     *           "name": "payments-api",
-                     *           "type": "openapi",
-                     *           "description": "Payments service API",
-                     *           "owner": "platform-team",
-                     *           "sourceRepo": "https://github.com/acme/payments-service",
-                     *           "tags": [
-                     *             "payments",
-                     *             "public"
-                     *           ],
-                     *           "createdAt": "2026-04-25T10:30:00.000Z",
-                     *           "updatedAt": "2026-06-07T14:00:00.000Z",
-                     *           "latestVersion": {
-                     *             "id": "ver-uuid-1",
-                     *             "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                     *             "semver": "1.2.0",
-                     *             "checksum": "sha256-abc123",
-                     *             "gitRef": "a1b2c3d4",
-                     *             "pushedBy": "github-actions[bot]",
-                     *             "previousVersion": "1.1.0",
-                     *             "isPrerelease": false,
-                     *             "createdAt": "2026-06-07T14:00:00.000Z"
-                     *           }
-                     *         },
-                     *         {
-                     *           "id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
-                     *           "name": "notifications-api",
-                     *           "type": "asyncapi",
-                     *           "description": "Event-driven notifications",
-                     *           "owner": "messaging-team",
-                     *           "tags": [
-                     *             "events",
-                     *             "internal"
-                     *           ],
-                     *           "createdAt": "2026-05-01T09:00:00.000Z",
-                     *           "updatedAt": "2026-05-15T11:30:00.000Z",
-                     *           "latestVersion": {
-                     *             "id": "ver-uuid-2",
-                     *             "specId": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
-                     *             "semver": "0.3.0",
-                     *             "checksum": "sha256-def456",
-                     *             "isPrerelease": true,
-                     *             "createdAt": "2026-05-15T11:30:00.000Z"
-                     *           }
-                     *         }
-                     *       ]
-                     *     }
-                     */
                     "application/json": components["schemas"]["ListSpecsResponse"];
                 };
             };
@@ -1146,13 +1042,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1162,13 +1051,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1178,13 +1060,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1199,24 +1074,6 @@ export interface operations {
         };
         requestBody: {
             content: {
-                /**
-                 * @example {
-                 *       "content": "openapi: 3.1.0\ninfo:\n  title: Payments API\n  version: 1.0.0\npaths:\n  /payments:\n    get:\n      operationId: listPayments\n      responses:\n        '200':\n          description: OK\n",
-                 *       "name": "payments-api",
-                 *       "type": "openapi",
-                 *       "description": "Payments service API",
-                 *       "owner": "platform-team",
-                 *       "sourceRepo": "https://github.com/acme/payments-service",
-                 *       "tags": [
-                 *         "payments",
-                 *         "public"
-                 *       ],
-                 *       "gitRef": "a1b2c3d4",
-                 *       "pushedBy": "github-actions[bot]",
-                 *       "prerelease": false,
-                 *       "force": false
-                 *     }
-                 */
                 "application/json": components["schemas"]["PushSpecRequest"];
             };
         };
@@ -1227,66 +1084,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": {
-                     *         "isNewSpec": false,
-                     *         "spec": {
-                     *           "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                     *           "name": "payments-api",
-                     *           "type": "openapi",
-                     *           "description": "Payments service API",
-                     *           "owner": "platform-team",
-                     *           "sourceRepo": "https://github.com/acme/payments-service",
-                     *           "tags": [
-                     *             "payments",
-                     *             "public"
-                     *           ],
-                     *           "createdAt": "2026-04-25T10:30:00.000Z",
-                     *           "updatedAt": "2026-06-07T14:00:00.000Z"
-                     *         },
-                     *         "version": {
-                     *           "id": "ver-uuid-3",
-                     *           "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                     *           "semver": "1.2.0",
-                     *           "checksum": "sha256-ghi789",
-                     *           "gitRef": "a1b2c3d4",
-                     *           "pushedBy": "github-actions[bot]",
-                     *           "previousVersion": "1.1.0",
-                     *           "isPrerelease": false,
-                     *           "createdAt": "2026-06-07T14:00:00.000Z",
-                     *           "compatibility": {
-                     *             "previousVersion": "1.1.0",
-                     *             "classification": "minor",
-                     *             "suggestedVersion": "1.2.0",
-                     *             "breakingChanges": [],
-                     *             "safeChanges": [
-                     *               {
-                     *                 "id": "chg-1",
-                     *                 "rule": "endpoint-added",
-                     *                 "description": "Endpoint GET /payments/{id}/refunds added",
-                     *                 "path": "/payments/{id}/refunds/GET"
-                     *               }
-                     *             ]
-                     *           }
-                     *         },
-                     *         "compatReport": {
-                     *           "previousVersion": "1.1.0",
-                     *           "classification": "minor",
-                     *           "suggestedVersion": "1.2.0",
-                     *           "breakingChanges": [],
-                     *           "safeChanges": [
-                     *             {
-                     *               "id": "chg-1",
-                     *               "rule": "endpoint-added",
-                     *               "description": "Endpoint GET /payments/{id}/refunds added",
-                     *               "path": "/payments/{id}/refunds/GET"
-                     *             }
-                     *           ]
-                     *         }
-                     *       }
-                     *     }
-                     */
                     "application/json": components["schemas"]["PushSpecResponse"];
                 };
             };
@@ -1296,13 +1093,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "bad_request",
-                     *       "message": "Missing required field: content",
-                     *       "statusCode": 400
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1312,13 +1102,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1328,13 +1111,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1344,27 +1120,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "breaking_change",
-                     *       "message": "Breaking changes detected. Use force: true with a reason to override.",
-                     *       "statusCode": 409,
-                     *       "compatReport": {
-                     *         "previousVersion": "1.1.0",
-                     *         "classification": "major",
-                     *         "suggestedVersion": "2.0.0",
-                     *         "breakingChanges": [
-                     *           {
-                     *             "id": "chg-2",
-                     *             "rule": "response-property-removed",
-                     *             "description": "Response property 'userId' was removed from GET /users/{id}",
-                     *             "path": "/users/{id}/GET/response/200/userId"
-                     *           }
-                     *         ],
-                     *         "safeChanges": []
-                     *       }
-                     *     }
-                     */
                     "application/json": components["schemas"]["BreakingChangeError"];
                 };
             };
@@ -1374,13 +1129,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "prerelease_constraint",
-                     *       "message": "Cannot push pre-release version. payments-api@1.1.0 is already a release version.",
-                     *       "statusCode": 422
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1390,13 +1138,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1407,10 +1148,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /**
-                 * @description URL-friendly spec identifier
-                 * @example payments-api
-                 */
+                /** @description URL-friendly spec identifier */
                 name: components["parameters"]["specName"];
             };
             cookie?: never;
@@ -1423,37 +1161,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": {
-                     *         "spec": {
-                     *           "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                     *           "name": "payments-api",
-                     *           "type": "openapi",
-                     *           "description": "Payments service API",
-                     *           "owner": "platform-team",
-                     *           "sourceRepo": "https://github.com/acme/payments-service",
-                     *           "tags": [
-                     *             "payments",
-                     *             "public"
-                     *           ],
-                     *           "createdAt": "2026-04-25T10:30:00.000Z",
-                     *           "updatedAt": "2026-06-07T14:00:00.000Z"
-                     *         },
-                     *         "latestVersion": {
-                     *           "id": "ver-uuid-1",
-                     *           "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                     *           "semver": "1.2.0",
-                     *           "checksum": "sha256-abc123",
-                     *           "gitRef": "a1b2c3d4",
-                     *           "pushedBy": "github-actions[bot]",
-                     *           "previousVersion": "1.1.0",
-                     *           "isPrerelease": false,
-                     *           "createdAt": "2026-06-07T14:00:00.000Z"
-                     *         }
-                     *       }
-                     *     }
-                     */
                     "application/json": components["schemas"]["GetSpecResponse"];
                 };
             };
@@ -1463,13 +1170,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1479,13 +1179,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1495,13 +1188,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Spec \"payments-api\" not found",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1511,13 +1197,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1528,10 +1207,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /**
-                 * @description URL-friendly spec identifier
-                 * @example payments-api
-                 */
+                /** @description URL-friendly spec identifier */
                 name: components["parameters"]["specName"];
             };
             cookie?: never;
@@ -1551,13 +1227,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1567,13 +1236,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1583,13 +1245,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Spec \"payments-api\" not found",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1599,13 +1254,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1616,21 +1264,13 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /**
-                 * @description URL-friendly spec identifier
-                 * @example payments-api
-                 */
+                /** @description URL-friendly spec identifier */
                 name: components["parameters"]["specName"];
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                /**
-                 * @example {
-                 *       "content": "openapi: 3.1.0\ninfo:\n  title: Payments API\n  version: 1.0.0\npaths:\n  /payments:\n    get:\n      operationId: listPayments\n      responses:\n        '200':\n          description: OK\n"
-                 *     }
-                 */
                 "application/json": components["schemas"]["ValidateSpecRequest"];
             };
         };
@@ -1641,28 +1281,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": {
-                     *         "valid": true,
-                     *         "compatReport": {
-                     *           "previousVersion": "1.1.0",
-                     *           "classification": "minor",
-                     *           "suggestedVersion": "1.2.0",
-                     *           "breakingChanges": [],
-                     *           "safeChanges": [
-                     *             {
-                     *               "id": "chg-1",
-                     *               "rule": "endpoint-added",
-                     *               "description": "Endpoint GET /payments/{id}/refunds added",
-                     *               "path": "/payments/{id}/refunds/GET"
-                     *             }
-                     *           ]
-                     *         },
-                     *         "warnings": []
-                     *       }
-                     *     }
-                     */
                     "application/json": components["schemas"]["ValidateSpecResponse"];
                 };
             };
@@ -1672,13 +1290,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "bad_request",
-                     *       "message": "Request body must be valid JSON",
-                     *       "statusCode": 400
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1688,13 +1299,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1704,13 +1308,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1720,13 +1317,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Spec \"payments-api\" not found",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1736,13 +1326,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1758,10 +1341,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /**
-                 * @description URL-friendly spec identifier
-                 * @example payments-api
-                 */
+                /** @description URL-friendly spec identifier */
                 name: components["parameters"]["specName"];
             };
             cookie?: never;
@@ -1774,40 +1354,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": [
-                     *         {
-                     *           "id": "ver-uuid-1",
-                     *           "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                     *           "semver": "1.2.0",
-                     *           "checksum": "sha256-abc123",
-                     *           "gitRef": "a1b2c3d4",
-                     *           "pushedBy": "github-actions[bot]",
-                     *           "previousVersion": "1.1.0",
-                     *           "isPrerelease": false,
-                     *           "createdAt": "2026-06-07T14:00:00.000Z"
-                     *         },
-                     *         {
-                     *           "id": "ver-uuid-0",
-                     *           "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                     *           "semver": "1.1.0",
-                     *           "checksum": "sha256-old456",
-                     *           "gitRef": "b2c3d4e5",
-                     *           "pushedBy": "github-actions[bot]",
-                     *           "previousVersion": "1.0.0",
-                     *           "isPrerelease": false,
-                     *           "createdAt": "2026-05-01T09:00:00.000Z"
-                     *         }
-                     *       ],
-                     *       "pagination": {
-                     *         "hasMore": false,
-                     *         "limit": 10,
-                     *         "offset": 0,
-                     *         "total": 2
-                     *       }
-                     *     }
-                     */
                     "application/json": components["schemas"]["VersionsPage"];
                 };
             };
@@ -1817,13 +1363,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1833,13 +1372,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1849,13 +1381,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Spec \"payments-api\" not found",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1865,13 +1390,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1882,15 +1400,9 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /**
-                 * @description URL-friendly spec identifier
-                 * @example payments-api
-                 */
+                /** @description URL-friendly spec identifier */
                 name: components["parameters"]["specName"];
-                /**
-                 * @description Semantic version
-                 * @example 1.2.0
-                 */
+                /** @description Semantic version */
                 semver: components["parameters"]["semver"];
             };
             cookie?: never;
@@ -1903,21 +1415,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": {
-                     *         "id": "ver-uuid-1",
-                     *         "specId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                     *         "semver": "1.2.0",
-                     *         "checksum": "sha256-abc123",
-                     *         "gitRef": "a1b2c3d4",
-                     *         "pushedBy": "github-actions[bot]",
-                     *         "previousVersion": "1.1.0",
-                     *         "isPrerelease": false,
-                     *         "createdAt": "2026-06-07T14:00:00.000Z"
-                     *       }
-                     *     }
-                     */
                     "application/json": components["schemas"]["GetVersionResponse"];
                 };
             };
@@ -1927,13 +1424,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1943,13 +1433,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1959,13 +1442,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Version 9.9.9 not found for spec \"payments-api\"",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1975,13 +1451,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -1992,10 +1461,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /**
-                 * @description URL-friendly spec identifier
-                 * @example payments-api
-                 */
+                /** @description URL-friendly spec identifier */
                 name: components["parameters"]["specName"];
             };
             cookie?: never;
@@ -2018,13 +1484,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2034,13 +1493,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2050,13 +1502,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Spec \"payments-api\" not found",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2066,13 +1511,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2083,10 +1521,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /**
-                 * @description URL-friendly spec identifier
-                 * @example payments-api
-                 */
+                /** @description URL-friendly spec identifier */
                 name: components["parameters"]["specName"];
             };
             cookie?: never;
@@ -2109,13 +1544,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2125,13 +1553,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2141,13 +1562,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Spec \"payments-api\" not found",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2157,13 +1571,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2174,15 +1581,9 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /**
-                 * @description URL-friendly spec identifier
-                 * @example payments-api
-                 */
+                /** @description URL-friendly spec identifier */
                 name: components["parameters"]["specName"];
-                /**
-                 * @description Semantic version
-                 * @example 1.2.0
-                 */
+                /** @description Semantic version */
                 semver: components["parameters"]["semver"];
             };
             cookie?: never;
@@ -2205,13 +1606,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2221,13 +1615,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2237,13 +1624,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Version 9.9.9 not found for spec \"payments-api\"",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2253,13 +1633,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2270,15 +1643,9 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /**
-                 * @description URL-friendly spec identifier
-                 * @example payments-api
-                 */
+                /** @description URL-friendly spec identifier */
                 name: components["parameters"]["specName"];
-                /**
-                 * @description Semantic version
-                 * @example 1.2.0
-                 */
+                /** @description Semantic version */
                 semver: components["parameters"]["semver"];
             };
             cookie?: never;
@@ -2301,13 +1668,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2317,13 +1677,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2333,13 +1686,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Version 9.9.9 not found for spec \"payments-api\"",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2349,13 +1695,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2366,15 +1705,9 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /**
-                 * @description URL-friendly spec identifier
-                 * @example payments-api
-                 */
+                /** @description URL-friendly spec identifier */
                 name: components["parameters"]["specName"];
-                /**
-                 * @description Semantic version
-                 * @example 1.2.0
-                 */
+                /** @description Semantic version */
                 semver: components["parameters"]["semver"];
             };
             cookie?: never;
@@ -2387,24 +1720,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": {
-                     *         "previousVersion": "1.1.0",
-                     *         "classification": "minor",
-                     *         "suggestedVersion": "1.2.0",
-                     *         "breakingChanges": [],
-                     *         "safeChanges": [
-                     *           {
-                     *             "id": "chg-1",
-                     *             "rule": "endpoint-added",
-                     *             "description": "Endpoint GET /payments/{id}/refunds added",
-                     *             "path": "/payments/{id}/refunds/GET"
-                     *           }
-                     *         ]
-                     *       }
-                     *     }
-                     */
                     "application/json": components["schemas"]["GetCompatReportResponse"];
                 };
             };
@@ -2414,13 +1729,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2430,13 +1738,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2446,13 +1747,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Compat report not found for payments-api@1.0.0",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2462,13 +1756,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2477,23 +1764,14 @@ export interface operations {
     compareVersions: {
         parameters: {
             query: {
-                /**
-                 * @description Starting version (inclusive). If newer than `to`, the order is normalized.
-                 * @example 1.0.0
-                 */
+                /** @description Starting version (inclusive). If newer than `to`, the order is normalized. */
                 from: string;
-                /**
-                 * @description Ending version (inclusive). If older than `from`, the order is normalized.
-                 * @example 1.3.0
-                 */
+                /** @description Ending version (inclusive). If older than `from`, the order is normalized. */
                 to: string;
             };
             header?: never;
             path: {
-                /**
-                 * @description URL-friendly spec identifier
-                 * @example payments-api
-                 */
+                /** @description URL-friendly spec identifier */
                 name: components["parameters"]["specName"];
             };
             cookie?: never;
@@ -2506,53 +1784,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": {
-                     *         "from": "1.0.0",
-                     *         "to": "1.3.0",
-                     *         "steps": [
-                     *           {
-                     *             "version": "1.1.0",
-                     *             "previousVersion": "1.0.0",
-                     *             "classification": "minor",
-                     *             "breakingChanges": [],
-                     *             "safeChanges": [
-                     *               {
-                     *                 "id": "chg-1",
-                     *                 "rule": "endpoint-added",
-                     *                 "description": "Endpoint GET /payments/{id}/refunds added",
-                     *                 "path": "/payments/{id}/refunds/GET",
-                     *                 "category": "structural"
-                     *               }
-                     *             ]
-                     *           },
-                     *           {
-                     *             "version": "1.2.0",
-                     *             "previousVersion": "1.1.0",
-                     *             "classification": "patch",
-                     *             "breakingChanges": [],
-                     *             "safeChanges": []
-                     *           },
-                     *           {
-                     *             "version": "1.3.0",
-                     *             "previousVersion": "1.2.0",
-                     *             "classification": "major",
-                     *             "breakingChanges": [
-                     *               {
-                     *                 "id": "chg-2",
-                     *                 "rule": "response-property-removed",
-                     *                 "description": "Response property 'userId' was removed from GET /users/{id}",
-                     *                 "path": "/users/{id}/GET/response/200/userId",
-                     *                 "category": "structural"
-                     *               }
-                     *             ],
-                     *             "safeChanges": []
-                     *           }
-                     *         ]
-                     *       }
-                     *     }
-                     */
                     "application/json": components["schemas"]["CompareVersionsResponse"];
                 };
             };
@@ -2562,13 +1793,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2578,13 +1802,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2594,13 +1811,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Version 1.3.0 not found for spec \"payments-api\"",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2610,13 +1820,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2637,21 +1840,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": [
-                     *         {
-                     *           "id": "cfg-uuid-1",
-                     *           "name": "payments-api-gateway",
-                     *           "provider": "kong",
-                     *           "specName": "payments-api",
-                     *           "specSemver": "1.2.0",
-                     *           "createdAt": "2026-04-25T10:30:00.000Z",
-                     *           "updatedAt": "2026-06-07T14:00:00.000Z"
-                     *         }
-                     *       ]
-                     *     }
-                     */
                     "application/json": components["schemas"]["ListGatewayConfigsResponse"];
                 };
             };
@@ -2661,13 +1849,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2677,13 +1858,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2693,13 +1867,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2714,64 +1881,6 @@ export interface operations {
         };
         requestBody: {
             content: {
-                /**
-                 * @example {
-                 *       "name": "payments-api-gateway",
-                 *       "provider": "kong",
-                 *       "specName": "payments-api",
-                 *       "specSemver": "1.2.0",
-                 *       "routes": [
-                 *         {
-                 *           "path": "/payments",
-                 *           "methods": [
-                 *             "GET",
-                 *             "POST"
-                 *           ]
-                 *         },
-                 *         {
-                 *           "path": "/payments/{id}",
-                 *           "methods": [
-                 *             "GET",
-                 *             "PUT",
-                 *             "DELETE"
-                 *           ]
-                 *         }
-                 *       ],
-                 *       "environments": {
-                 *         "staging": {
-                 *           "kongAddr": "http://kong-staging:8001",
-                 *           "upstream": "http://payments-staging:8080",
-                 *           "plugins": [
-                 *             {
-                 *               "name": "rate-limiting",
-                 *               "config": {
-                 *                 "minute": 1000
-                 *               },
-                 *               "order": 1
-                 *             },
-                 *             {
-                 *               "name": "jwt",
-                 *               "config": {
-                 *                 "issuer": "https://auth.example.com"
-                 *               },
-                 *               "order": 2
-                 *             }
-                 *           ]
-                 *         }
-                 *       },
-                 *       "callerIdentification": {
-                 *         "strategy": "first-match",
-                 *         "rules": [
-                 *           {
-                 *             "source": "header:x-consumer-id",
-                 *             "confidence": "high"
-                 *           }
-                 *         ]
-                 *       },
-                 *       "content": "apiVersion: v1\nkind: GatewayConfig",
-                 *       "pushedBy": "github-actions[bot]"
-                 *     }
-                 */
                 "application/json": components["schemas"]["PushGatewayConfigRequest"];
             };
         };
@@ -2782,63 +1891,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": {
-                     *         "config": {
-                     *           "id": "cfg-uuid-1",
-                     *           "name": "payments-api-gateway",
-                     *           "provider": "kong",
-                     *           "specName": "payments-api",
-                     *           "specSemver": "1.2.0",
-                     *           "createdAt": "2026-04-25T10:30:00.000Z",
-                     *           "updatedAt": "2026-06-07T14:00:00.000Z"
-                     *         },
-                     *         "version": {
-                     *           "id": "ver-uuid-1",
-                     *           "gatewayConfigId": "cfg-uuid-1",
-                     *           "routes": [
-                     *             {
-                     *               "path": "/payments",
-                     *               "methods": [
-                     *                 "GET",
-                     *                 "POST"
-                     *               ]
-                     *             }
-                     *           ],
-                     *           "environments": [
-                     *             {
-                     *               "name": "staging",
-                     *               "kongAddr": "http://kong-staging:8001",
-                     *               "upstream": "http://payments-staging:8080",
-                     *               "plugins": [
-                     *                 {
-                     *                   "name": "rate-limiting",
-                     *                   "config": {
-                     *                     "minute": 1000
-                     *                   },
-                     *                   "order": 1
-                     *                 }
-                     *               ]
-                     *             }
-                     *           ],
-                     *           "callerIdentification": {
-                     *             "strategy": "first-match",
-                     *             "rules": [
-                     *               {
-                     *                 "source": "header:x-consumer-id",
-                     *                 "confidence": "high"
-                     *               }
-                     *             ]
-                     *           },
-                     *           "content": "apiVersion: v1\nkind: GatewayConfig",
-                     *           "checksum": "sha256-abc123",
-                     *           "pushedBy": "github-actions[bot]",
-                     *           "createdAt": "2026-06-07T14:00:00.000Z"
-                     *         }
-                     *       }
-                     *     }
-                     */
                     "application/json": components["schemas"]["PushGatewayConfigResponse"];
                 };
             };
@@ -2848,13 +1900,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "bad_request",
-                     *       "message": "Missing required field: name",
-                     *       "statusCode": 400
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2864,13 +1909,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2880,13 +1918,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2896,13 +1927,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "name_exists",
-                     *       "message": "Gateway config name 'payments-api-gateway' already exists with a different spec",
-                     *       "statusCode": 409
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2912,13 +1936,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unsupported_provider",
-                     *       "message": "Unsupported provider 'nginx'",
-                     *       "statusCode": 422
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2928,13 +1945,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2945,10 +1955,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /**
-                 * @description URL-friendly gateway config identifier
-                 * @example payments-api-gateway
-                 */
+                /** @description URL-friendly gateway config identifier */
                 name: components["parameters"]["gatewayConfigName"];
             };
             cookie?: never;
@@ -2961,19 +1968,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": {
-                     *         "id": "cfg-uuid-1",
-                     *         "name": "payments-api-gateway",
-                     *         "provider": "kong",
-                     *         "specName": "payments-api",
-                     *         "specSemver": "1.2.0",
-                     *         "createdAt": "2026-04-25T10:30:00.000Z",
-                     *         "updatedAt": "2026-06-07T14:00:00.000Z"
-                     *       }
-                     *     }
-                     */
                     "application/json": components["schemas"]["GetGatewayConfigResponse"];
                 };
             };
@@ -2983,13 +1977,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -2999,13 +1986,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3015,13 +1995,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Gateway config \"payments-api-gateway\" not found",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3031,13 +2004,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3048,10 +2014,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /**
-                 * @description URL-friendly gateway config identifier
-                 * @example payments-api-gateway
-                 */
+                /** @description URL-friendly gateway config identifier */
                 name: components["parameters"]["gatewayConfigName"];
             };
             cookie?: never;
@@ -3064,53 +2027,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": [
-                     *         {
-                     *           "id": "ver-uuid-1",
-                     *           "gatewayConfigId": "cfg-uuid-1",
-                     *           "routes": [
-                     *             {
-                     *               "path": "/payments",
-                     *               "methods": [
-                     *                 "GET",
-                     *                 "POST"
-                     *               ]
-                     *             }
-                     *           ],
-                     *           "environments": [
-                     *             {
-                     *               "name": "staging",
-                     *               "kongAddr": "http://kong-staging:8001",
-                     *               "upstream": "http://payments-staging:8080",
-                     *               "plugins": [
-                     *                 {
-                     *                   "name": "rate-limiting",
-                     *                   "config": {
-                     *                     "minute": 1000
-                     *                   },
-                     *                   "order": 1
-                     *                 }
-                     *               ]
-                     *             }
-                     *           ],
-                     *           "callerIdentification": {
-                     *             "strategy": "first-match",
-                     *             "rules": [
-                     *               {
-                     *                 "source": "header:x-consumer-id",
-                     *                 "confidence": "high"
-                     *               }
-                     *             ]
-                     *           },
-                     *           "checksum": "sha256-abc123",
-                     *           "pushedBy": "github-actions[bot]",
-                     *           "createdAt": "2026-06-07T14:00:00.000Z"
-                     *         }
-                     *       ]
-                     *     }
-                     */
                     "application/json": components["schemas"]["ListGatewayConfigVersionsResponse"];
                 };
             };
@@ -3120,13 +2036,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3136,13 +2045,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3152,13 +2054,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Gateway config \"payments-api-gateway\" not found",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3168,13 +2063,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3185,15 +2073,9 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /**
-                 * @description URL-friendly gateway config identifier
-                 * @example payments-api-gateway
-                 */
+                /** @description URL-friendly gateway config identifier */
                 name: components["parameters"]["gatewayConfigName"];
-                /**
-                 * @description Gateway config version UUID
-                 * @example a1b2c3d4-e5f6-7890-abcd-ef1234567890
-                 */
+                /** @description Gateway config version UUID */
                 versionId: components["parameters"]["versionId"];
             };
             cookie?: never;
@@ -3206,52 +2088,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": {
-                     *         "id": "ver-uuid-1",
-                     *         "gatewayConfigId": "cfg-uuid-1",
-                     *         "routes": [
-                     *           {
-                     *             "path": "/payments",
-                     *             "methods": [
-                     *               "GET",
-                     *               "POST"
-                     *             ]
-                     *           }
-                     *         ],
-                     *         "environments": [
-                     *           {
-                     *             "name": "staging",
-                     *             "kongAddr": "http://kong-staging:8001",
-                     *             "upstream": "http://payments-staging:8080",
-                     *             "plugins": [
-                     *               {
-                     *                 "name": "rate-limiting",
-                     *                 "config": {
-                     *                   "minute": 1000
-                     *                 },
-                     *                 "order": 1
-                     *               }
-                     *             ]
-                     *           }
-                     *         ],
-                     *         "callerIdentification": {
-                     *           "strategy": "first-match",
-                     *           "rules": [
-                     *             {
-                     *               "source": "header:x-consumer-id",
-                     *               "confidence": "high"
-                     *             }
-                     *           ]
-                     *         },
-                     *         "content": "apiVersion: v1\nkind: GatewayConfig",
-                     *         "checksum": "sha256-abc123",
-                     *         "pushedBy": "github-actions[bot]",
-                     *         "createdAt": "2026-06-07T14:00:00.000Z"
-                     *       }
-                     *     }
-                     */
                     "application/json": components["schemas"]["GetGatewayConfigVersionResponse"];
                 };
             };
@@ -3261,13 +2097,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3277,13 +2106,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3293,13 +2115,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Version ver-uuid-99 not found for gateway config \"payments-api-gateway\"",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3309,13 +2124,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3326,41 +2134,15 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /**
-                 * @description Gateway provider (e.g., kong)
-                 * @example kong
-                 */
+                /** @description Gateway provider (e.g., kong) */
                 provider: components["parameters"]["provider"];
-                /**
-                 * @description Deployment environment (e.g., staging, production)
-                 * @example staging
-                 */
+                /** @description Deployment environment (e.g., staging, production) */
                 environment: components["parameters"]["environment"];
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                /**
-                 * @example {
-                 *       "service": {
-                 *         "name": "payments-api-gateway"
-                 *       },
-                 *       "request": {
-                 *         "method": "GET",
-                 *         "uri": "/payments",
-                 *         "headers": {
-                 *           "x-consumer-id": "consumer-123"
-                 *         }
-                 *       },
-                 *       "response": {
-                 *         "status": 200
-                 *       },
-                 *       "latencies": {
-                 *         "request": 42
-                 *       }
-                 *     }
-                 */
                 "application/json": Record<string, never>;
             };
         };
@@ -3371,11 +2153,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "status": "ok"
-                     *     }
-                     */
                     "application/json": {
                         /** @example ok */
                         status?: string;
@@ -3388,13 +2165,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "bad_request",
-                     *       "message": "Missing service.name in gateway log payload",
-                     *       "statusCode": 400
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3404,13 +2174,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3420,13 +2183,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3436,13 +2192,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3482,33 +2231,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": [
-                     *         {
-                     *           "id": "log-uuid-1",
-                     *           "provider": "kong",
-                     *           "gatewayConfigName": "payments-api-gateway",
-                     *           "environment": "staging",
-                     *           "method": "GET",
-                     *           "path": "/payments",
-                     *           "routePath": "/payments",
-                     *           "status": 200,
-                     *           "callerId": "consumer-123",
-                     *           "callerSource": "header:x-consumer-id",
-                     *           "callerConfidence": "high",
-                     *           "occurredAt": "2026-06-07T14:00:00.000Z",
-                     *           "createdAt": "2026-06-07T14:00:01.000Z"
-                     *         }
-                     *       ],
-                     *       "pagination": {
-                     *         "hasMore": false,
-                     *         "limit": 50,
-                     *         "offset": 0,
-                     *         "total": 1
-                     *       }
-                     *     }
-                     */
                     "application/json": components["schemas"]["ListGatewayLogsResponse"];
                 };
             };
@@ -3518,13 +2240,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3534,13 +2249,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3550,13 +2258,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3586,21 +2287,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": [
-                     *         {
-                     *           "gatewayConfigName": "payments-api-gateway",
-                     *           "environment": "staging",
-                     *           "method": "GET",
-                     *           "routePath": "/payments",
-                     *           "lastSeenAt": "2026-06-07T14:00:00.000Z",
-                     *           "totalCalls": 15042,
-                     *           "uniqueCallerIds": 128
-                     *         }
-                     *       ]
-                     *     }
-                     */
                     "application/json": components["schemas"]["GetGatewayLogStatsResponse"];
                 };
             };
@@ -3610,13 +2296,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3626,13 +2305,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3642,13 +2314,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3659,10 +2324,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /**
-                 * @description Gateway log entry UUID
-                 * @example a1b2c3d4-e5f6-7890-abcd-ef1234567890
-                 */
+                /** @description Gateway log entry UUID */
                 id: components["parameters"]["logId"];
             };
             cookie?: never;
@@ -3675,25 +2337,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "data": {
-                     *         "id": "log-uuid-1",
-                     *         "provider": "kong",
-                     *         "gatewayConfigName": "payments-api-gateway",
-                     *         "environment": "staging",
-                     *         "method": "GET",
-                     *         "path": "/payments",
-                     *         "routePath": "/payments",
-                     *         "status": 200,
-                     *         "callerId": "consumer-123",
-                     *         "callerSource": "header:x-consumer-id",
-                     *         "callerConfidence": "high",
-                     *         "occurredAt": "2026-06-07T14:00:00.000Z",
-                     *         "createdAt": "2026-06-07T14:00:01.000Z"
-                     *       }
-                     *     }
-                     */
                     "application/json": components["schemas"]["GetGatewayLogResponse"];
                 };
             };
@@ -3703,13 +2346,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "unauthorized",
-                     *       "message": "Invalid or missing bearer token",
-                     *       "statusCode": 401
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3719,13 +2355,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "forbidden",
-                     *       "message": "Missing required scope: specs:write",
-                     *       "statusCode": 403
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3735,13 +2364,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "not_found",
-                     *       "message": "Log not found",
-                     *       "statusCode": 404
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
@@ -3751,13 +2373,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "error": "internal_error",
-                     *       "message": "Internal server error",
-                     *       "statusCode": 500
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiError"];
                 };
             };

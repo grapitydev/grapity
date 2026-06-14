@@ -889,7 +889,7 @@ describe("diffSpecs — $ref resolution", () => {
                   "application/json": {
                     schema: {
                       type: "object",
-                      properties: { id: { type: "string", example: "abc-123" } },
+                      properties: { id: { type: "string", examples: ["abc-123"] } },
                     },
                   },
                 },
@@ -917,7 +917,7 @@ describe("diffSpecs — $ref resolution", () => {
                   "application/json": {
                     schema: {
                       type: "object",
-                      properties: { id: { type: "string", example: "old-example" } },
+                      properties: { id: { type: "string", examples: ["old-example"] } },
                     },
                   },
                 },
@@ -940,7 +940,7 @@ describe("diffSpecs — $ref resolution", () => {
                   "application/json": {
                     schema: {
                       type: "object",
-                      properties: { id: { type: "string", example: "new-example" } },
+                      properties: { id: { type: "string", examples: ["new-example"] } },
                     },
                   },
                 },
@@ -993,7 +993,12 @@ describe("diffSpecs — $ref resolution", () => {
                       type: "object",
                       properties: { id: { type: "string" } },
                     },
-                    example: { id: "abc-123" },
+                    examples: {
+                      default: {
+                        value: { id: "abc-123" },
+                        summary: "Default",
+                      },
+                    },
                   },
                 },
               },

@@ -76,8 +76,13 @@ const OPENAPI_JSON = JSON.stringify({
                     },
                   },
                 },
-                example: {
-                  data: [{ id: "acc_123" }],
+                examples: {
+                  default: {
+                    value: {
+                      data: [{ id: "acc_123" }],
+                    },
+                    summary: "Default",
+                  },
                 },
               },
             },
@@ -106,11 +111,16 @@ const OPENAPI_JSON = JSON.stringify({
                   },
                 },
               },
-              example: {
-                name: "Acme Corp",
-                email: "admin@acme.com",
-                metadata: { plan: "enterprise", tier: "gold" },
-              },
+                examples: {
+                  default: {
+                    value: {
+                      name: "Acme Corp",
+                      email: "admin@acme.com",
+                      metadata: { plan: "enterprise", tier: "gold" },
+                    },
+                    summary: "Default",
+                  },
+                },
             },
           },
         },
@@ -127,10 +137,15 @@ const OPENAPI_JSON = JSON.stringify({
                     email: { type: "string" },
                   },
                 },
-                example: {
-                  id: "acc_new456",
-                  name: "Acme Corp",
-                  email: "admin@acme.com",
+                examples: {
+                  default: {
+                    value: {
+                      id: "acc_new456",
+                      name: "Acme Corp",
+                      email: "admin@acme.com",
+                    },
+                    summary: "Default",
+                  },
                 },
               },
             },
@@ -155,12 +170,17 @@ const OPENAPI_JSON = JSON.stringify({
                 schema: {
                   $ref: "#/components/schemas/Payment",
                 },
-                example: {
-                  id: "pay_123",
-                  amount: 99.99,
-                  currency: "USD",
-                  status: "completed",
-                  createdAt: "2026-01-15T10:30:00Z",
+                examples: {
+                  default: {
+                    value: {
+                      id: "pay_123",
+                      amount: 99.99,
+                      currency: "USD",
+                      status: "completed",
+                      createdAt: "2026-01-15T10:30:00Z",
+                    },
+                    summary: "Default",
+                  },
                 },
               },
             },

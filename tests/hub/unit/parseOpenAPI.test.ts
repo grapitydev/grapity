@@ -34,17 +34,17 @@ describe("parseOpenAPI", () => {
             type: "object",
             required: ["error", "message", "statusCode"],
             properties: {
-              error: { type: "string", example: "breaking_change" },
-              message: { type: "string", example: "Breaking changes detected" },
-              statusCode: { type: "integer", example: 409 },
+              error: { type: "string", examples: ["breaking_change"] },
+              message: { type: "string", examples: ["Breaking changes detected"] },
+              statusCode: { type: "integer", examples: [409] },
             },
           },
           CompatReport: {
             type: "object",
             required: ["previousVersion", "classification", "breakingChanges", "safeChanges"],
             properties: {
-              previousVersion: { type: "string", example: "1.1.0" },
-              classification: { type: "string", example: "major" },
+              previousVersion: { type: "string", examples: ["1.1.0"] },
+              classification: { type: "string", examples: ["major"] },
               breakingChanges: { type: "array", items: { type: "object" } },
               safeChanges: { type: "array", items: { type: "object" } },
             },

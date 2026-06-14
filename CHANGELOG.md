@@ -4,6 +4,13 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.4.1](https://github.com/grapitydev/grapity/compare/v0.4.0...v0.4.1) (2026-06-14)
+
+
+### Bug Fixes
+
+* **registry:** generate route scopes at build time and remove runtime openapi.yaml dependency ([e3fbf83](https://github.com/grapitydev/grapity/commit/e3fbf832ec9fa843a5f28a9843876b8c1d19b17a))
+
 ## [0.4.0](https://github.com/grapitydev/grapity/compare/v0.3.0...v0.4.0) (2026-06-14)
 
 

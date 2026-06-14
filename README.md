@@ -1,8 +1,19 @@
 # @grapity/grapity
 
-grapity - API spec registry and compatibility guardian.
+> **Gravity for APIs.** The contract guardian that catches breaking changes before merge, auto-assigns semver, provisions your gateway from the same spec, and gives every team a browsable Hub of every version you've ever shipped.
 
-[Quickstart](https://grapity.dev/docs/getting-started/quickstart) · [CLI Reference](https://grapity.dev/docs/cli-reference/init)
+<p align="center">
+  <a href="https://grapity.dev">
+    <img src="./assets/grapity-pitch.gif" alt="Grapity 60-second product tour" width="720" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://grapity.dev">grapity.dev</a> ·
+  <a href="https://grapity.dev/docs/getting-started/quickstart">Quickstart</a> ·
+  <a href="https://grapity.dev/docs/cli-reference/init">CLI Reference</a> ·
+  <a href="https://x.com/grapitydev">@grapitydev</a>
+</p>
 
 ## Installation
 

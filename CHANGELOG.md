@@ -4,6 +4,23 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.5.0](https://github.com/grapitydev/grapity/compare/v0.4.1...v0.5.0) (2026-06-14)
+
+
+### Features
+
+* **ci:** add PR verification workflow ([66e8724](https://github.com/grapitydev/grapity/commit/66e872479d11751d9a8c9cceb053b282e23d8d73))
+* **hub:** render endpoint security requirements and scopes in Overview ([31df845](https://github.com/grapitydev/grapity/commit/31df845535379555d8a7d418a7feca557541e259))
+
+
+### Bug Fixes
+
+* **deps:** update bun, npm, drizzle-orm, lucide-react, ora, uuid and mise-action ([b069988](https://github.com/grapitydev/grapity/commit/b06998828ce9495ad7cbb3c17ef4cae5ea3054e2))
+* **hub:** remove redundant runtime config script from index.html ([bfd0f61](https://github.com/grapitydev/grapity/commit/bfd0f617755dc3df81327eacf94aea0c068f5b1e))
+* **openapi:** migrate deprecated example and nullable to OpenAPI 3.1 equivalents ([d7179e5](https://github.com/grapitydev/grapity/commit/d7179e5cf2d1cd58bfe02b580a4ddb31b3944dc3))
+* **openapi:** use openIdConnect security scheme for Keycloak OIDC ([00a8752](https://github.com/grapitydev/grapity/commit/00a87520944564bff8cfe272ed39eac08f94b284))
+* **tests:** remove cross-repo doc sync test and resolve hardcoded cwd ([f98697d](https://github.com/grapitydev/grapity/commit/f98697de3c913eb79566c121fc6466c6eb149613))
+
 ## [0.4.1](https://github.com/grapitydev/grapity/compare/v0.4.0...v0.4.1) (2026-06-14)
 
 

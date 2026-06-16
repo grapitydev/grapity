@@ -3,7 +3,7 @@
 > **Gravity for APIs.** The contract guardian that catches breaking changes before merge, auto-assigns semver, provisions your gateway from the same spec, and gives every team a browsable Hub of every version you've ever shipped.
 
 <p align="center">
-  <a href="./assets/grapity-pitch.mp4">
+  <a href="https://grapity.dev/#tour">
     <img src="./assets/grapity-pitch-poster.png" alt="Grapity 60-second product tour — click to play" width="720" />
   </a>
 </p>

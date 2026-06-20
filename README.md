@@ -3,6 +3,13 @@
 > **Gravity for APIs.** The contract guardian that catches breaking changes before merge, auto-assigns semver, provisions your gateway from the same spec, and gives every team a browsable Hub of every version you've ever shipped.
 
 <p align="center">
+  <a href="https://github.com/grapitydev/grapity/actions/workflows/ci.yml"><img src="https://github.com/grapitydev/grapity/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://www.npmjs.com/package/@grapity/grapity"><img src="https://img.shields.io/npm/v/@grapity/grapity.svg" alt="npm" /></a>
+  <a href="https://github.com/grapitydev/grapity/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License: Apache 2.0" /></a>
+  <a href="https://grapity.dev/docs/getting-started/quickstart"><img src="https://img.shields.io/badge/docs-online-blue.svg" alt="Docs" /></a>
+</p>
+
+<p align="center">
   <a href="https://grapity.dev/#tour">
     <img src="./assets/grapity-pitch-poster.png" alt="Grapity 60-second product tour — click to play" width="720" />
   </a>

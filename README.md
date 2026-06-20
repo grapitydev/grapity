@@ -1,6 +1,8 @@
 # @grapity/grapity
 
-> **Gravity for APIs.** The contract guardian that catches breaking changes before merge, auto-assigns semver, provisions your gateway from the same spec, and gives every team a browsable Hub of every version you've ever shipped.
+> **Open-source API governance.** Ship APIs that won't break your consumers.
+
+Grapity is a contract registry that validates backward compatibility, auto-assigns semver, provisions Kong gateways from the same spec, and serves a browsable Hub for every API your team ships.
 
 <p align="center">
   <a href="https://github.com/grapitydev/grapity/actions/workflows/ci.yml"><img src="https://github.com/grapitydev/grapity/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>

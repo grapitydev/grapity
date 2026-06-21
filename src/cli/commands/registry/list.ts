@@ -7,7 +7,7 @@ import { formatSpec, formatEmptyState, formatError } from "../../output";
 
 export const listCommand = new Command("list")
   .description("List all specs in the registry")
-  .option("--type <type>", "Filter by spec type")
+  .option("--type <type>", "Filter by spec type: openapi")
   .option("--owner <owner>", "Filter by owner")
   .option("--tags <tags>", "Filter by tags (comma-separated)")
   .action(async (options) => {

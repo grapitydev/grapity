@@ -6,6 +6,8 @@ import { authCommand } from "./commands/auth";
 import { createServeCommand } from "./commands/serve";
 import { createRequire } from "node:module";
 
+import { materializeCommand } from "./commands/materialize";
+
 const require = createRequire(import.meta.url);
 const { version } = require("../../package.json");
 
@@ -22,6 +24,7 @@ program
 
 program.addCommand(registryCommand);
 program.addCommand(gatewayCommand);
+program.addCommand(materializeCommand);
 program.addCommand(initCommand);
 program.addCommand(authCommand);
 program.addCommand(createServeCommand(version));

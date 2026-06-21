@@ -4,6 +4,22 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.6.0](https://github.com/grapitydev/grapity/compare/v0.5.0...v0.6.0) (2026-06-21)
+
+
+### Features
+
+* add 60s product tour to README ([7eb1de2](https://github.com/grapitydev/grapity/commit/7eb1de28f277b2339abcaf2f1972f94830d00231))
+* add CI, npm, license and docs badges ([d79c7dd](https://github.com/grapitydev/grapity/commit/d79c7dd54318fcc769a05358543f22f4598c9959))
+* add grapity materialize command with grapity.yaml and grapity-lock.json ([e0c2542](https://github.com/grapitydev/grapity/commit/e0c254297c3f8ef35db0321bd0cf0444cdde6a0c))
+* README poster click-to-play ([bca9d46](https://github.com/grapitydev/grapity/commit/bca9d4644711f7b4aee32c87510ff6324ee14914))
+* rewrite README header for clarity ([994d91a](https://github.com/grapitydev/grapity/commit/994d91a8643190cb236cf1f7328bf6bc7a835b4b))
+
+
+### Bug Fixes
+
+* README poster opens grapity.dev tour instead of GitHub blob ([a920dd0](https://github.com/grapitydev/grapity/commit/a920dd05ad400ea921485b362b0ebf61065afd91))
+
 ## [0.5.0](https://github.com/grapitydev/grapity/compare/v0.4.1...v0.5.0) (2026-06-14)
 
 

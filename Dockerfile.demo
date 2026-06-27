@@ -1,0 +1,38 @@
+# syntax=docker/dockerfile:1
+
+# Stage 1: Build the grapity package
+FROM node:22-slim AS builder
+
+WORKDIR /app
+
+# Install Bun for dependency install and build
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates unzip && rm -rf /var/lib/apt/lists/*
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:${PATH}"
+
+COPY package.json bun.lockb* ./
+RUN bun install --frozen-lockfile
+
+COPY . .
+RUN bun run build
+
+# Stage 2: Runtime image
+FROM node:22-slim AS runtime
+
+WORKDIR /app
+
+# Create data directory for SQLite volume
+RUN mkdir -p /data
+
+# Copy production artifacts
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/drizzle/migrations ./drizzle/migrations
+COPY --from=builder /app/node_modules ./node_modules
+
+ENV HOME=/root
+ENV NODE_ENV=production
+
+EXPOSE 3000
+
+ENTRYPOINT ["node", "dist/demo/entrypoint.js"]

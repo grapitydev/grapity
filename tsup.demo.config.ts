@@ -1,12 +1,11 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/registry/index.ts", "src/registry/serve.ts", "src/registry/standalone.ts"],
+  entry: ["src/demo/entrypoint.ts"],
   format: ["esm"],
-  outDir: "dist/registry",
+  outDir: "dist/demo",
   outExtension: () => ({ js: ".js" }),
-  dts: true,
+  dts: false,
   clean: true,
   splitting: false,
-  external: ["pg"],
 });

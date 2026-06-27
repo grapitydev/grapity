@@ -54,7 +54,3 @@ export async function startServer(userConfig?: Partial<ServerConfig>): Promise<R
 }
 
 export type { ServerConfig };
-
-if (process.argv[1] === new URL(import.meta.url).pathname) {
-  startServer();
-}

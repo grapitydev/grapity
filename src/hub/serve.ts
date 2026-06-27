@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { serveStatic } from "@hono/node-server/serve-static";
-import { serve } from "@hono/node-server";
+import { serve, type ServerType } from "@hono/node-server";
 import path from "node:path";
 import fs from "node:fs";
 import { HUB_DIST_PATH } from "./paths";
@@ -22,7 +22,12 @@ export interface HubConfig {
 const DEFAULT_PORT = 3000;
 const DEFAULT_REGISTRY_URL = "http://localhost:3750";
 
-export async function startHubServer(userConfig?: Partial<HubConfig>) {
+export interface RunningHubServer {
+  app: Hono;
+  server: ServerType;
+}
+
+export async function startHubServer(userConfig?: Partial<HubConfig>): Promise<RunningHubServer> {
   const config = {
     port: userConfig?.port ?? DEFAULT_PORT,
     registryUrl: userConfig?.registryUrl ?? DEFAULT_REGISTRY_URL,
@@ -90,13 +95,11 @@ export async function startHubServer(userConfig?: Partial<HubConfig>) {
     return c.html(injected);
   });
 
-  serve({
+  const server = serve({
     fetch: app.fetch,
     port: config.port,
   });
+
+  return { app, server };
 }
 
-// Allow: node dist/serve.js (standalone)
-if (process.argv[1] === new URL(import.meta.url).pathname) {
-  startHubServer();
-}

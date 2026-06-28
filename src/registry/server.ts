@@ -41,11 +41,13 @@ export function createApp(config: ServerConfig, store: SpecStore & GatewayConfig
   const app = new Hono<AppEnv>();
 
   app.use("*", logger());
-  if (config.corsOrigins && config.corsOrigins.length > 0) {
-    app.use("*", cors({ origin: config.corsOrigins }));
-  } else {
-    app.use("*", cors());
-  }
+  const corsOptions = {
+    origin: config.corsOrigins ?? "*",
+    allowHeaders: ["Authorization", "Content-Type"],
+    credentials: true,
+    maxAge: 86400,
+  };
+  app.use("*", cors(corsOptions));
   app.use("*", prettyJSON());
 
   app.use("*", async (c, next) => {

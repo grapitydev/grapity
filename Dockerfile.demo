@@ -36,5 +36,6 @@ ENV HOME=/root
 ENV NODE_ENV=production
 
 EXPOSE 3000
+EXPOSE 3750
 
 ENTRYPOINT ["node", "dist/demo/entrypoint.js"]

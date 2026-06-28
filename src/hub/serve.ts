@@ -32,7 +32,9 @@ export async function startHubServer(userConfig?: Partial<HubConfig>): Promise<R
   const config = {
     port: userConfig?.port ?? DEFAULT_PORT,
     registryUrl: userConfig?.publicRegistryUrl ?? userConfig?.registryUrl ?? DEFAULT_REGISTRY_URL,
-    proxyUrl: userConfig?.publicRegistryUrl ? undefined : (userConfig?.registryUrl ?? DEFAULT_REGISTRY_URL),
+    proxyUrl: userConfig?.publicRegistryUrl
+      ? undefined
+      : (userConfig?.registryUrl ?? DEFAULT_REGISTRY_URL),
     auth: userConfig?.auth,
   };
 
@@ -77,10 +79,8 @@ export async function startHubServer(userConfig?: Partial<HubConfig>): Promise<R
     });
   }
 
-  // Serve static assets from dist/
-  app.use("/*", serveStatic({ root: HUB_DIST_PATH }));
-
   // SPA fallback: any unmatched route returns index.html with the config script injected.
+  // This must come before serveStatic so that the root `/` gets the injected config.
   app.get("/*", async (c) => {
     const indexPath = path.join(HUB_DIST_PATH, "index.html");
     if (!fs.existsSync(indexPath)) {
@@ -91,13 +91,16 @@ export async function startHubServer(userConfig?: Partial<HubConfig>): Promise<R
     }
 
     const html = fs.readFileSync(indexPath, "utf-8");
-    const configScript = `\n    \u003cscript src="/config.js"\u003e\u003c/script\u003e\n  `;
+    const configScript = `\n    <script src="/config.js"></script>\n  `;
     const injected = html.replace(
-      "\u003c/head\u003e",
-      `${configScript}\u003c/head\u003e`
+      "</head>",
+      `${configScript}</head>`
     );
     return c.html(injected);
   });
+
+  // Serve static assets from dist/
+  app.use("/*", serveStatic({ root: HUB_DIST_PATH }));
 
   const server = serve({
     fetch: app.fetch,

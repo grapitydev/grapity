@@ -22,6 +22,9 @@ export const demoEnvSchema = z.object({
   GRAPITY_HUB_PORT: z.coerce.number().int().min(1).default(3000),
   GRAPITY_DATABASE_PATH: z.string().min(1).default("/data/registry.db"),
   GRAPITY_REGISTRY_PUBLIC_URL: z.string().url().optional(),
+  GRAPITY_DEMO_MODE: z
+    .union([z.literal("hub"), z.literal("registry"), z.literal("both")])
+    .default("both"),
 });
 
 export type DemoEnv = z.infer<typeof demoEnvSchema>;

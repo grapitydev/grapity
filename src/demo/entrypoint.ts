@@ -33,34 +33,47 @@ async function main() {
       : undefined,
   };
 
-  const { server: registryServer, store } = await startServer(registryConfig);
-  const registryBindHost = env.GRAPITY_REGISTRY_PUBLIC_URL ? "0.0.0.0" : "127.0.0.1";
-  console.log(`Registry listening on http://${registryBindHost}:${env.GRAPITY_REGISTRY_PORT}`);
+  let registryServer: Awaited<ReturnType<typeof startServer>>["server"] | undefined;
+  let store: Awaited<ReturnType<typeof startServer>>["store"] | undefined;
 
-  await startHubServer({
-    port: env.GRAPITY_HUB_PORT,
-    registryUrl: env.GRAPITY_REGISTRY_PUBLIC_URL
-      ? env.GRAPITY_REGISTRY_PUBLIC_URL
-      : `http://127.0.0.1:${env.GRAPITY_REGISTRY_PORT}`,
-    publicRegistryUrl: env.GRAPITY_REGISTRY_PUBLIC_URL,
-    auth: {
-      mode: "keycloak",
-      serverUrl: registryAuth.serverUrl,
-      realm: registryAuth.realm,
-      clientId: env.GRAPITY_KEYCLOAK_HUB_CLIENT_ID,
-      audience: registryAuth.audience,
-    },
-  });
-  console.log(`Hub listening on http://0.0.0.0:${env.GRAPITY_HUB_PORT}`);
+  if (env.GRAPITY_DEMO_MODE === "registry" || env.GRAPITY_DEMO_MODE === "both") {
+    const registry = await startServer(registryConfig);
+    registryServer = registry.server;
+    store = registry.store;
+    const registryBindHost = env.GRAPITY_REGISTRY_PUBLIC_URL ? "0.0.0.0" : "127.0.0.1";
+    console.log(`Registry listening on http://${registryBindHost}:${env.GRAPITY_REGISTRY_PORT}`);
+  }
+
+  if (env.GRAPITY_DEMO_MODE === "hub" || env.GRAPITY_DEMO_MODE === "both") {
+    await startHubServer({
+      port: env.GRAPITY_HUB_PORT,
+      registryUrl: env.GRAPITY_REGISTRY_PUBLIC_URL
+        ? env.GRAPITY_REGISTRY_PUBLIC_URL
+        : `http://127.0.0.1:${env.GRAPITY_REGISTRY_PORT}`,
+      publicRegistryUrl: env.GRAPITY_REGISTRY_PUBLIC_URL,
+      auth: {
+        mode: "keycloak",
+        serverUrl: registryAuth.serverUrl,
+        realm: registryAuth.realm,
+        clientId: env.GRAPITY_KEYCLOAK_HUB_CLIENT_ID,
+        audience: registryAuth.audience,
+      },
+    });
+    console.log(`Hub listening on http://0.0.0.0:${env.GRAPITY_HUB_PORT}`);
+  }
 
   const shutdown = (signal: string) => {
     console.log(`Received ${signal}, shutting down...`);
-    registryServer.close(async () => {
-      if ("end" in store && typeof store.end === "function") {
-        await store.end();
-      }
+    if (registryServer) {
+      registryServer.close(async () => {
+        if (store && "end" in store && typeof store.end === "function") {
+          await store.end();
+        }
+        process.exit(0);
+      });
+    } else {
       process.exit(0);
-    });
+    }
   };
 
   process.on("SIGTERM", () => shutdown("SIGTERM"));

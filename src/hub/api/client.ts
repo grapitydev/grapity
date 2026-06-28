@@ -1,6 +1,5 @@
 import { useConfig } from "../context/ConfigContext";
 import { getAccessToken, clearAuthSession } from "../context/AuthContext";
-import { useAuth } from "../context/AuthContext";
 import type {
   ListSpecsResponse,
   GetSpecResponse,
@@ -24,7 +23,6 @@ export interface ApiError {
 
 export function useApiClient() {
   const { registryUrl, auth } = useConfig();
-  const { login } = useAuth();
 
   async function request<T>(method: string, path: string): Promise<T> {
     const url = `${registryUrl}${path}`;
@@ -38,8 +36,8 @@ export function useApiClient() {
 
     if (response.status === 401 && auth) {
       clearAuthSession();
-      login();
-      throw new Error("Session expired. Redirecting to login.");
+      const error = (await response.json().catch(() => ({}))) as Partial<ApiError>;
+      throw new Error(error.message ?? "Session expired. Sign in again.");
     }
 
     if (!response.ok) {
@@ -62,8 +60,8 @@ export function useApiClient() {
 
     if (response.status === 401 && auth) {
       clearAuthSession();
-      login();
-      throw new Error("Session expired. Redirecting to login.");
+      const error = (await response.json().catch(() => ({}))) as Partial<ApiError>;
+      throw new Error(error.message ?? "Session expired. Sign in again.");
     }
 
     if (!response.ok) {

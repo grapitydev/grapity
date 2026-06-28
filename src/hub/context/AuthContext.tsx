@@ -143,9 +143,9 @@ export function clearAuthSession(): void {
   sessionStorage.removeItem(REFRESH_TOKEN_KEY);
   sessionStorage.removeItem(ID_TOKEN_KEY);
   sessionStorage.removeItem(EXPIRES_AT_KEY);
-  sessionStorage.removeItem(VERIFIER_KEY);
-  sessionStorage.removeItem(STATE_KEY);
-  sessionStorage.removeItem(NONCE_KEY);
+  localStorage.removeItem(VERIFIER_KEY);
+  localStorage.removeItem(STATE_KEY);
+  localStorage.removeItem(NONCE_KEY);
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -168,9 +168,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const state = generateRandom();
     const nonce = generateRandom();
 
-    sessionStorage.setItem(VERIFIER_KEY, verifier);
-    sessionStorage.setItem(STATE_KEY, state);
-    sessionStorage.setItem(NONCE_KEY, nonce);
+    localStorage.setItem(VERIFIER_KEY, verifier);
+    localStorage.setItem(STATE_KEY, state);
+    localStorage.setItem(NONCE_KEY, nonce);
 
     sha256(verifier).then((digest) => {
       const challenge = base64UrlEncode(digest);
@@ -200,8 +200,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error("Keycloak auth is not configured");
       }
 
-      const verifier = sessionStorage.getItem(VERIFIER_KEY);
-      const expectedState = sessionStorage.getItem(STATE_KEY);
+      const verifier = localStorage.getItem(VERIFIER_KEY);
+      const expectedState = localStorage.getItem(STATE_KEY);
 
       if (!verifier) {
         throw new Error("PKCE verifier not found");
@@ -214,9 +214,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const tokens = await exchangeCode(auth, code, verifier);
       saveTokenSet(tokens);
       setToken(tokens);
-      sessionStorage.removeItem(VERIFIER_KEY);
-      sessionStorage.removeItem(STATE_KEY);
-      sessionStorage.removeItem(NONCE_KEY);
+      localStorage.removeItem(VERIFIER_KEY);
+      localStorage.removeItem(STATE_KEY);
+      localStorage.removeItem(NONCE_KEY);
       return tokens;
     },
     [auth]

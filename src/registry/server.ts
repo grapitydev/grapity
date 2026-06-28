@@ -41,7 +41,11 @@ export function createApp(config: ServerConfig, store: SpecStore & GatewayConfig
   const app = new Hono<AppEnv>();
 
   app.use("*", logger());
-  app.use("*", cors());
+  if (config.corsOrigins && config.corsOrigins.length > 0) {
+    app.use("*", cors({ origin: config.corsOrigins }));
+  } else {
+    app.use("*", cors());
+  }
   app.use("*", prettyJSON());
 
   app.use("*", async (c, next) => {

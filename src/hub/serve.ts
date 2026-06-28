@@ -16,6 +16,7 @@ export interface HubAuthConfig {
 export interface HubConfig {
   port?: number;
   registryUrl?: string;
+  publicRegistryUrl?: string;
   auth?: HubAuthConfig;
 }
 
@@ -30,7 +31,8 @@ export interface RunningHubServer {
 export async function startHubServer(userConfig?: Partial<HubConfig>): Promise<RunningHubServer> {
   const config = {
     port: userConfig?.port ?? DEFAULT_PORT,
-    registryUrl: userConfig?.registryUrl ?? DEFAULT_REGISTRY_URL,
+    registryUrl: userConfig?.publicRegistryUrl ?? userConfig?.registryUrl ?? DEFAULT_REGISTRY_URL,
+    proxyUrl: userConfig?.publicRegistryUrl ? undefined : (userConfig?.registryUrl ?? DEFAULT_REGISTRY_URL),
     auth: userConfig?.auth,
   };
 
@@ -56,22 +58,24 @@ export async function startHubServer(userConfig?: Partial<HubConfig>): Promise<R
     );
   });
 
-  // Proxy /v1/* requests to the Registry, forwarding the browser's Authorization header.
-  app.use("/v1/*", async (c) => {
-    const url = new URL(c.req.url);
-    const targetUrl = config.registryUrl + url.pathname + url.search;
+  // Proxy /v1/* requests to the Registry only when using a local registry.
+  if (config.proxyUrl) {
+    app.use("/v1/*", async (c) => {
+      const url = new URL(c.req.url);
+      const targetUrl = config.proxyUrl + url.pathname + url.search;
 
-    const headers = new Headers(c.req.raw.headers);
-    headers.delete("host");
+      const headers = new Headers(c.req.raw.headers);
+      headers.delete("host");
 
-    const response = await fetch(targetUrl, {
-      method: c.req.method,
-      headers,
-      body: c.req.raw.body,
+      const response = await fetch(targetUrl, {
+        method: c.req.method,
+        headers,
+        body: c.req.raw.body,
+      });
+
+      return response;
     });
-
-    return response;
-  });
+  }
 
   // Serve static assets from dist/
   app.use("/*", serveStatic({ root: HUB_DIST_PATH }));

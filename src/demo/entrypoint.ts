@@ -2,7 +2,6 @@ import { startServer } from "registry/serve";
 import type { ServerConfig } from "registry/config";
 import { startHubServer } from "hub/serve";
 import { demoEnvSchema } from "./types";
-import { writeDemoConfig } from "./config";
 
 async function main() {
   const parseResult = demoEnvSchema.safeParse(process.env);
@@ -15,8 +14,6 @@ async function main() {
 
   const env = parseResult.data;
 
-  writeDemoConfig(env);
-
   const registryAuth: ServerConfig["auth"] = {
     mode: "keycloak",
     serverUrl: env.GRAPITY_KEYCLOAK_SERVER_URL.replace(/\/$/, ""),
@@ -27,17 +24,25 @@ async function main() {
 
   const registryConfig: Partial<ServerConfig> = {
     port: env.GRAPITY_REGISTRY_PORT,
+    hostname: env.GRAPITY_REGISTRY_PUBLIC_URL ? "0.0.0.0" : "127.0.0.1",
     database: "sqlite",
     sqlitePath: env.GRAPITY_DATABASE_PATH,
     auth: registryAuth,
+    corsOrigins: env.GRAPITY_REGISTRY_PUBLIC_URL
+      ? [env.GRAPITY_PUBLIC_URL]
+      : undefined,
   };
 
   const { server: registryServer, store } = await startServer(registryConfig);
-  console.log(`Registry listening on http://127.0.0.1:${env.GRAPITY_REGISTRY_PORT}`);
+  const registryBindHost = env.GRAPITY_REGISTRY_PUBLIC_URL ? "0.0.0.0" : "127.0.0.1";
+  console.log(`Registry listening on http://${registryBindHost}:${env.GRAPITY_REGISTRY_PORT}`);
 
   await startHubServer({
     port: env.GRAPITY_HUB_PORT,
-    registryUrl: `http://127.0.0.1:${env.GRAPITY_REGISTRY_PORT}`,
+    registryUrl: env.GRAPITY_REGISTRY_PUBLIC_URL
+      ? env.GRAPITY_REGISTRY_PUBLIC_URL
+      : `http://127.0.0.1:${env.GRAPITY_REGISTRY_PORT}`,
+    publicRegistryUrl: env.GRAPITY_REGISTRY_PUBLIC_URL,
     auth: {
       mode: "keycloak",
       serverUrl: registryAuth.serverUrl,

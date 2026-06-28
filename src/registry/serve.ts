@@ -48,6 +48,7 @@ export async function startServer(userConfig?: Partial<ServerConfig>): Promise<R
   const server = serve({
     fetch: app.fetch,
     port: config.port,
+    hostname: config.hostname,
   });
 
   return { app, store, server };

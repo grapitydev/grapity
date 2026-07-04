@@ -13,7 +13,7 @@ export function Button({ children, variant = "default", asChild, className = "",
     ghost: "hover:bg-surface-hover text-text-secondary hover:text-text-primary",
   };
 
-  const classes = `inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-sm font-medium transition-colors disabled:opacity-50 ${variants[variant]} ${className}`;
+  const classes = `inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${variants[variant]} ${className}`;
 
   if (asChild && children && typeof children === "object") {
     const child = children as ReactElement<{ className?: string }>;

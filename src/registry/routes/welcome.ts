@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import type { AppEnv } from "../server";
 
-function buildPage(port: number, mode: string): string {
+function buildPage(): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -253,9 +253,7 @@ body {
   <!-- STATUS -->
   <div class="status-row">
     <span class="status-dot"></span>
-    running on <span>localhost:${port}</span>
-    <span class="sep">|</span>
-    mode: <span>${mode}</span>
+    healthy
     <span class="sep">|</span>
     <a href="/v1/health" style="color:var(--cyan);text-decoration:none;">health ↗</a>
   </div>
@@ -414,6 +412,5 @@ function switchTab(tab) {
 }
 
 export const welcomeRoute = new Hono<AppEnv>().get("/", (c) => {
-  const config = c.get("config");
-  return c.html(buildPage(config.port, "local"));
+  return c.html(buildPage());
 });

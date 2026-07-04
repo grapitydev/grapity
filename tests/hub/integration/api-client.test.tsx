@@ -224,11 +224,6 @@ describe("unauthenticated redirect", () => {
   test("clears session, saves current path, and navigates home on 401", async () => {
     mockFetchJson(401, { error: "unauthorized", message: "Session expired", statusCode: 401 });
 
-    const navigateCalls: string[] = [];
-    const navigate = (path: string) => {
-      navigateCalls.push(path);
-    };
-
     function wrapperWithNavigate({ children }: { children: React.ReactNode }) {
       return (
         <MemoryRouter>
@@ -237,7 +232,6 @@ describe("unauthenticated redirect", () => {
       );
     }
 
-    // Override useNavigate to capture the redirect.
     const { result } = renderHook(() => useApiClient(), {
       wrapper: wrapperWithNavigate,
     });

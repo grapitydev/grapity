@@ -24,12 +24,13 @@ export interface ApiError {
 
 const POST_LOGIN_PATH_KEY = "grapity_post_login_path";
 
-function handleUnauthorized(): never {
+function handleUnauthorized(navigate: ReturnType<typeof useNavigate>): never {
   clearAuthSession();
   const path = window.location.pathname + window.location.search;
   if (path !== "/" && !path.startsWith("/callback")) {
     localStorage.setItem(POST_LOGIN_PATH_KEY, path);
   }
+  navigate("/", { replace: true });
   throw new Error("Session expired. Sign in again.");
 }
 
@@ -48,9 +49,7 @@ export function useApiClient() {
     const response = await fetch(url, { method, headers });
 
     if (response.status === 401 && auth) {
-      handleUnauthorized();
-      navigate("/", { replace: true });
-      throw new Error("Session expired. Sign in again.");
+      handleUnauthorized(navigate);
     }
 
     if (!response.ok) {
@@ -72,9 +71,7 @@ export function useApiClient() {
     const response = await fetch(url, { method, headers });
 
     if (response.status === 401 && auth) {
-      handleUnauthorized();
-      navigate("/", { replace: true });
-      throw new Error("Session expired. Sign in again.");
+      handleUnauthorized(navigate);
     }
 
     if (!response.ok) {

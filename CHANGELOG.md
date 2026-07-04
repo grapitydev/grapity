@@ -4,6 +4,27 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.7.0](https://github.com/grapitydev/grapity/compare/v0.6.0...v0.7.0) (2026-07-04)
+
+
+### Features
+
+* add demo container entrypoint, standalone servers, and publish workflow ([3b5c9a2](https://github.com/grapitydev/grapity/commit/3b5c9a2ff0ee16b92746a4ae6881536d6858a956))
+* **demo:** expose registry on separate public url ([50f20cd](https://github.com/grapitydev/grapity/commit/50f20cd6095064e654d378a52cb58c1c53b900fe))
+* **demo:** split demo entrypoint by GRAPITY_DEMO_MODE and route registry on port 3750 ([5150d8e](https://github.com/grapitydev/grapity/commit/5150d8e2016042d64b1d675884d531273c762550))
+* **hub:** add Keycloak auth guard, login page, and 401 redirect flow ([0625eba](https://github.com/grapitydev/grapity/commit/0625ebab6280f5e78752baee161b5acf77a84908))
+* **hub:** harmonize login card with try panel and simplify registry welcome ([7614fca](https://github.com/grapitydev/grapity/commit/7614fca3ac3a7557a4465d6b6a381097346351b4))
+
+
+### Bug Fixes
+
+* **demo:** install curl for healthchecks ([6bd220f](https://github.com/grapitydev/grapity/commit/6bd220f5e7ad243d6d061a8dd54115a4bf00bd76))
+* **hub:** make 401 redirect navigate before throwing and remove dead code ([0bcfcc4](https://github.com/grapitydev/grapity/commit/0bcfcc4ceb89379adbc2c025074e7087a0794562))
+* **hub:** persist PKCE verifier in localStorage across Keycloak redirect ([3474538](https://github.com/grapitydev/grapity/commit/3474538f46359fe8012f46ced640bf815606efcc))
+* **hub:** serve static assets before SPA fallback ([d8b0b5b](https://github.com/grapitydev/grapity/commit/d8b0b5b702440819d24ae2cb2aeff2313267b00c))
+* **hub:** stop auto-login on 401 and surface registry error message ([0e68f59](https://github.com/grapitydev/grapity/commit/0e68f597c6bbeeac5b012b0d8ba6bc6f0a188d2a))
+* **registry:** allow Authorization and Content-Type headers in CORS ([c1e8b22](https://github.com/grapitydev/grapity/commit/c1e8b2262a9290e1b0f0695960485e94005770c8))
+
 ## [0.6.0](https://github.com/grapitydev/grapity/compare/v0.5.0...v0.6.0) (2026-06-21)
 
 

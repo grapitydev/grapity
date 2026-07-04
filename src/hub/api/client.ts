@@ -1,5 +1,6 @@
 import { useConfig } from "../context/ConfigContext";
 import { getAccessToken, clearAuthSession } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import type {
   ListSpecsResponse,
   GetSpecResponse,
@@ -21,8 +22,20 @@ export interface ApiError {
   statusCode: number;
 }
 
+const POST_LOGIN_PATH_KEY = "grapity_post_login_path";
+
+function handleUnauthorized(): never {
+  clearAuthSession();
+  const path = window.location.pathname + window.location.search;
+  if (path !== "/" && !path.startsWith("/callback")) {
+    localStorage.setItem(POST_LOGIN_PATH_KEY, path);
+  }
+  throw new Error("Session expired. Sign in again.");
+}
+
 export function useApiClient() {
   const { registryUrl, auth } = useConfig();
+  const navigate = useNavigate();
 
   async function request<T>(method: string, path: string): Promise<T> {
     const url = `${registryUrl}${path}`;
@@ -35,9 +48,9 @@ export function useApiClient() {
     const response = await fetch(url, { method, headers });
 
     if (response.status === 401 && auth) {
-      clearAuthSession();
-      const error = (await response.json().catch(() => ({}))) as Partial<ApiError>;
-      throw new Error(error.message ?? "Session expired. Sign in again.");
+      handleUnauthorized();
+      navigate("/", { replace: true });
+      throw new Error("Session expired. Sign in again.");
     }
 
     if (!response.ok) {
@@ -59,9 +72,9 @@ export function useApiClient() {
     const response = await fetch(url, { method, headers });
 
     if (response.status === 401 && auth) {
-      clearAuthSession();
-      const error = (await response.json().catch(() => ({}))) as Partial<ApiError>;
-      throw new Error(error.message ?? "Session expired. Sign in again.");
+      handleUnauthorized();
+      navigate("/", { replace: true });
+      throw new Error("Session expired. Sign in again.");
     }
 
     if (!response.ok) {

@@ -1,51 +1,31 @@
 import { Link } from "react-router-dom";
-import { Moon, Sun, LogIn, LogOut } from "lucide-react";
+import { Moon, Sun, LogOut } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import { useConfig } from "../../context/ConfigContext";
+import { GrapityLogo, GrapityWordmark } from "../branding/Logo";
 
 export function Header() {
   const { theme, toggle } = useTheme();
-  const { isAuthenticated, isLoading, login, logout } = useAuth();
+  const { isAuthenticated, isLoading, logout } = useAuth();
   const { auth } = useConfig();
 
   return (
     <header className="sticky top-0 z-50 border-b border-surface-border bg-surface-base/80 backdrop-blur-xl">
       <div className="flex h-16 items-center justify-between px-4 lg:px-6">
         <Link to="/" className="flex items-center gap-3">
-          <svg className="h-7 w-7" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="logo-g" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#6366f1" />
-                <stop offset="100%" stopColor="#06b6d4" />
-              </linearGradient>
-            </defs>
-            <path d="M7 24 L16 6 L25 24 L21 24 L16 14 L11 24 Z" fill="url(#logo-g)" />
-            <circle cx="16" cy="24" r="2.5" fill="url(#logo-g)" />
-          </svg>
-          <span className="font-display text-lg font-semibold tracking-tight">
-            <span className="text-text-primary">grapity</span>{" "}
-            <span className="text-text-secondary">Hub</span>
-          </span>
+          <GrapityLogo className="h-7 w-7" />
+          <GrapityWordmark className="font-display text-lg font-semibold tracking-tight" />
         </Link>
 
         <div className="flex items-center gap-2">
-          {auth && !isLoading && (
+          {auth && !isLoading && isAuthenticated && (
             <button
-              onClick={isAuthenticated ? logout : login}
+              onClick={logout}
               className="flex items-center gap-2 rounded-sm px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary hover:bg-surface-hover"
             >
-              {isAuthenticated ? (
-                <>
-                  <LogOut className="h-4 w-4" />
-                  Sign out
-                </>
-              ) : (
-                <>
-                  <LogIn className="h-4 w-4" />
-                  Sign in
-                </>
-              )}
+              <LogOut className="h-4 w-4" />
+              Sign out
             </button>
           )}
           <button

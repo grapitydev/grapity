@@ -42,7 +42,8 @@ export interface Config {
   };
 }
 
-export const CONFIG_PATH = () => path.join(os.homedir(), ".grapity", "config.yaml");
+export const CONFIG_PATH = () =>
+  process.env.GRAPITY_CONFIG_PATH ?? path.join(os.homedir(), ".grapity", "config.yaml");
 
 const DEFAULT_CONFIG: Config = {
   mode: "local",

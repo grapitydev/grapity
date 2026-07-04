@@ -1,7 +1,8 @@
 import "../setup";
 import { Providers } from "../test-utils";
-import { beforeEach, describe, expect, test } from "bun:test";
+import { beforeEach, describe, expect, test, afterEach } from "bun:test";
 import { renderHook } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { useApiClient } from "hub/api/client";
 import type { Spec, PublicSpecVersion, CompatReport } from "core";
 
@@ -32,7 +33,11 @@ function mockFetchText(status: number, body: string) {
 }
 
 function wrapper({ children }: { children: React.ReactNode }) {
-  return <Providers>{children}</Providers>;
+  return (
+    <MemoryRouter>
+      <Providers>{children}</Providers>
+    </MemoryRouter>
+  );
 }
 
 const BASE = "";
@@ -177,5 +182,69 @@ describe("error handling", () => {
 
     const { result } = renderHook(() => useApiClient(), { wrapper });
     await expect(result.current.listSpecs()).rejects.toThrow("Request failed: 500");
+  });
+});
+
+describe("unauthenticated redirect", () => {
+  const POST_LOGIN_PATH_KEY = "grapity_post_login_path";
+  let originalLocation: Location;
+
+  beforeEach(() => {
+    originalLocation = window.location;
+
+    window.__GRAPITY_CONFIG__ = {
+      registryUrl: "https://registry-demo.grapity.dev",
+      auth: { mode: "keycloak", serverUrl: "https://keycloak.example.com", realm: "grapity", clientId: "grapity-hub" },
+    };
+    sessionStorage.setItem("grapity_access_token", "expired-token");
+    sessionStorage.setItem("grapity_expires_at", String(Date.now() - 1000));
+    localStorage.clear();
+
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: {
+        pathname: "/specs/payments-api",
+        search: "",
+        origin: "http://localhost:3000",
+        href: "http://localhost:3000/specs/payments-api",
+      },
+    });
+  });
+
+  afterEach(() => {
+    delete window.__GRAPITY_CONFIG__;
+    sessionStorage.clear();
+    localStorage.clear();
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: originalLocation,
+    });
+  });
+
+  test("clears session, saves current path, and navigates home on 401", async () => {
+    mockFetchJson(401, { error: "unauthorized", message: "Session expired", statusCode: 401 });
+
+    const navigateCalls: string[] = [];
+    const navigate = (path: string) => {
+      navigateCalls.push(path);
+    };
+
+    function wrapperWithNavigate({ children }: { children: React.ReactNode }) {
+      return (
+        <MemoryRouter>
+          <Providers>{children}</Providers>
+        </MemoryRouter>
+      );
+    }
+
+    // Override useNavigate to capture the redirect.
+    const { result } = renderHook(() => useApiClient(), {
+      wrapper: wrapperWithNavigate,
+    });
+
+    await expect(result.current.listSpecs()).rejects.toThrow("Session expired. Sign in again.");
+
+    expect(sessionStorage.getItem("grapity_access_token")).toBeNull();
+    expect(localStorage.getItem(POST_LOGIN_PATH_KEY)).toBe("/specs/payments-api");
   });
 });

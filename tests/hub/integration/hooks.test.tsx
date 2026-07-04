@@ -2,6 +2,7 @@ import "../setup";
 import { Providers } from "../test-utils";
 import { beforeEach, describe, expect, test } from "bun:test";
 import { renderHook, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { useSpecs } from "hub/hooks/useSpecs";
 import { useSpec } from "hub/hooks/useSpec";
 import { useVersions } from "hub/hooks/useVersions";
@@ -11,7 +12,11 @@ import { useSpecContent } from "hub/hooks/useSpecContent";
 import type { Spec, SpecListItem, PublicSpecVersion, CompatReport } from "core";
 
 function wrapper({ children }: { children: React.ReactNode }) {
-  return <Providers>{children}</Providers>;
+  return (
+    <MemoryRouter>
+      <Providers>{children}</Providers>
+    </MemoryRouter>
+  );
 }
 
 function mockFetchJson(status: number, body: unknown) {

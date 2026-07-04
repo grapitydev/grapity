@@ -11,19 +11,24 @@ import { resetTokenCache } from "cli/auth";
 // getRegistryUrl() will return and what we assert on in URL checks.
 const tmpHome = mkdtempSync(join(tmpdir(), "grapity-client-test-"));
 const originalHome = process.env.HOME;
+const originalConfigPath = process.env.GRAPITY_CONFIG_PATH;
 const originalFetch = global.fetch;
 
 beforeAll(() => {
   process.env.HOME = tmpHome;
   process.env.GRAPITY_TOKEN = "test-token";
-  // Write a predictable local config
+  // Write a predictable local config and force the CLI to read it, bypassing
+  // os.homedir() caching that can leak the developer's real ~/.grapity/config.yaml.
   const dir = join(tmpHome, ".grapity");
   mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, "config.yaml"), yaml.dump({ mode: "local", local: { port: 3750 } }), "utf-8");
+  const configPath = join(dir, "config.yaml");
+  writeFileSync(configPath, yaml.dump({ mode: "local", local: { port: 3750 } }), "utf-8");
+  process.env.GRAPITY_CONFIG_PATH = configPath;
 });
 
 afterAll(() => {
   process.env.HOME = originalHome;
+  process.env.GRAPITY_CONFIG_PATH = originalConfigPath;
   global.fetch = originalFetch;
   rmSync(tmpHome, { recursive: true, force: true });
 });

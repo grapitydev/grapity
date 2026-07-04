@@ -1,5 +1,13 @@
 import { Window } from "happy-dom";
 
+// Capture the runtime's native fetch before happy-dom replaces the global.
+// Network-level integration tests can restore this to avoid happy-dom's fetch
+// hanging on streaming HTTP responses from the registry server.
+// @ts-ignore
+const nodeFetch = globalThis.fetch;
+// @ts-ignore
+globalThis.__NODE_FETCH__ = nodeFetch;
+
 // Some transitive dependencies (e.g. swagger-parser used by registry tests)
 // reference the global `location` object. Provide a minimal stub so the
 // happy-dom Window polyfill does not leak broken browser globals into

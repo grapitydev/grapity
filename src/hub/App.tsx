@@ -1,8 +1,9 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router-dom";
 import { ConfigProvider } from "./context/ConfigContext";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { SpecExplorerProvider } from "./context/SpecExplorerContext";
+import { AuthGuard } from "./components/auth/AuthGuard";
 import { Layout } from "./components/layout/Layout";
 import { SpecListPage } from "./pages/SpecListPage";
 import { SpecDetailPage } from "./pages/SpecDetailPage";
@@ -25,16 +26,24 @@ export default function App() {
       <AuthProvider>
         <ThemeProvider>
           <SpecExplorerProvider>
-            <Layout sidebarFilters={{ ...filters, onFilterChange: setFilters }}>
-              <Routes>
-                <Route path="/" element={<SpecListPage filters={filters} />} />
-                <Route path="/specs/:name" element={<SpecDetailPage />} />
-                <Route path="/specs/:name/versions/:semver" element={<VersionPage />} />
-                <Route path="/specs/:name/diff" element={<DiffPage />} />
-                <Route path="/callback" element={<CallbackPage />} />
+            <Routes>
+              <Route path="/callback" element={<CallbackPage />} />
+              <Route
+                element={
+                  <AuthGuard>
+                    <Layout sidebarFilters={{ ...filters, onFilterChange: setFilters }}>
+                      <Outlet />
+                    </Layout>
+                  </AuthGuard>
+                }
+              >
+                <Route index element={<SpecListPage filters={filters} />} />
+                <Route path="specs/:name" element={<SpecDetailPage />} />
+                <Route path="specs/:name/versions/:semver" element={<VersionPage />} />
+                <Route path="specs/:name/diff" element={<DiffPage />} />
                 <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-            </Layout>
+              </Route>
+            </Routes>
           </SpecExplorerProvider>
         </ThemeProvider>
       </AuthProvider>

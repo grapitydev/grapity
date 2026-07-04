@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useConfig } from "../context/ConfigContext";
-import { useAuth, clearAuthSession } from "../context/AuthContext";
+import { useAuth, clearAuthSession, getAndClearPostLoginPath } from "../context/AuthContext";
 
 export function CallbackPage() {
   const { auth } = useConfig();
@@ -33,7 +33,8 @@ export function CallbackPage() {
 
     handleCallback(code, state)
       .then(() => {
-        navigate("/", { replace: true });
+        const redirectPath = getAndClearPostLoginPath();
+        navigate(redirectPath, { replace: true });
       })
       .catch((err) => {
         setError(err instanceof Error ? err.message : "Login failed");

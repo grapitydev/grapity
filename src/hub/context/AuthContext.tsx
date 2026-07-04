@@ -33,6 +33,7 @@ const EXPIRES_AT_KEY = "grapity_expires_at";
 const VERIFIER_KEY = "grapity_pkce_verifier";
 const STATE_KEY = "grapity_oidc_state";
 const NONCE_KEY = "grapity_oidc_nonce";
+const POST_LOGIN_PATH_KEY = "grapity_post_login_path";
 
 function generateRandom(): string {
   const array = new Uint8Array(32);
@@ -146,6 +147,13 @@ export function clearAuthSession(): void {
   localStorage.removeItem(VERIFIER_KEY);
   localStorage.removeItem(STATE_KEY);
   localStorage.removeItem(NONCE_KEY);
+  localStorage.removeItem(POST_LOGIN_PATH_KEY);
+}
+
+export function getAndClearPostLoginPath(): string {
+  const path = localStorage.getItem(POST_LOGIN_PATH_KEY) ?? "/";
+  localStorage.removeItem(POST_LOGIN_PATH_KEY);
+  return path;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -163,6 +171,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(() => {
     if (!auth) return;
+
+    const currentPath = window.location.pathname + window.location.search;
+    if (currentPath !== "/" && !currentPath.startsWith("/callback")) {
+      localStorage.setItem(POST_LOGIN_PATH_KEY, currentPath);
+    }
 
     const verifier = generateRandom();
     const state = generateRandom();

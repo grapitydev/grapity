@@ -4,6 +4,7 @@ import { ArrowLeft, Filter, Tag, User, FileJson, ChevronRight, ChevronDown, Laye
 import { Button } from "../ui/button";
 import { useSpecExplorer } from "../../context/SpecExplorerContext";
 import { getClassificationPillStyle } from "../../lib/classificationStyles";
+import { getMethodTextStyle } from "../../lib/methodStyles";
 
 interface SidebarProps {
   filters?: {
@@ -146,19 +147,9 @@ export function Sidebar({ filters }: SidebarProps) {
                                 title={`${ep.method} ${ep.path}`}
                               >
                                 <span
-                                  className={`font-mono text-xs font-semibold ${
-                                    ep.method === "GET"
-                                      ? "text-blue-400"
-                                      : ep.method === "POST"
-                                        ? "text-green-400"
-                                        : ep.method === "PUT"
-                                          ? "text-amber-400"
-                                          : ep.method === "DELETE"
-                                            ? "text-red-400"
-                                            : ep.method === "PATCH"
-                                              ? "text-purple-400"
-                                              : "text-text-muted"
-                                  }`}
+                                  className={`font-mono text-xs font-semibold ${getMethodTextStyle(
+                                    ep.method
+                                  )}`}
                                 >
                                   {ep.method}
                                 </span>

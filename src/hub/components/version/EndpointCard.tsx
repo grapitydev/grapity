@@ -3,21 +3,14 @@ import { SchemaPropertyTree } from "./SchemaPropertyTree";
 import { CodeBlock } from "./CodeBlock";
 import { Badge } from "../ui/badge";
 import { Lock } from "lucide-react";
-
-const METHOD_COLORS: Record<string, string> = {
-  GET: "bg-blue-500/10 text-blue-400 border-blue-500/30",
-  POST: "bg-green-500/10 text-green-400 border-green-500/30",
-  PUT: "bg-amber-500/10 text-amber-400 border-amber-500/30",
-  DELETE: "bg-red-500/10 text-red-400 border-red-500/30",
-  PATCH: "bg-purple-500/10 text-purple-400 border-purple-500/30",
-};
+import { getMethodPillStyle, getStatusBadgeClass } from "../../lib/methodStyles";
 
 function MethodBadge({ method }: { method: string }) {
   return (
     <span
-      className={`inline-flex rounded border px-2 py-0.5 font-mono text-xs font-semibold ${
-        METHOD_COLORS[method] ?? "bg-surface-hover text-text-secondary border-surface-border"
-      }`}
+      className={`inline-flex rounded border px-2 py-0.5 font-mono text-xs font-semibold ${getMethodPillStyle(
+        method
+      )}`}
     >
       {method}
     </span>
@@ -99,14 +92,6 @@ function SecurityRow({ security }: { security: Endpoint["security"] }) {
       )}
     </span>
   );
-}
-
-function statusBadgeClass(status: string): string {
-  if (status.startsWith("2")) return "bg-green-500/10 text-green-400";
-  if (status.startsWith("3")) return "bg-blue-500/10 text-blue-400";
-  if (status.startsWith("4")) return "bg-amber-500/10 text-amber-400";
-  if (status.startsWith("5")) return "bg-red-500/10 text-red-400";
-  return "bg-surface-hover text-text-secondary";
 }
 
 export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
@@ -195,7 +180,7 @@ export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
                       <div>
                         <div className="flex items-baseline gap-2 mb-1">
                           <span
-                            className={`rounded px-1.5 py-0.5 font-mono text-xs font-semibold ${statusBadgeClass(resp.status)}`}
+                            className={getStatusBadgeClass(resp.status)}
                           >
                             {resp.status}
                           </span>
@@ -211,7 +196,7 @@ export function EndpointCard({ endpoint }: { endpoint: Endpoint }) {
                     <>
                       <div className="flex items-baseline gap-2 mb-1">
                         <span
-                          className={`rounded px-1.5 py-0.5 font-mono text-xs font-semibold ${statusBadgeClass(resp.status)}`}
+                          className={getStatusBadgeClass(resp.status)}
                         >
                           {resp.status}
                         </span>

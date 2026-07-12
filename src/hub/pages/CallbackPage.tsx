@@ -45,7 +45,7 @@ export function CallbackPage() {
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center p-6">
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-6 text-red-400">
+        <div className="rounded-lg border border-accent-rose/30 bg-accent-rose/10 p-6 text-accent-rose">
           <h1 className="mb-2 text-xl font-semibold">Authentication failed</h1>
           <p>{error}</p>
         </div>

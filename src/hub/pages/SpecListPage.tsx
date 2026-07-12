@@ -1,30 +1,67 @@
 import { useState, useMemo } from "react";
 import { Search } from "lucide-react";
-import { useSpecs } from "../hooks/useSpecs";
+import type { SpecListItem } from "core";
 import { SpecList } from "../components/spec/SpecList";
+import { ActiveFilterChips } from "../components/spec/ActiveFilterChips";
 import { Input } from "../components/ui/input";
 
-interface SpecListPageProps {
-  filters?: { type?: string; owner?: string; tags?: string[]; classification?: string };
+interface Filters {
+  type?: string;
+  owner?: string;
+  tags?: string[];
+  classification?: string;
 }
 
-export function SpecListPage({ filters = {} }: SpecListPageProps) {
+interface SpecListPageProps {
+  filters?: Filters;
+  onFilterChange?: (filters: Filters) => void;
+  specs?: SpecListItem[];
+  loading?: boolean;
+  error?: Error | null;
+}
+
+export function SpecListPage({
+  filters = {},
+  onFilterChange,
+  specs = [],
+  loading = false,
+  error = null,
+}: SpecListPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { classification, ...serverFilters } = filters;
-  const { specs, loading, error } = useSpecs(serverFilters);
-
   const filteredSpecs = useMemo(() => {
-    if (!classification) return specs;
-    const matchMap: Record<string, string[]> = {
-      major: ["initial", "major"],
-      minor: ["minor"],
-      patch: ["patch"],
-    };
-    const allowed = matchMap[classification];
-    if (!allowed) return specs;
-    return specs.filter((s) => allowed.includes(s.latestVersion?.compatibility?.classification ?? ""));
-  }, [specs, classification]);
+    let result = specs;
+
+    if (filters.type) {
+      result = result.filter((s) => s.type === filters.type);
+    }
+
+    if (filters.owner) {
+      result = result.filter((s) => s.owner === filters.owner);
+    }
+
+    if (filters.tags?.length) {
+      result = result.filter((s) =>
+        filters.tags!.every((tag) => s.tags?.includes(tag))
+      );
+    }
+
+    if (filters.classification) {
+      const matchMap: Record<string, string[]> = {
+        major: ["initial", "major"],
+        minor: ["minor"],
+        patch: ["patch"],
+      };
+      const allowed = matchMap[filters.classification];
+      if (allowed) {
+        result = result.filter((s) =>
+          allowed.includes(s.latestVersion?.compatibility?.classification ?? "")
+        );
+      }
+    }
+
+    return result;
+  }, [specs, filters]);
 
   if (error) {
     return (
@@ -46,7 +83,7 @@ export function SpecListPage({ filters = {} }: SpecListPageProps) {
         </p>
       </div>
 
-      <div className="mb-6 relative max-w-md">
+      <div className="mb-4 relative max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
         <Input
           type="search"
@@ -56,6 +93,10 @@ export function SpecListPage({ filters = {} }: SpecListPageProps) {
           className="pl-9"
         />
       </div>
+
+      {onFilterChange && (
+        <ActiveFilterChips filters={filters} onChange={onFilterChange} />
+      )}
 
       <SpecList specs={filteredSpecs} loading={loading} searchQuery={searchQuery} />
     </div>

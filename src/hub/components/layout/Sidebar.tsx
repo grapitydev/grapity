@@ -1,12 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Filter, Tag, User, FileJson, ChevronRight, ChevronDown, Layers } from "lucide-react";
+import type { SpecListItem } from "core";
+import {
+  ArrowLeft,
+  Filter,
+  Tag,
+  User,
+  FileJson,
+  ChevronRight,
+  ChevronDown,
+  Layers,
+  X,
+  Circle,
+  CheckCircle2,
+  Square,
+  CheckSquare,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import { useSpecExplorer } from "../../context/SpecExplorerContext";
-import { getClassificationPillStyle } from "../../lib/classificationStyles";
 import { getMethodTextStyle } from "../../lib/methodStyles";
 
 interface SidebarProps {
+  specs?: SpecListItem[];
   filters?: {
     type?: string;
     owner?: string;
@@ -16,12 +31,40 @@ interface SidebarProps {
   };
 }
 
-export function Sidebar({ filters }: SidebarProps) {
+export function Sidebar({ specs, filters }: SidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const { endpoints, activeEndpointId, setActiveEndpointId, setScrollSuppressed } = useSpecExplorer();
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+
+  const activeFilterCount = useMemo(() => {
+    if (!filters) return 0;
+    return (
+      (filters.type ? 1 : 0) +
+      (filters.owner ? 1 : 0) +
+      (filters.tags?.length ?? 0) +
+      (filters.classification ? 1 : 0)
+    );
+  }, [filters]);
+
+  const availableOwners = useMemo(() => {
+    const owners = new Set<string>();
+    specs?.forEach((spec) => {
+      if (spec.owner) owners.add(spec.owner);
+    });
+    return Array.from(owners).sort();
+  }, [specs]);
+
+  const availableTags = useMemo(() => {
+    const tags = new Set<string>();
+    specs?.forEach((spec) => {
+      spec.tags?.forEach((tag) => {
+        if (tag) tags.add(tag);
+      });
+    });
+    return Array.from(tags).sort();
+  }, [specs]);
 
   // Expand all groups when endpoints load
   useEffect(() => {
@@ -81,6 +124,10 @@ export function Sidebar({ filters }: SidebarProps) {
     }
     setIsOpen(false);
     setTimeout(() => setScrollSuppressed(false), 400);
+  }
+
+  function clearFilters() {
+    filters?.onFilterChange({});
   }
 
   return (
@@ -174,86 +221,59 @@ export function Sidebar({ filters }: SidebarProps) {
           )}
 
           {filters && !endpoints && (
-            <>
+            <div className="space-y-5">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h2 className="text-sm font-semibold text-text-primary">Filters</h2>
+                  <p
+                    className={`text-xs text-text-muted ${
+                      activeFilterCount > 0 ? "" : "invisible"
+                    }`}
+                    aria-hidden={activeFilterCount === 0}
+                  >
+                    {activeFilterCount} active
+                  </p>
+                </div>
+                {activeFilterCount > 0 && (
+                  <button
+                    onClick={clearFilters}
+                    className="inline-flex items-center gap-1 text-xs text-text-secondary transition-colors hover:text-text-primary"
+                  >
+                    <X className="h-3 w-3" />
+                    Clear all
+                  </button>
+                )}
+              </div>
+
               <div>
                 <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   <FileJson className="h-3 w-3" />
                   Type
                 </h3>
                 <div className="space-y-1">
-                  {["openapi", "asyncapi"].map((type) => (
-                    <button
-                      key={type}
-                      onClick={() =>
-                        filters.onFilterChange({
-                          ...filters,
-                          type: filters.type === type ? undefined : type,
-                        })
-                      }
-                      className={`block w-full rounded-sm px-2 py-1 text-left text-sm transition-colors ${
-                        filters.type === type
-                          ? "bg-accent-indigo/10 text-accent-indigo"
-                          : "text-text-secondary hover:bg-surface-hover hover:text-text-primary"
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-secondary">
-                  <User className="h-3 w-3" />
-                  Owner
-                </h3>
-                <div className="space-y-1">
-                  {["platform-team", "payments-team", "api-team"].map((owner) => (
-                    <button
-                      key={owner}
-                      onClick={() =>
-                        filters.onFilterChange({
-                          ...filters,
-                          owner: filters.owner === owner ? undefined : owner,
-                        })
-                      }
-                      className={`block w-full rounded-sm px-2 py-1 text-left text-sm transition-colors ${
-                        filters.owner === owner
-                          ? "bg-accent-indigo/10 text-accent-indigo"
-                          : "text-text-secondary hover:bg-surface-hover hover:text-text-primary"
-                      }`}
-                    >
-                      {owner}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-secondary">
-                  <Tag className="h-3 w-3" />
-                  Tags
-                </h3>
-                <div className="flex flex-wrap gap-1">
-                  {["payments", "public", "internal"].map((tag) => {
-                    const isSelected = filters.tags?.includes(tag);
+                  {["openapi", "asyncapi"].map((type) => {
+                    const isSelected = filters.type === type;
                     return (
                       <button
-                        key={tag}
-                        onClick={() => {
-                          const current = filters.tags ?? [];
-                          const next = isSelected
-                            ? current.filter((t) => t !== tag)
-                            : [...current, tag];
-                          filters.onFilterChange({ ...filters, tags: next.length ? next : undefined });
-                        }}
-                        className={`rounded-sm px-2 py-0.5 text-xs transition-colors ${
+                        key={type}
+                        onClick={() =>
+                          filters.onFilterChange({
+                            ...filters,
+                            type: isSelected ? undefined : type,
+                          })
+                        }
+                        className={`flex w-full items-center gap-2 rounded-sm px-2 py-1 text-left text-sm transition-colors ${
                           isSelected
-                            ? "bg-accent-indigo/10 text-accent-indigo"
-                            : "bg-surface-hover text-text-secondary hover:text-text-primary"
+                            ? "border border-accent-indigo/30 bg-accent-indigo/15 font-medium text-accent-indigo"
+                            : "border border-transparent text-text-secondary hover:bg-surface-hover hover:text-text-primary"
                         }`}
                       >
-                        {tag}
+                        {isSelected ? (
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                        ) : (
+                          <Circle className="h-3.5 w-3.5 text-text-muted" />
+                        )}
+                        {type}
                       </button>
                     );
                   })}
@@ -265,11 +285,11 @@ export function Sidebar({ filters }: SidebarProps) {
                   <Layers className="h-3 w-3" />
                   Classification
                 </h3>
-                <div className="flex flex-wrap gap-1">
+                <div className="space-y-1">
                   {[
-                    { key: "major", label: "Major", match: ["initial", "major"] },
-                    { key: "minor", label: "Minor", match: ["minor"] },
-                    { key: "patch", label: "Patch", match: ["patch"] },
+                    { key: "major", label: "Major" },
+                    { key: "minor", label: "Minor" },
+                    { key: "patch", label: "Patch" },
                   ].map((item) => {
                     const isSelected = filters.classification === item.key;
                     return (
@@ -281,19 +301,102 @@ export function Sidebar({ filters }: SidebarProps) {
                             classification: isSelected ? undefined : item.key,
                           })
                         }
-                        className={`inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-bold transition-colors ${
+                        className={`flex w-full items-center gap-2 rounded-sm px-2 py-1 text-left text-sm transition-colors ${
                           isSelected
-                            ? getClassificationPillStyle(item.key as "major" | "minor" | "patch")
-                            : "bg-surface-hover text-text-secondary hover:text-text-primary"
+                            ? "border border-accent-indigo/30 bg-accent-indigo/15 font-medium text-accent-indigo"
+                            : "border border-transparent text-text-secondary hover:bg-surface-hover hover:text-text-primary"
                         }`}
                       >
+                        {isSelected ? (
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                        ) : (
+                          <Circle className="h-3.5 w-3.5 text-text-muted" />
+                        )}
                         {item.label}
                       </button>
                     );
                   })}
                 </div>
               </div>
-            </>
+
+              {availableOwners.length > 0 && (
+                <div>
+                  <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                    <User className="h-3 w-3" />
+                    Owner
+                  </h3>
+                  <div className="space-y-1">
+                    {availableOwners.map((owner) => {
+                      const isSelected = filters.owner === owner;
+                      return (
+                        <button
+                          key={owner}
+                          onClick={() =>
+                            filters.onFilterChange({
+                              ...filters,
+                              owner: isSelected ? undefined : owner,
+                            })
+                          }
+                          className={`flex w-full items-center gap-2 rounded-sm px-2 py-1 text-left text-sm transition-colors ${
+                            isSelected
+                              ? "border border-accent-indigo/30 bg-accent-indigo/15 font-medium text-accent-indigo"
+                              : "border border-transparent text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+                          }`}
+                        >
+                          {isSelected ? (
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                          ) : (
+                            <Circle className="h-3.5 w-3.5 text-text-muted" />
+                          )}
+                          {owner}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {availableTags.length > 0 && (
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <h3 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                      <Tag className="h-3 w-3" />
+                      Tags
+                    </h3>
+                    <span className="text-[10px] text-text-muted">Select multiple</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {availableTags.map((tag) => {
+                      const isSelected = filters.tags?.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          onClick={() => {
+                            const current = filters.tags ?? [];
+                            const next = isSelected
+                              ? current.filter((t) => t !== tag)
+                              : [...current, tag];
+                            filters.onFilterChange({ ...filters, tags: next.length ? next : undefined });
+                          }}
+                          className={`inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs transition-colors ${
+                            isSelected
+                              ? "border border-accent-indigo/30 bg-accent-indigo/15 font-medium text-accent-indigo"
+                              : "border border-transparent bg-surface-hover text-text-secondary hover:text-text-primary"
+                          }`}
+                        >
+                          {isSelected ? (
+                            <CheckSquare className="h-3 w-3" />
+                          ) : (
+                            <Square className="h-3 w-3 text-text-muted" />
+                          )}
+                          {tag}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </aside>

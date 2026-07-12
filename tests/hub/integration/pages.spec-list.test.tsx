@@ -21,48 +21,16 @@ function wrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-function mockFetchJson(body: unknown) {
-  global.fetch = (async () =>
-    new Response(JSON.stringify(body), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    })) as unknown as typeof globalThis.fetch;
-}
-
-function mockFetchError(status: number, errorBody: unknown) {
-  global.fetch = (async () =>
-    new Response(JSON.stringify(errorBody), {
-      status,
-      headers: { "Content-Type": "application/json" },
-    })) as unknown as typeof globalThis.fetch;
-}
-
-beforeEach(() => {
-  global.fetch = (async () => new Response("{}", { status: 200 })) as unknown as typeof globalThis.fetch;
-});
-
 afterEach(() => {
   cleanup();
 });
 
 describe("SpecListPage — / (Browse All Specs)", () => {
-  test("mounts and shows skeleton while loading", async () => {
-    mockFetchJson({ data: [] });
+  test("renders empty state when no specs exist", () => {
     render(<SpecListPage />, { wrapper });
 
-    expect(screen.getByText(/Browse All Specs/i)).toBeTruthy();
-    await waitFor(() => {
-      expect(screen.getByText(/Push your first spec with/i)).toBeTruthy();
-    });
-  });
-
-  test("renders empty state when no specs exist", async () => {
-    mockFetchJson({ data: [] });
-    render(<SpecListPage />, { wrapper });
-
-    await waitFor(() => {
-      expect(screen.getByText(/Push your first spec with/i)).toBeTruthy();
-    });
+    expect(screen.getByText(/0 specs in the registry/i)).toBeTruthy();
+    expect(screen.getByText(/Push your first spec with/i)).toBeTruthy();
   });
 
   test("renders spec cards after successful fetch", async () => {
@@ -91,13 +59,95 @@ describe("SpecListPage — / (Browse All Specs)", () => {
       },
       { id: "2", name: "users-api", type: "openapi" as const, tags: ["internal"], createdAt: new Date(), updatedAt: new Date() },
     ];
-    mockFetchJson({ data: specs });
-    render(<SpecListPage />, { wrapper });
+    render(<SpecListPage specs={specs} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText("payments-api")).toBeTruthy();
       expect(screen.getByText("users-api")).toBeTruthy();
       expect(screen.getByText("1.0.0")).toBeTruthy();
+    });
+  });
+
+  test("filters specs by type client-side", async () => {
+    const specs: SpecListItem[] = [
+      {
+        id: "1",
+        name: "payments-api",
+        type: "openapi" as const,
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: "2",
+        name: "events-api",
+        type: "asyncapi" as const,
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
+    render(<SpecListPage specs={specs} filters={{ type: "asyncapi" }} />, { wrapper });
+
+    await waitFor(() => {
+      expect(screen.queryByText("payments-api")).toBeNull();
+      expect(screen.getByText("events-api")).toBeTruthy();
+    });
+  });
+
+  test("filters specs by owner client-side", async () => {
+    const specs: SpecListItem[] = [
+      {
+        id: "1",
+        name: "payments-api",
+        type: "openapi" as const,
+        owner: "platform-team",
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: "2",
+        name: "users-api",
+        type: "openapi" as const,
+        owner: "payments-team",
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
+    render(<SpecListPage specs={specs} filters={{ owner: "payments-team" }} />, { wrapper });
+
+    await waitFor(() => {
+      expect(screen.queryByText("payments-api")).toBeNull();
+      expect(screen.getByText("users-api")).toBeTruthy();
+    });
+  });
+
+  test("filters specs by tags client-side", async () => {
+    const specs: SpecListItem[] = [
+      {
+        id: "1",
+        name: "payments-api",
+        type: "openapi" as const,
+        tags: ["payments", "public"],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: "2",
+        name: "users-api",
+        type: "openapi" as const,
+        tags: ["internal"],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
+    render(<SpecListPage specs={specs} filters={{ tags: ["public"] }} />, { wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText("payments-api")).toBeTruthy();
+      expect(screen.queryByText("users-api")).toBeNull();
     });
   });
 
@@ -148,8 +198,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
         },
       },
     ];
-    mockFetchJson({ data: specs });
-    render(<SpecListPage filters={{ classification: "major" }} />, { wrapper });
+    render(<SpecListPage specs={specs} filters={{ classification: "major" }} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText("payments-api")).toBeTruthy();
@@ -204,8 +253,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
         },
       },
     ];
-    mockFetchJson({ data: specs });
-    render(<SpecListPage filters={{ classification: "minor" }} />, { wrapper });
+    render(<SpecListPage specs={specs} filters={{ classification: "minor" }} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.queryByText("payments-api")).toBeNull();
@@ -213,29 +261,12 @@ describe("SpecListPage — / (Browse All Specs)", () => {
     });
   });
 
-  test("shows error state on fetch failure", async () => {
-    mockFetchError(500, { error: "internal_error", message: "Server failed" });
-    render(<SpecListPage />, { wrapper });
+  test("shows error state when error is provided", () => {
+    const error = new Error("Server failed");
+    render(<SpecListPage error={error} />, { wrapper });
 
-    await waitFor(() => {
-      expect(screen.getByText(/Failed to load specs/i)).toBeTruthy();
-    });
-  });
-
-  test("filters by type trigger refetch with query param", async () => {
-    let capturedUrl = "";
-    global.fetch = (async (input: string | URL | Request) => {
-      const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
-      capturedUrl = url;
-      return new Response(JSON.stringify({ data: [] }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-    }) as unknown as typeof globalThis.fetch;
-
-    render(<SpecListPage filters={{ type: "openapi" }} />, { wrapper });
-
-    await waitFor(() => expect(capturedUrl).toContain("type=openapi"));
+    expect(screen.getByText(/Failed to load specs/i)).toBeTruthy();
+    expect(screen.getByText(/Server failed/i)).toBeTruthy();
   });
 
   test("filters specs client-side while typing in search input", async () => {
@@ -264,8 +295,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
       },
       { id: "2", name: "users-api", type: "openapi" as const, tags: ["internal"], createdAt: new Date(), updatedAt: new Date() },
     ];
-    mockFetchJson({ data: specs });
-    render(<SpecListPage />, { wrapper });
+    render(<SpecListPage specs={specs} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText("payments-api")).toBeTruthy();

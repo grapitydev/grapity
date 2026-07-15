@@ -4,6 +4,20 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.8.0](https://github.com/grapitydev/grapity/compare/v0.7.0...v0.8.0) (2026-07-15)
+
+
+### Features
+
+* **hub:** dynamic filters with URL sync and client-side filtering ([b1a9588](https://github.com/grapitydev/grapity/commit/b1a9588d53fe72e433b7be3bec97b644d831f226))
+* improve Hub light mode contrast and theme-aware method colors ([45b0846](https://github.com/grapitydev/grapity/commit/45b0846a8012570108b82d575ba79db4c8121ade))
+
+
+### Bug Fixes
+
+* remove leftover sessionStorage references in Hub tests ([a1b5ec9](https://github.com/grapitydev/grapity/commit/a1b5ec95e34d46c1b9e61aa7efde851e382da9e6))
+* share Hub auth session across tabs via localStorage ([9edaf1e](https://github.com/grapitydev/grapity/commit/9edaf1e5685ef2ad65caca68c0f91affad57a4c3))
+
 ## [0.7.0](https://github.com/grapitydev/grapity/compare/v0.6.0...v0.7.0) (2026-07-04)
 
 

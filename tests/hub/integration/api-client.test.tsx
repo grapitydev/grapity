@@ -213,7 +213,6 @@ describe("unauthenticated redirect", () => {
 
   afterEach(() => {
     delete window.__GRAPITY_CONFIG__;
-    sessionStorage.clear();
     localStorage.clear();
     Object.defineProperty(window, "location", {
       configurable: true,

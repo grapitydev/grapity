@@ -29,7 +29,6 @@ beforeEach(() => {
     registryUrl: "https://registry-demo.grapity.dev",
     auth: authConfig,
   };
-  sessionStorage.clear();
   localStorage.clear();
   global.fetch = (async () => new Response("{}", { status: 200 })) as unknown as typeof globalThis.fetch;
 });
@@ -37,7 +36,6 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   delete window.__GRAPITY_CONFIG__;
-  sessionStorage.clear();
   localStorage.clear();
 });
 

@@ -119,7 +119,6 @@ beforeEach(() => {
     },
   };
   window.location.href = "http://localhost:3000/";
-  sessionStorage.clear();
   localStorage.clear();
   useNodeFetch();
 });
@@ -127,7 +126,6 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   delete window.__GRAPITY_CONFIG__;
-  sessionStorage.clear();
   localStorage.clear();
   restoreHappyFetch();
 });

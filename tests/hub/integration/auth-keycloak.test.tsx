@@ -265,7 +265,7 @@ describe("Hub Keycloak integration", () => {
       }),
     });
 
-    sessionStorage.setItem("grapity_access_token", token);
+    localStorage.setItem("grapity_access_token", token);
 
     const { result } = renderHook(() => useApiClient(), { wrapper: hookWrapper });
     const specs = await result.current.listSpecs();
@@ -275,7 +275,7 @@ describe("Hub Keycloak integration", () => {
 
   it("shows the authenticated header when a valid token is stored", async () => {
     const token = await fetchToken(keycloakServerUrl, "grapity-cli", "grapity-cli-secret");
-    sessionStorage.setItem("grapity_access_token", token);
+    localStorage.setItem("grapity_access_token", token);
 
     render(<Header />, { wrapper: headerWrapper });
 

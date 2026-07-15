@@ -111,12 +111,12 @@ async function exchangeCode(
 }
 
 function loadTokenSet(): TokenSet | null {
-  const accessToken = sessionStorage.getItem(ACCESS_TOKEN_KEY);
+  const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
   if (!accessToken) return null;
 
-  const refreshToken = sessionStorage.getItem(REFRESH_TOKEN_KEY) ?? undefined;
-  const idToken = sessionStorage.getItem(ID_TOKEN_KEY) ?? undefined;
-  const expiresAtRaw = sessionStorage.getItem(EXPIRES_AT_KEY);
+  const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY) ?? undefined;
+  const idToken = localStorage.getItem(ID_TOKEN_KEY) ?? undefined;
+  const expiresAtRaw = localStorage.getItem(EXPIRES_AT_KEY);
 
   return {
     accessToken,
@@ -127,23 +127,23 @@ function loadTokenSet(): TokenSet | null {
 }
 
 function saveTokenSet(tokens: TokenSet): void {
-  sessionStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
+  localStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
   if (tokens.refreshToken) {
-    sessionStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
+    localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
   }
   if (tokens.idToken) {
-    sessionStorage.setItem(ID_TOKEN_KEY, tokens.idToken);
+    localStorage.setItem(ID_TOKEN_KEY, tokens.idToken);
   }
   if (tokens.expiresAt) {
-    sessionStorage.setItem(EXPIRES_AT_KEY, String(tokens.expiresAt));
+    localStorage.setItem(EXPIRES_AT_KEY, String(tokens.expiresAt));
   }
 }
 
 export function clearAuthSession(): void {
-  sessionStorage.removeItem(ACCESS_TOKEN_KEY);
-  sessionStorage.removeItem(REFRESH_TOKEN_KEY);
-  sessionStorage.removeItem(ID_TOKEN_KEY);
-  sessionStorage.removeItem(EXPIRES_AT_KEY);
+  localStorage.removeItem(ACCESS_TOKEN_KEY);
+  localStorage.removeItem(REFRESH_TOKEN_KEY);
+  localStorage.removeItem(ID_TOKEN_KEY);
+  localStorage.removeItem(EXPIRES_AT_KEY);
   localStorage.removeItem(VERIFIER_KEY);
   localStorage.removeItem(STATE_KEY);
   localStorage.removeItem(NONCE_KEY);

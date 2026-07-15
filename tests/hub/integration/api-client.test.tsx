@@ -196,9 +196,9 @@ describe("unauthenticated redirect", () => {
       registryUrl: "https://registry-demo.grapity.dev",
       auth: { mode: "keycloak", serverUrl: "https://keycloak.example.com", realm: "grapity", clientId: "grapity-hub" },
     };
-    sessionStorage.setItem("grapity_access_token", "expired-token");
-    sessionStorage.setItem("grapity_expires_at", String(Date.now() - 1000));
     localStorage.clear();
+    localStorage.setItem("grapity_access_token", "expired-token");
+    localStorage.setItem("grapity_expires_at", String(Date.now() - 1000));
 
     Object.defineProperty(window, "location", {
       configurable: true,
@@ -238,7 +238,7 @@ describe("unauthenticated redirect", () => {
 
     await expect(result.current.listSpecs()).rejects.toThrow("Session expired. Sign in again.");
 
-    expect(sessionStorage.getItem("grapity_access_token")).toBeNull();
+    expect(localStorage.getItem("grapity_access_token")).toBeNull();
     expect(localStorage.getItem(POST_LOGIN_PATH_KEY)).toBe("/specs/payments-api");
   });
 });

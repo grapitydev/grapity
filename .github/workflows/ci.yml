@@ -30,3 +30,14 @@ jobs:
 
       - name: Build
         run: mise run build
+
+      - name: Check package size
+        run: |
+          npm pack --dry-run --json > /tmp/pack.json
+          BYTES=$(jq '.[0].size' /tmp/pack.json)
+          FILES=$(jq '.[0].entryCount' /tmp/pack.json)
+          echo "Tarball: $BYTES bytes across $FILES files"
+          if [ "$BYTES" -gt 3145728 ]; then
+            echo "Package tarball exceeds 3 MB"
+            exit 1
+          fi

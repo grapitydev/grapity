@@ -7,6 +7,6 @@ export default defineConfig({
   outExtension: () => ({ js: ".js" }),
   dts: true,
   clean: true,
-  splitting: false,
+  splitting: true,
   external: ["pg"],
 });

@@ -12,7 +12,7 @@ on:
       - "src/hub/**"
       - "src/cli/**"
       - "package.json"
-      - "bun.lockb"
+      - "bun.lock"
       - "tsup.*.config.ts"
       - "vite.config.ts"
       - "drizzle/**"

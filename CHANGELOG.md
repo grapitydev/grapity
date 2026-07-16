@@ -4,6 +4,13 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.8.1](https://github.com/grapitydev/grapity/compare/v0.8.0...v0.8.1) (2026-07-16)
+
+
+### Bug Fixes
+
+* shrink npm package from 21.6 MB to 272 KB ([f6584e1](https://github.com/grapitydev/grapity/commit/f6584e11290b96b825339e008bf80027bb80fdc9))
+
 ## [0.8.0](https://github.com/grapitydev/grapity/compare/v0.7.0...v0.8.0) (2026-07-15)
 
 

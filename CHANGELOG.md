@@ -4,6 +4,13 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.8.2](https://github.com/grapitydev/grapity/compare/v0.8.1...v0.8.2) (2026-07-16)
+
+
+### Bug Fixes
+
+* slim demo image with production-only node_modules and pinned Bun ([4840d06](https://github.com/grapitydev/grapity/commit/4840d068d83385e479bbed18b1d9faf238d2371f))
+
 ## [0.8.1](https://github.com/grapitydev/grapity/compare/v0.8.0...v0.8.1) (2026-07-16)
 
 

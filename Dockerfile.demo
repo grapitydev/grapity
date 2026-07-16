@@ -1,14 +1,17 @@
 # syntax=docker/dockerfile:1
 
-# Stage 1: Build the grapity package
-FROM node:22-slim AS builder
+ARG BUN_VERSION=1.3.14
 
+# Base stage with pinned Bun (matches mise.toml)
+FROM node:22-slim AS bun-base
+ARG BUN_VERSION
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates unzip && rm -rf /var/lib/apt/lists/*
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}"
+ENV PATH="/root/.bun/bin:${PATH}"
 WORKDIR /app
 
-# Install Bun for dependency install and build
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates unzip && rm -rf /var/lib/apt/lists/*
-RUN curl -fsSL https://bun.sh/install | bash
-ENV PATH="/root/.bun/bin:${PATH}"
+# Stage 1: Build the grapity package
+FROM bun-base AS builder
 
 COPY package.json bun.lock* ./
 RUN bun install --frozen-lockfile
@@ -16,7 +19,13 @@ RUN bun install --frozen-lockfile
 COPY . .
 RUN bun run build
 
-# Stage 2: Runtime image
+# Stage 2: Production dependencies only
+FROM bun-base AS prod-deps
+
+COPY package.json bun.lock* ./
+RUN bun install --frozen-lockfile --production
+
+# Stage 3: Runtime image
 FROM node:22-slim AS runtime
 
 WORKDIR /app
@@ -30,7 +39,7 @@ RUN mkdir -p /data
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/drizzle/migrations ./drizzle/migrations
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=prod-deps /app/node_modules ./node_modules
 
 ENV HOME=/root
 ENV NODE_ENV=production

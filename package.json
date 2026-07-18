@@ -2,8 +2,19 @@
   "name": "@grapity/grapity",
   "version": "0.8.2",
   "type": "module",
-  "description": "grapity - API spec registry and compatibility guardian",
+  "description": "Open-source API governance. Ship APIs that won't break your consumers.",
   "license": "Apache-2.0",
+  "keywords": [
+    "openapi",
+    "asyncapi",
+    "api-governance",
+    "api-contract",
+    "api-registry",
+    "kong",
+    "semver",
+    "breaking-changes",
+    "developer-portal"
+  ],
   "homepage": "https://grapity.dev/docs/cli-reference/init",
   "repository": {
     "type": "git",

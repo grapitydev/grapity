@@ -4,6 +4,19 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.9.0](https://github.com/grapitydev/grapity/compare/v0.8.2...v0.9.0) (2026-07-19)
+
+
+### Features
+
+* add npm keywords and sharpen package description for search discovery ([95f4cec](https://github.com/grapitydev/grapity/commit/95f4cec1fa00e4135069e2e75c21b1ed44f722ae))
+* add standalone binary distribution and release pipeline ([4959ba7](https://github.com/grapitydev/grapity/commit/4959ba7485c3edc149536bcb554f7284df019d7d))
+
+
+### Bug Fixes
+
+* run CI on main pushes and pin README badge to main so bot PR approvals don't mark it failing ([b51a7ce](https://github.com/grapitydev/grapity/commit/b51a7cea79cd71f11ecd80de5e8a0a4484e8f88d))
+
 ## [0.8.2](https://github.com/grapitydev/grapity/compare/v0.8.1...v0.8.2) (2026-07-16)
 
 

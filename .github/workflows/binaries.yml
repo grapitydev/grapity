@@ -76,4 +76,4 @@ jobs:
       - name: Upload binaries to release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload "$TAG" grapity-darwin-arm64 grapity-darwin-x64 grapity-linux-x64 grapity-linux-arm64 --clobber
+        run: gh release upload "$TAG" grapity-darwin-arm64 grapity-darwin-x64 grapity-linux-x64 grapity-linux-arm64 --clobber --repo "${{ github.repository }}"

@@ -4,6 +4,7 @@ import { serve, type ServerType } from "@hono/node-server";
 import path from "node:path";
 import fs from "node:fs";
 import { HUB_DIST_PATH } from "./paths";
+import { loadEmbeddedAssets, type EmbeddedAssets, type EmbeddedHubFile } from "runtime";
 
 export interface HubAuthConfig {
   mode: "keycloak";
@@ -28,6 +29,17 @@ export interface RunningHubServer {
   server: ServerType;
 }
 
+function embeddedFileBody(file: EmbeddedHubFile): string | Uint8Array<ArrayBuffer> {
+  return file.encoding === "base64"
+    ? new Uint8Array(Buffer.from(file.body, "base64"))
+    : file.body;
+}
+
+function injectConfigScript(html: string): string {
+  const configScript = `\n    <script src="/config.js"></script>\n  `;
+  return html.replace("</head>", `${configScript}</head>`);
+}
+
 export async function startHubServer(userConfig?: Partial<HubConfig>): Promise<RunningHubServer> {
   const config = {
     port: userConfig?.port ?? DEFAULT_PORT,
@@ -39,6 +51,7 @@ export async function startHubServer(userConfig?: Partial<HubConfig>): Promise<R
   };
 
   const app = new Hono();
+  const embedded = await loadEmbeddedAssets();
 
   // Expose runtime config to the SPA.
   app.get("/config.js", (c) => {
@@ -79,29 +92,28 @@ export async function startHubServer(userConfig?: Partial<HubConfig>): Promise<R
     });
   }
 
-  // Serve static assets from dist/ before the SPA fallback so that
-  // /assets/* and /favicon.svg are delivered with correct MIME types.
-  app.use("/assets/*", serveStatic({ root: HUB_DIST_PATH }));
-  app.use("/favicon.svg", serveStatic({ root: HUB_DIST_PATH }));
+  if (embedded) {
+    registerEmbeddedStaticRoutes(app, embedded);
+  } else {
+    // Serve static assets from dist/ before the SPA fallback so that
+    // /assets/* and /favicon.svg are delivered with correct MIME types.
+    app.use("/assets/*", serveStatic({ root: HUB_DIST_PATH }));
+    app.use("/favicon.svg", serveStatic({ root: HUB_DIST_PATH }));
 
-  // SPA fallback: any unmatched route returns index.html with the config script injected.
-  app.get("/*", async (c) => {
-    const indexPath = path.join(HUB_DIST_PATH, "index.html");
-    if (!fs.existsSync(indexPath)) {
-      return c.text(
-        "index.html not found. Build the project with 'bun run build' first.",
-        404
-      );
-    }
+    // SPA fallback: any unmatched route returns index.html with the config script injected.
+    app.get("/*", async (c) => {
+      const indexPath = path.join(HUB_DIST_PATH, "index.html");
+      if (!fs.existsSync(indexPath)) {
+        return c.text(
+          "index.html not found. Build the project with 'bun run build' first.",
+          404
+        );
+      }
 
-    const html = fs.readFileSync(indexPath, "utf-8");
-    const configScript = `\n    <script src="/config.js"></script>\n  `;
-    const injected = html.replace(
-      "</head>",
-      `${configScript}</head>`
-    );
-    return c.html(injected);
-  });
+      const html = fs.readFileSync(indexPath, "utf-8");
+      return c.html(injectConfigScript(html));
+    });
+  }
 
   const server = serve({
     fetch: app.fetch,
@@ -109,5 +121,27 @@ export async function startHubServer(userConfig?: Partial<HubConfig>): Promise<R
   });
 
   return { app, server };
+}
+
+function registerEmbeddedStaticRoutes(app: Hono, embedded: EmbeddedAssets) {
+  app.use("/assets/*", async (c) => {
+    const file = embedded.hub[c.req.path.slice(1)];
+    if (!file) return c.text("Not found", 404);
+    return c.body(embeddedFileBody(file), 200, { "Content-Type": file.contentType });
+  });
+
+  app.use("/favicon.svg", async (c) => {
+    const file = embedded.hub["favicon.svg"];
+    if (!file) return c.text("Not found", 404);
+    return c.body(embeddedFileBody(file), 200, { "Content-Type": file.contentType });
+  });
+
+  app.get("/*", (c) => {
+    const file = embedded.hub["index.html"];
+    if (!file) {
+      return c.text("index.html is not embedded in this binary.", 404);
+    }
+    return c.html(injectConfigScript(file.body));
+  });
 }
 

@@ -8,8 +8,13 @@ import { createRequire } from "node:module";
 
 import { materializeCommand } from "./commands/materialize";
 
+declare const __GRAPITY_VERSION__: string | undefined;
+
 const require = createRequire(import.meta.url);
-const { version } = require("../../package.json");
+const version =
+  typeof __GRAPITY_VERSION__ === "string"
+    ? __GRAPITY_VERSION__
+    : (require("../../package.json").version as string);
 
 const program = new Command();
 

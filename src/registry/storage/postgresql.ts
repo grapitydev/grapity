@@ -20,9 +20,7 @@ import type {
 } from "core";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { v4 as uuid } from "uuid";
-import { PG_MIGRATIONS_FOLDER } from "../paths";
-
-const MIGRATIONS_FOLDER = PG_MIGRATIONS_FOLDER;
+import { getMigrationsFolder } from "../paths";
 
 export class DatabaseConnectionError extends Error {
   constructor(
@@ -76,7 +74,7 @@ export class PostgreSQLSpecStore implements SpecStore, GatewayConfigStore {
   async migrate(): Promise<void> {
     try {
       await migrate(this.db, {
-        migrationsFolder: MIGRATIONS_FOLDER,
+        migrationsFolder: await getMigrationsFolder("pg"),
       });
     } catch (err) {
       if (isConnectionError(err)) {

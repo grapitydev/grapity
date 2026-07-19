@@ -1,6 +1,5 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import { migrate } from "drizzle-orm/better-sqlite3/migrator";
+import { Database, drizzle, migrate } from "sqlite-driver";
+import type { SqliteDatabase } from "sqlite-driver";
 import { sql, eq, and, desc, asc } from "drizzle-orm";
 import path from "node:path";
 import { specs, specVersions, auditLog, gatewayConfigs, gatewayConfigVersions, provisions, httpLogs } from "./schema";
@@ -19,14 +18,11 @@ import type {
   GatewayLogFilters,
   GatewayLogStats,
 } from "core";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
 import { v4 as uuid } from "uuid";
-import { SQLITE_MIGRATIONS_FOLDER } from "../paths";
-
-const MIGRATIONS_FOLDER = SQLITE_MIGRATIONS_FOLDER;
+import { getMigrationsFolder } from "../paths";
 
 export class SQLiteSpecStore implements SpecStore, GatewayConfigStore {
-  private db: BetterSQLite3Database;
+  private db: SqliteDatabase;
 
   constructor(dbPath: string) {
     const sqlite = new Database(dbPath);
@@ -35,7 +31,7 @@ export class SQLiteSpecStore implements SpecStore, GatewayConfigStore {
 
   async migrate(): Promise<void> {
     await migrate(this.db, {
-      migrationsFolder: MIGRATIONS_FOLDER,
+      migrationsFolder: await getMigrationsFolder("sqlite"),
     });
   }
 

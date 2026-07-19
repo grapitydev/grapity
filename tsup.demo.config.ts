@@ -1,4 +1,5 @@
 import { defineConfig } from "tsup";
+import path from "node:path";
 
 export default defineConfig({
   entry: ["src/demo/entrypoint.ts"],
@@ -8,4 +9,11 @@ export default defineConfig({
   dts: false,
   clean: true,
   splitting: false,
+  external: ["grapity-embedded-assets"],
+  esbuildOptions(options) {
+    options.alias = {
+      ...options.alias,
+      "sqlite-driver": path.resolve("src/registry/storage/sqlite-driver.node.ts"),
+    };
+  },
 });

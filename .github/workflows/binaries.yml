@@ -1,0 +1,79 @@
+name: Build Standalone Binaries
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to build for (e.g. v0.8.2)'
+        required: true
+        type: string
+  repository_dispatch:
+    types: [build-binaries]
+
+permissions:
+  contents: write
+
+env:
+  TAG: ${{ inputs.tag || github.event.client_payload.tag }}
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - uses: jdx/mise-action@v4
+        with:
+          install: true
+          cache: true
+
+      - name: Setup
+        run: mise run setup
+
+      - name: Build package (dist/)
+        run: mise run build
+
+      - name: Build standalone binaries
+        run: bun run build:standalone
+
+      - name: Smoke test darwin-arm64
+        run: bash scripts/smoke-standalone.sh dist-standalone/grapity-darwin-arm64 "$(jq -r .version package.json)"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: standalone-binaries
+          path: dist-standalone/grapity-*
+          retention-days: 1
+
+  smoke-linux:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: standalone-binaries
+
+      - name: Make binaries executable
+        run: chmod +x grapity-*
+
+      - name: Smoke test linux-x64
+        run: bash scripts/smoke-standalone.sh grapity-linux-x64 "$(jq -r .version package.json)"
+
+  publish-binaries:
+    needs: [build, smoke-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: standalone-binaries
+
+      - name: Upload binaries to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "$TAG" grapity-darwin-arm64 grapity-darwin-x64 grapity-linux-x64 grapity-linux-arm64 --clobber

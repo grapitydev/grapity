@@ -77,6 +77,7 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "generate": "bun run scripts/generate-types.ts",
+    "build:standalone": "bun run scripts/build-standalone.ts",
     "prepublishOnly": "bun run build"
   },
   "publishConfig": {

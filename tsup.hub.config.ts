@@ -8,4 +8,5 @@ export default defineConfig({
   dts: true,
   clean: true,
   splitting: true,
+  external: ["grapity-embedded-assets"],
 });

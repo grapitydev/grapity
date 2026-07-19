@@ -28,3 +28,11 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           event-type: publish-package
           client-payload: '{"tag": "latest"}'
+
+      - name: Dispatch binary builds for releases
+        if: ${{ steps.release-please.outputs.releases_created == 'true' }}
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: build-binaries
+          client-payload: '{"tag": "${{ steps.release-please.outputs.tag_name }}"}'

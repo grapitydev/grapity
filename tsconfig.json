@@ -24,9 +24,12 @@
       "hub": ["src/hub/index.ts"],
       "hub/*": ["src/hub/*"],
       "cli": ["src/cli/index.ts"],
-      "cli/*": ["src/cli/*"]
+      "cli/*": ["src/cli/*"],
+      "runtime": ["src/runtime/embedded.ts"],
+      "runtime/*": ["src/runtime/*"],
+      "sqlite-driver": ["src/registry/storage/sqlite-driver.bun.ts"]
     }
   },
-  "include": ["src", "tests"],
+  "include": ["src", "tests", "scripts"],
   "exclude": ["node_modules", "dist"]
 }

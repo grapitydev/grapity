@@ -4,6 +4,18 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.10.0](https://github.com/grapitydev/grapity/compare/v0.9.0...v0.10.0) (2026-07-20)
+
+
+### Features
+
+* auto-bump homebrew formula on release ([278813f](https://github.com/grapitydev/grapity/commit/278813f6d78c9f7b9eaf403019338937779d2e1d))
+
+
+### Bug Fixes
+
+* upload standalone binaries with explicit repo flag ([47daa67](https://github.com/grapitydev/grapity/commit/47daa67897d847649f1ae4bda3f294d031c285ac))
+
 ## [0.9.0](https://github.com/grapitydev/grapity/compare/v0.8.2...v0.9.0) (2026-07-19)
 
 

@@ -111,3 +111,135 @@ jobs:
           git add Formula/grapity.rb
           git commit -m "Update grapity to v${TAG#v}" || echo "No changes to commit"
           git push
+
+  packages:
+    needs: publish-binaries
+    runs-on: ubuntu-latest
+    env:
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      PACKAGES_REPO_PAT: ${{ secrets.PACKAGES_REPO_PAT }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: standalone-binaries
+
+      - name: Install packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y reprepro createrepo-c
+          go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.47.0
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Import GPG release key
+        run: |
+          mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          echo "allow-preset-passphrase" >> ~/.gnupg/gpg-agent.conf
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          KEYID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5; exit}')
+          echo "KEYID=$KEYID" >> "$GITHUB_ENV"
+          for keygrip in $(gpg --list-secret-keys --with-keygrip --with-colons | awk -F: '/^grp/{print $10}'); do
+            /usr/lib/gnupg/gpg-preset-passphrase --passphrase "$GPG_PASSPHRASE" --preset "$keygrip"
+          done
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$KEYID" --sign /dev/null
+
+      - name: Build deb/rpm/pkg packages
+        run: |
+          VERSION="${TAG#v}"
+          mkdir -p out
+          for combo in "amd64:x64" "arm64:arm64"; do
+            GOARCH="${combo%%:*}"
+            TARGET="${combo##*:}"
+            for packager in deb rpm archlinux; do
+              ARCH="$GOARCH" VERSION="$VERSION" TARGET="$TARGET" \
+                nfpm package --config nfpm.yaml --packager "$packager" --target out/
+            done
+          done
+          ls -la out/
+
+      - name: Assemble apt repository
+        run: |
+          VERSION="${TAG#v}"
+          mkdir -p site/apt/conf
+          cat > site/apt/conf/distributions <<EOF
+          Origin: Grapity
+          Label: grapity
+          Codename: stable
+          Architectures: amd64 arm64
+          Components: main
+          Description: grapity CLI apt repository
+          SignWith: ${KEYID}
+          EOF
+          reprepro -b site/apt includedeb stable "out/grapity_${VERSION}_amd64.deb" "out/grapity_${VERSION}_arm64.deb"
+
+      - name: Assemble dnf repository
+        run: |
+          VERSION="${TAG#v}"
+          mkdir -p site/dnf/x86_64 site/dnf/aarch64
+          cp "out/grapity-${VERSION}-1.x86_64.rpm" site/dnf/x86_64/
+          cp "out/grapity-${VERSION}-1.aarch64.rpm" site/dnf/aarch64/
+          createrepo_c site/dnf/x86_64
+          createrepo_c site/dnf/aarch64
+          for arch in x86_64 aarch64; do
+            gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" \
+              --local-user "$KEYID" --detach-sign --armor "site/dnf/${arch}/repodata/repomd.xml"
+          done
+          cat > site/dnf/grapity.repo <<EOF
+          [grapity]
+          name=grapity
+          baseurl=https://grapitydev.github.io/packages/dnf/\$basearch
+          enabled=1
+          gpgcheck=1
+          gpgkey=https://grapitydev.github.io/packages/gpg.key
+          EOF
+
+      - name: Assemble pacman repository
+        run: |
+          VERSION="${TAG#v}"
+          mkdir -p site/pacman/x86_64 site/pacman/aarch64
+          cp "out/grapity-${VERSION}-1-x86_64.pkg.tar.zst" site/pacman/x86_64/
+          cp "out/grapity-${VERSION}-1-aarch64.pkg.tar.zst" site/pacman/aarch64/
+          docker run --rm \
+            -v "$PWD/site/pacman:/work" \
+            -v "$HOME/.gnupg:/root/.gnupg" \
+            -e GPG_PASSPHRASE -e KEYID \
+            archlinux:latest bash -c '
+              set -e
+              chmod 700 /root/.gnupg
+              echo "pinentry-mode loopback" > /root/.gnupg/gpg.conf
+              echo "allow-loopback-pinentry" > /root/.gnupg/gpg-agent.conf
+              echo "allow-preset-passphrase" >> /root/.gnupg/gpg-agent.conf
+              gpgconf --kill all || true
+              for keygrip in $(gpg --list-secret-keys --with-keygrip --with-colons | awk -F: "/^grp/{print \$10}"); do
+                /usr/lib/gnupg/gpg-preset-passphrase --passphrase "$GPG_PASSPHRASE" --preset "$keygrip"
+              done
+              gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$KEYID" --sign /dev/null
+              for arch in x86_64 aarch64; do
+                cd "/work/$arch"
+                repo-add --sign --key "$KEYID" grapity.db.tar.gz ./*.pkg.tar.zst
+              done
+            '
+
+      - name: Publish site to gh-pages
+        run: |
+          gpg --armor --export "$KEYID" > site/gpg.key
+          cat > site/index.html <<'EOF'
+          <!doctype html>
+          <title>grapity packages</title>
+          <p>apt/dnf/pacman repositories for the grapity CLI.
+          See <a href="https://github.com/grapitydev/packages">github.com/grapitydev/packages</a> for install instructions.</p>
+          EOF
+          cd site
+          git init -q -b gh-pages .
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Publish packages for v${TAG#v}"
+          git remote add origin "https://x-access-token:${PACKAGES_REPO_PAT}@github.com/grapitydev/packages.git"
+          git push --force origin gh-pages

@@ -1,0 +1,17 @@
+name: grapity
+arch: ${ARCH}
+platform: linux
+version: ${VERSION}
+version_schema: none
+section: utils
+priority: optional
+maintainer: Grapity Releases <contact@grapity.dev>
+description: Open-source API governance. Ship APIs that won't break your consumers.
+homepage: https://grapity.dev
+license: Apache-2.0
+contents:
+  - src: ./grapity-linux-${TARGET}
+    dst: /usr/local/bin/grapity
+    expand: true
+    file_info:
+      mode: 0755

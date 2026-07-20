@@ -203,10 +203,10 @@ jobs:
           cat > site/dnf/grapity.repo <<EOF
           [grapity]
           name=grapity
-          baseurl=https://grapitydev.github.io/packages/dnf/\$basearch
+          baseurl=https://packages.grapity.dev/dnf/\$basearch
           enabled=1
           gpgcheck=1
-          gpgkey=https://grapitydev.github.io/packages/gpg.key
+          gpgkey=https://packages.grapity.dev/gpg.key
           EOF
 
       - name: Assemble pacman repository
@@ -245,6 +245,7 @@ jobs:
           PACKAGES_REPO_PAT: ${{ secrets.PACKAGES_REPO_PAT }}
         run: |
           gpg --armor --export "$KEYID" > site/gpg.key
+          echo "packages.grapity.dev" > site/CNAME
           cat > site/index.html <<'EOF'
           <!doctype html>
           <title>grapity packages</title>

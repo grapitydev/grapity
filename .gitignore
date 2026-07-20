@@ -4,3 +4,6 @@ dist-standalone/
 *.tsbuildinfo
 .DS_Store
 .env*
+release-key.asc
+site/
+out/

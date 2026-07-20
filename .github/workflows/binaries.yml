@@ -11,7 +11,7 @@ on:
     types: [build-binaries]
 
 permissions:
-  contents: write
+  contents: read
 
 env:
   TAG: ${{ inputs.tag || github.event.client_payload.tag }}
@@ -68,6 +68,8 @@ jobs:
   publish-binaries:
     needs: [build, smoke-linux]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -116,9 +118,9 @@ jobs:
     needs: publish-binaries
     runs-on: ubuntu-latest
     env:
-      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-      GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-      PACKAGES_REPO_PAT: ${{ secrets.PACKAGES_REPO_PAT }}
+      NFPM_VERSION: 2.47.0
+      NFPM_SHA256: 0660ca602b2d2d2ae4781a06c692b3eeb9d437ffea05b831d76e41f4a3188783
+      ARCHLINUX_IMAGE: archlinux:latest@sha256:592e11bd99ab579f933a0cb77a8f66e2f3ae57f5eafacf13aea44a6e98ef21ae
     steps:
       - uses: actions/checkout@v4
 
@@ -130,25 +132,32 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y reprepro createrepo-c
-          curl -fsSL https://github.com/goreleaser/nfpm/releases/download/v2.47.0/nfpm_2.47.0_Linux_x86_64.tar.gz | sudo tar -xz -C /usr/local/bin nfpm
+          curl -fsSL "https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_Linux_x86_64.tar.gz" -o /tmp/nfpm.tar.gz
+          echo "${NFPM_SHA256}  /tmp/nfpm.tar.gz" | sha256sum -c -
+          sudo tar -xz -C /usr/local/bin -f /tmp/nfpm.tar.gz nfpm
+          rm /tmp/nfpm.tar.gz
 
       - name: Import GPG release key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
-          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
-          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
-          echo "allow-preset-passphrase" >> ~/.gnupg/gpg-agent.conf
+          echo "allow-preset-passphrase" > ~/.gnupg/gpg-agent.conf
           echo "$GPG_PRIVATE_KEY" | gpg --batch --import
           echo "$GPG_PRIVATE_KEY" > release-key.asc
           chmod 600 release-key.asc
           KEYID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5; exit}')
           echo "KEYID=$KEYID" >> "$GITHUB_ENV"
+          gpgconf --kill all || true
           for keygrip in $(gpg --list-secret-keys --with-keygrip --with-colons | awk -F: '/^grp/{print $10}'); do
-            /usr/lib/gnupg/gpg-preset-passphrase --passphrase "$GPG_PASSPHRASE" --preset "$keygrip"
+            printf '%s\n' "$GPG_PASSPHRASE" | /usr/lib/gnupg/gpg-preset-passphrase --preset "$keygrip"
           done
-          gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$KEYID" --output /dev/null --sign /dev/null
+          gpg --batch --yes --passphrase-fd 3 --local-user "$KEYID" --output /dev/null --sign /dev/null 3<<<"$GPG_PASSPHRASE"
 
       - name: Build deb/rpm/pkg packages
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           VERSION="${TAG#v}"
           mkdir -p out
@@ -178,6 +187,8 @@ jobs:
           reprepro -b site/apt includedeb stable "out/grapity_${VERSION}_amd64.deb" "out/grapity_${VERSION}_arm64.deb"
 
       - name: Assemble dnf repository
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           VERSION="${TAG#v}"
           mkdir -p site/dnf/x86_64 site/dnf/aarch64
@@ -186,8 +197,8 @@ jobs:
           createrepo_c site/dnf/x86_64
           createrepo_c site/dnf/aarch64
           for arch in x86_64 aarch64; do
-            gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" \
-              --local-user "$KEYID" --detach-sign --armor "site/dnf/${arch}/repodata/repomd.xml"
+            gpg --batch --yes --passphrase-fd 3 --local-user "$KEYID" \
+              --detach-sign --armor "site/dnf/${arch}/repodata/repomd.xml" 3<<<"$GPG_PASSPHRASE"
           done
           cat > site/dnf/grapity.repo <<EOF
           [grapity]
@@ -199,30 +210,30 @@ jobs:
           EOF
 
       - name: Assemble pacman repository
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           VERSION="${TAG#v}"
           mkdir -p site/pacman/x86_64 site/pacman/aarch64
           cp "out/grapity-${VERSION}-1-x86_64.pkg.tar.zst" site/pacman/x86_64/
           cp "out/grapity-${VERSION}-1-aarch64.pkg.tar.zst" site/pacman/aarch64/
           for arch in x86_64 aarch64; do
-            gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" \
-              --local-user "$KEYID" --detach-sign "site/pacman/${arch}/grapity-${VERSION}-1-${arch}.pkg.tar.zst"
+            gpg --batch --yes --passphrase-fd 3 --local-user "$KEYID" \
+              --detach-sign "site/pacman/${arch}/grapity-${VERSION}-1-${arch}.pkg.tar.zst" 3<<<"$GPG_PASSPHRASE"
           done
           docker run --rm \
             -v "$PWD/site/pacman:/work" \
             -v "$HOME/.gnupg:/root/.gnupg" \
             -e GPG_PASSPHRASE -e KEYID \
-            archlinux:latest bash -c '
+            "$ARCHLINUX_IMAGE" bash -c '
               set -e
               chmod 700 /root/.gnupg
-              echo "pinentry-mode loopback" > /root/.gnupg/gpg.conf
-              echo "allow-loopback-pinentry" > /root/.gnupg/gpg-agent.conf
-              echo "allow-preset-passphrase" >> /root/.gnupg/gpg-agent.conf
+              echo "allow-preset-passphrase" > /root/.gnupg/gpg-agent.conf
               gpgconf --kill all || true
               for keygrip in $(gpg --list-secret-keys --with-keygrip --with-colons | awk -F: "/^grp/{print \$10}"); do
-                /usr/lib/gnupg/gpg-preset-passphrase --passphrase "$GPG_PASSPHRASE" --preset "$keygrip"
+                printf "%s\n" "$GPG_PASSPHRASE" | /usr/lib/gnupg/gpg-preset-passphrase --preset "$keygrip"
               done
-              gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$KEYID" --output /dev/null --sign /dev/null
+              gpg --batch --yes --passphrase-fd 3 --local-user "$KEYID" --output /dev/null --sign /dev/null 3<<<"$GPG_PASSPHRASE"
               for arch in x86_64 aarch64; do
                 cd "/work/$arch"
                 repo-add --include-sigs --sign --key "$KEYID" grapity.db.tar.gz ./*.pkg.tar.zst
@@ -230,6 +241,8 @@ jobs:
             '
 
       - name: Publish site to gh-pages
+        env:
+          PACKAGES_REPO_PAT: ${{ secrets.PACKAGES_REPO_PAT }}
         run: |
           gpg --armor --export "$KEYID" > site/gpg.key
           cat > site/index.html <<'EOF'
@@ -244,5 +257,12 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -q -m "Publish packages for v${TAG#v}"
-          git remote add origin "https://x-access-token:${PACKAGES_REPO_PAT}@github.com/grapitydev/packages.git"
-          git push --force origin gh-pages
+          AUTH_HEADER=$(printf 'x-access-token:%s' "$PACKAGES_REPO_PAT" | base64 -w0)
+          git -c http.extraheader="Authorization: Basic $AUTH_HEADER" \
+            push --force https://github.com/grapitydev/packages.git gh-pages
+
+      - name: Clean up key material
+        if: always()
+        run: |
+          shred -u release-key.asc 2>/dev/null || rm -f release-key.asc
+          rm -rf ~/.gnupg

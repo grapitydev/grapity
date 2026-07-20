@@ -9,6 +9,10 @@ maintainer: Grapity Releases <contact@grapity.dev>
 description: Open-source API governance. Ship APIs that won't break your consumers.
 homepage: https://grapity.dev
 license: Apache-2.0
+rpm:
+  signature:
+    key_file: ./release-key.asc
+    key_id: 5BC02278C1306FA1
 contents:
   - src: ./grapity-linux-${TARGET}
     dst: /usr/local/bin/grapity

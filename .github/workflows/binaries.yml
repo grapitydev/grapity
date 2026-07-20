@@ -139,6 +139,8 @@ jobs:
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           echo "allow-preset-passphrase" >> ~/.gnupg/gpg-agent.conf
           echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          echo "$GPG_PRIVATE_KEY" > release-key.asc
+          chmod 600 release-key.asc
           KEYID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5; exit}')
           echo "KEYID=$KEYID" >> "$GITHUB_ENV"
           for keygrip in $(gpg --list-secret-keys --with-keygrip --with-colons | awk -F: '/^grp/{print $10}'); do
@@ -154,7 +156,7 @@ jobs:
             GOARCH="${combo%%:*}"
             TARGET="${combo##*:}"
             for packager in deb rpm archlinux; do
-              ARCH="$GOARCH" VERSION="$VERSION" TARGET="$TARGET" \
+              ARCH="$GOARCH" VERSION="$VERSION" TARGET="$TARGET" NFPM_PASSPHRASE="$GPG_PASSPHRASE" \
                 nfpm package --config nfpm.yaml --packager "$packager" --target out/
             done
           done
@@ -202,6 +204,10 @@ jobs:
           mkdir -p site/pacman/x86_64 site/pacman/aarch64
           cp "out/grapity-${VERSION}-1-x86_64.pkg.tar.zst" site/pacman/x86_64/
           cp "out/grapity-${VERSION}-1-aarch64.pkg.tar.zst" site/pacman/aarch64/
+          for arch in x86_64 aarch64; do
+            gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" \
+              --local-user "$KEYID" --detach-sign "site/pacman/${arch}/grapity-${VERSION}-1-${arch}.pkg.tar.zst"
+          done
           docker run --rm \
             -v "$PWD/site/pacman:/work" \
             -v "$HOME/.gnupg:/root/.gnupg" \
@@ -219,7 +225,7 @@ jobs:
               gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$KEYID" --output /dev/null --sign /dev/null
               for arch in x86_64 aarch64; do
                 cd "/work/$arch"
-                repo-add --sign --key "$KEYID" grapity.db.tar.gz ./*.pkg.tar.zst
+                repo-add --include-sigs --sign --key "$KEYID" grapity.db.tar.gz ./*.pkg.tar.zst
               done
             '
 

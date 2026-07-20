@@ -144,7 +144,7 @@ jobs:
           for keygrip in $(gpg --list-secret-keys --with-keygrip --with-colons | awk -F: '/^grp/{print $10}'); do
             /usr/lib/gnupg/gpg-preset-passphrase --passphrase "$GPG_PASSPHRASE" --preset "$keygrip"
           done
-          gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$KEYID" --sign /dev/null
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$KEYID" --output /dev/null --sign /dev/null
 
       - name: Build deb/rpm/pkg packages
         run: |
@@ -216,7 +216,7 @@ jobs:
               for keygrip in $(gpg --list-secret-keys --with-keygrip --with-colons | awk -F: "/^grp/{print \$10}"); do
                 /usr/lib/gnupg/gpg-preset-passphrase --passphrase "$GPG_PASSPHRASE" --preset "$keygrip"
               done
-              gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$KEYID" --sign /dev/null
+              gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$KEYID" --output /dev/null --sign /dev/null
               for arch in x86_64 aarch64; do
                 cd "/work/$arch"
                 repo-add --sign --key "$KEYID" grapity.db.tar.gz ./*.pkg.tar.zst

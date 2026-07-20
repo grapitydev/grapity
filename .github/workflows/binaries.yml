@@ -77,3 +77,37 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release upload "$TAG" grapity-darwin-arm64 grapity-darwin-x64 grapity-linux-x64 grapity-linux-arm64 --clobber --repo "${{ github.repository }}"
+
+  update-homebrew:
+    needs: publish-binaries
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: standalone-binaries
+
+      - name: Checkout homebrew tap
+        uses: actions/checkout@v4
+        with:
+          repository: grapitydev/homebrew-tap
+          token: ${{ secrets.PACKAGES_REPO_PAT }}
+          path: homebrew-tap
+
+      - name: Update formula
+        run: |
+          VERSION="${TAG#v}"
+          cd homebrew-tap
+          sed -i "s/version \".*\"/version \"${VERSION}\"/" Formula/grapity.rb
+          for target in darwin-arm64 darwin-x64 linux-x64 linux-arm64; do
+            sha=$(sha256sum "../grapity-${target}" | cut -d' ' -f1)
+            perl -0pi -e "s/(grapity-${target}\"\n\s+sha256 \")[^\"]*/\${1}${sha}/" Formula/grapity.rb
+          done
+
+      - name: Commit and push
+        run: |
+          cd homebrew-tap
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/grapity.rb
+          git commit -m "Update grapity to v${TAG#v}" || echo "No changes to commit"
+          git push

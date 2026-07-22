@@ -17,6 +17,7 @@
 #   GRAPITY_FORCE_BINARY=1    skip package managers, use the binary fallback
 
 set -eu
+# shellcheck disable=SC3040
 (set -o pipefail) 2>/dev/null && set -o pipefail
 
 REPO_URL="https://packages.grapity.dev"

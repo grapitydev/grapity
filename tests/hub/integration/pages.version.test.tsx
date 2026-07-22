@@ -202,12 +202,15 @@ const OPENAPI_JSON = JSON.stringify({
   },
 });
 
+const originalFetch = global.fetch;
+
 beforeEach(() => {
   global.fetch = (async () => new Response("{}", { status: 200 })) as unknown as typeof globalThis.fetch;
 });
 
 afterEach(() => {
   cleanup();
+  global.fetch = originalFetch;
 });
 
 describe("VersionPage — /specs/:name/versions/:semver", () => {

@@ -67,8 +67,11 @@ function wrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
+const originalFetch = global.fetch;
+
 afterEach(() => {
   cleanup();
+  global.fetch = originalFetch;
 });
 
 describe("App URL filter sync", () => {

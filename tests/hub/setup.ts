@@ -1,4 +1,5 @@
 import { Window } from "happy-dom";
+import { afterEach } from "bun:test";
 
 // Capture the runtime's native fetch before happy-dom replaces the global.
 // Network-level integration tests can restore this to avoid happy-dom's fetch
@@ -7,6 +8,15 @@ import { Window } from "happy-dom";
 const nodeFetch = globalThis.fetch;
 // @ts-ignore
 globalThis.__NODE_FETCH__ = nodeFetch;
+
+// Restore the native fetch after every test in every file. All test files
+// share a single process, and hub component tests stub `global.fetch` with
+// mocks. Without a global restore, a leaked stub poisons later files that
+// perform real network I/O (registry integration servers, keycloak token
+// fetches, jose JWKS validation inside app.request).
+afterEach(() => {
+  globalThis.fetch = nodeFetch;
+});
 
 // Some transitive dependencies (e.g. swagger-parser used by registry tests)
 // reference the global `location` object. Provide a minimal stub so the

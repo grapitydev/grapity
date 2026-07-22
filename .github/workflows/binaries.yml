@@ -78,7 +78,9 @@ jobs:
       - name: Upload binaries to release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload "$TAG" grapity-darwin-arm64 grapity-darwin-x64 grapity-linux-x64 grapity-linux-arm64 --clobber --repo "${{ github.repository }}"
+        run: |
+          sha256sum grapity-darwin-arm64 grapity-darwin-x64 grapity-linux-x64 grapity-linux-arm64 > checksums.txt
+          gh release upload "$TAG" grapity-darwin-arm64 grapity-darwin-x64 grapity-linux-x64 grapity-linux-arm64 checksums.txt --clobber --repo "${{ github.repository }}"
 
   update-homebrew:
     needs: publish-binaries
@@ -246,6 +248,7 @@ jobs:
         run: |
           gpg --armor --export "$KEYID" > site/gpg.key
           echo "packages.grapity.dev" > site/CNAME
+          cp scripts/install.sh site/install.sh
           cat > site/index.html <<'EOF'
           <!doctype html>
           <title>grapity packages</title>

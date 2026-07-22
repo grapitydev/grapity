@@ -33,6 +33,11 @@ jobs:
       - name: Build
         run: mise run build
 
+      - name: Shellcheck installer
+        run: |
+          command -v shellcheck >/dev/null || sudo apt-get install -y shellcheck
+          shellcheck scripts/install.sh
+
       - name: Check package size
         run: |
           npm pack --dry-run --json > /tmp/pack.json

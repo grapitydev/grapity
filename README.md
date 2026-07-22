@@ -26,9 +26,19 @@ Grapity is a contract registry that validates backward compatibility, auto-assig
 
 ## Installation
 
+macOS and Linux (auto-detects Homebrew, apt, dnf or pacman):
+
+```bash
+curl -fsSL https://packages.grapity.dev/install.sh | sh
+```
+
+Any platform with Node.js 20+ (incl. Windows):
+
 ```bash
 npm install -g @grapity/grapity
 ```
+
+See the [installation guide](https://grapity.dev/docs/getting-started/installation/) for all methods.
 
 ## Quick start
 

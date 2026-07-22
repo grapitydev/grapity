@@ -4,6 +4,27 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.11.0](https://github.com/grapitydev/grapity/compare/v0.10.0...v0.11.0) (2026-07-22)
+
+
+### Features
+
+* add apt/dnf/pacman package publishing to release pipeline ([1166df1](https://github.com/grapitydev/grapity/commit/1166df18db23c7ef061dc895b0015d2fb8da2fff))
+* add curl quick installer with package manager detection ([8bedba7](https://github.com/grapitydev/grapity/commit/8bedba78655780bf9b3284cbc3a499250a0ac126))
+* use prebuilt nfpm binary in packages job ([f52334a](https://github.com/grapitydev/grapity/commit/f52334a82ebb19d230f65e61bdb914dedef0ebff))
+
+
+### Bug Fixes
+
+* checkout default branch in packages job for nfpm config ([1aebaa1](https://github.com/grapitydev/grapity/commit/1aebaa1f77f1963753ed8537c739065ff88eb4ff))
+* discard gpg sanity-check signature output ([aeefbff](https://github.com/grapitydev/grapity/commit/aeefbff22dcf9981a1f8670c778e1aec159cce86))
+* document quick install script in readme ([f33a0a2](https://github.com/grapitydev/grapity/commit/f33a0a288b3eb03f4f10018098b2d3919fb3dd5c))
+* harden release signing pipeline secret handling ([001b4c1](https://github.com/grapitydev/grapity/commit/001b4c17e98533b85efe8b94482fc67c54b9e6f7))
+* restore leaked global.fetch stubs that poisoned integration tests ([06d976d](https://github.com/grapitydev/grapity/commit/06d976dba9a7f6f65a9debd0314b56ff11a8dd7a))
+* serve packages site under packages.grapity.dev ([0cab6e2](https://github.com/grapitydev/grapity/commit/0cab6e2f57e6461fea225d397e30dfa459f0722e))
+* sign rpm and pacman packages for repo gpgcheck ([f7f95ea](https://github.com/grapitydev/grapity/commit/f7f95ea2db3adf9ac99d98eb1ac3d6dd6bbe71f6))
+* silence false-positive pipefail warning in installer shellcheck ([e3cd85f](https://github.com/grapitydev/grapity/commit/e3cd85fc815cea4a4205b7c82e383f4c15b4d674))
+
 ## [0.10.0](https://github.com/grapitydev/grapity/compare/v0.9.0...v0.10.0) (2026-07-20)
 
 

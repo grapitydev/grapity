@@ -204,4 +204,103 @@ describe("Scenario 14: Spec serving", () => {
     expect(versions.data.length).toBe(2);
     versions.data.forEach((v: any) => expect(v.content).toBeUndefined());
   });
+
+  it("14P: served spec document carries the registry-assigned version in info.version", async () => {
+    const spec = makeSpec({ info: { title: "Test API", version: "0.0.0" } });
+    await pushSpec(app, { content: spec, name: "payments-api" });
+
+    const jsonRes = await app.request("/v1/specs/payments-api/spec.json");
+    const jsonBody = await jsonRes.json() as any;
+    expect(jsonRes.status).toBe(200);
+    expect(jsonBody.info.version).toBe("1.0.0");
+
+    const yamlRes = await app.request("/v1/specs/payments-api/spec.yaml");
+    const yamlBody = yaml.load(await yamlRes.text()) as any;
+    expect(yamlRes.status).toBe(200);
+    expect(yamlBody.info.version).toBe("1.0.0");
+  });
+
+  it("14Q: each served version carries its own assigned version regardless of the pushed info.version", async () => {
+    const v1 = makeSpec({ info: { title: "Test API", version: "0.0.0" } });
+    const v2 = makeSpec({
+      info: { title: "Test API", version: "0.0.0" },
+      paths: {
+        "/payments/{id}": {
+          get: {
+            operationId: "getPayment",
+            parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+            responses: { "200": { description: "ok" } },
+          },
+        },
+        "/payments/{id}/refunds": {
+          get: {
+            operationId: "getRefunds",
+            parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+            responses: { "200": { description: "ok" } },
+          },
+        },
+      },
+    });
+
+    await pushSpec(app, { content: v1, name: "payments-api" });
+    const { body: pushBody } = await pushSpec(app, { content: v2, name: "payments-api" });
+    expect(pushBody.data.version.semver).toBe("1.1.0");
+
+    const resV1 = await app.request("/v1/specs/payments-api/versions/1.0.0/spec.json");
+    expect(resV1.status).toBe(200);
+    expect((await resV1.json() as any).info.version).toBe("1.0.0");
+
+    const resV2 = await app.request("/v1/specs/payments-api/versions/1.1.0/spec.json");
+    expect(resV2.status).toBe(200);
+    expect((await resV2.json() as any).info.version).toBe("1.1.0");
+
+    const yamlV2 = await app.request("/v1/specs/payments-api/versions/1.1.0/spec.yaml");
+    expect(yamlV2.status).toBe(200);
+    expect((yaml.load(await yamlV2.text()) as any).info.version).toBe("1.1.0");
+  });
+
+  it("14R: AsyncAPI documents are stamped with the assigned version", async () => {
+    const asyncApiSpec = JSON.stringify({
+      asyncapi: "2.6.0",
+      info: { title: "Events API", version: "0.0.0" },
+      channels: {},
+    });
+
+    const { res: pushRes } = await pushSpec(app, { content: asyncApiSpec, name: "events-api", type: "asyncapi" });
+    expect(pushRes.status).toBe(201);
+
+    const res = await app.request("/v1/specs/events-api/spec.json");
+    const body = await res.json() as any;
+    expect(res.status).toBe(200);
+    expect(body.info.version).toBe("1.0.0");
+  });
+
+  it("14S: compat report does not include an info-version-changed entry", async () => {
+    const v1 = makeSpec({ info: { title: "Test API", version: "0.0.0" } });
+    const v2 = makeSpec({
+      info: { title: "Test API", version: "0.0.0" },
+      paths: {
+        "/payments/{id}": {
+          get: {
+            operationId: "getPayment",
+            parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+            responses: { "200": { description: "ok" } },
+          },
+        },
+        "/payments/{id}/refunds": {
+          get: {
+            operationId: "getRefunds",
+            parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+            responses: { "200": { description: "ok" } },
+          },
+        },
+      },
+    });
+
+    await pushSpec(app, { content: v1, name: "payments-api" });
+    const { body } = await pushSpec(app, { content: v2, name: "payments-api" });
+
+    const rules = (body.data.compatReport.safeChanges as any[]).map((c) => c.rule);
+    expect(rules).not.toContain("info-version-changed");
+  });
 });

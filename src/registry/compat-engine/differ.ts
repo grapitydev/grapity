@@ -169,9 +169,8 @@ function diffGlobalMetadata(oldSpec: ParsedSpec, newSpec: ParsedSpec): RawChange
   if (oldInfo.title !== newInfo.title && (oldInfo.title !== undefined || newInfo.title !== undefined)) {
     changes.push({ type: "documentation-updated", kind: "info-title-changed", path: "/info/title", detail: `${oldInfo.title} → ${newInfo.title}` });
   }
-  if (oldInfo.version !== newInfo.version && (oldInfo.version !== undefined || newInfo.version !== undefined)) {
-    changes.push({ type: "documentation-updated", kind: "info-version-changed", path: "/info/version", detail: `${oldInfo.version} → ${newInfo.version}` });
-  }
+  // info.version is registry-owned metadata (rewritten at push time) and is
+  // excluded from the compat surface.
   if (oldInfo.description !== newInfo.description && (oldInfo.description !== undefined || newInfo.description !== undefined)) {
     changes.push({ type: "documentation-updated", kind: "info-description-changed", path: "/info/description" });
   }

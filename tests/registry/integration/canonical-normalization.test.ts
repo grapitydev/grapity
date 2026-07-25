@@ -33,7 +33,8 @@ describe("Canonical normalization on push", () => {
     const stored = await app.request("/v1/specs/ordered-api/spec.json");
     const body = await stored.json();
     expect(Object.keys(body)).toEqual(["openapi", "info", "a", "z"]);
-    expect(Object.keys(body.info)).toEqual(["a", "z"]);
+    // info.version is added by the registry stamp (assigned version 1.0.0)
+    expect(Object.keys(body.info)).toEqual(["a", "version", "z"]);
   });
 
   it("produces identical checksums for same spec with different key ordering", async () => {
@@ -53,13 +54,15 @@ describe("Canonical normalization on push", () => {
       openapi: "3.1.0",
     });
 
-    const { res: res1, body: body1 } = await pushSpec(app, { content: spec1, name: "same-api" });
+    // Pushed as separate specs so both are stamped with the same assigned
+    // version (1.0.0): the checksum covers the stamped, normalized document.
+    const { res: res1, body: body1 } = await pushSpec(app, { content: spec1, name: "same-api-a" });
     expect(res1.status).toBe(201);
     const checksum1 = body1.data.version.checksum;
 
-    const { res: res2, body: body2 } = await pushSpec(app, { content: spec2, name: "same-api" });
-    expect(res2.status).toBe(201); // No changes detected, patch bump
-    expect(body2.data.version.semver).toBe("1.0.1");
+    const { res: res2, body: body2 } = await pushSpec(app, { content: spec2, name: "same-api-b" });
+    expect(res2.status).toBe(201);
+    expect(body2.data.version.semver).toBe("1.0.0");
     expect(body2.data.version.checksum).toBe(checksum1);
   });
 

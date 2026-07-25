@@ -28,7 +28,7 @@ export interface paths {
         put?: never;
         /**
          * Push a spec version
-         * @description Push a new spec version to the registry. On the first push for a given name, the spec is created. On subsequent pushes, the spec is diffed against the previous version. Breaking changes are blocked unless `force: true` is provided with a reason.
+         * @description Push a new spec version to the registry. On the first push for a given name, the spec is created. On subsequent pushes, the spec is diffed against the previous version. Breaking changes are blocked unless `force: true` is provided with a reason. The registry assigns the version number and rewrites `info.version` inside the stored document to match it; the pushed `info.version` value is discarded.
          */
         post: operations["pushSpec"];
         delete?: never;
@@ -124,7 +124,7 @@ export interface paths {
         };
         /**
          * Get the latest spec as JSON
-         * @description Returns the latest version of the spec document as a parsed JSON object. The spec is converted to JSON regardless of the format it was pushed in. Content-Type reflects the spec type (OpenAPI or AsyncAPI).
+         * @description Returns the latest version of the spec document as a parsed JSON object. The spec is converted to JSON regardless of the format it was pushed in. Content-Type reflects the spec type (OpenAPI or AsyncAPI). The document's `info.version` is the registry-assigned version, rewritten at push time.
          */
         get: operations["getSpecJson"];
         put?: never;
@@ -144,7 +144,7 @@ export interface paths {
         };
         /**
          * Get the latest spec as YAML
-         * @description Returns the latest version of the spec document as YAML text. The spec is converted to YAML regardless of the format it was pushed in. Content-Type reflects the spec type (OpenAPI or AsyncAPI).
+         * @description Returns the latest version of the spec document as YAML text. The spec is converted to YAML regardless of the format it was pushed in. Content-Type reflects the spec type (OpenAPI or AsyncAPI). The document's `info.version` is the registry-assigned version, rewritten at push time.
          */
         get: operations["getSpecYaml"];
         put?: never;
@@ -162,7 +162,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get a specific version as JSON */
+        /**
+         * Get a specific version as JSON
+         * @description Returns the requested version of the spec document as a parsed JSON object. The document's `info.version` equals the registry-assigned `{semver}` in the path.
+         */
         get: operations["getVersionSpecJson"];
         put?: never;
         post?: never;
@@ -179,7 +182,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get a specific version as YAML */
+        /**
+         * Get a specific version as YAML
+         * @description Returns the requested version of the spec document as YAML text. The document's `info.version` equals the registry-assigned `{semver}` in the path.
+         */
         get: operations["getVersionSpecYaml"];
         put?: never;
         post?: never;

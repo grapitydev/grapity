@@ -2,6 +2,7 @@ import { v4 as uuid } from "uuid";
 import type { Spec, SpecVersion, SpecStore, SpecFilters, CompatReport } from "core";
 import { computeChecksum } from "../utils";
 import { normalizeSpec } from "../utils/normalize-spec";
+import { stampInfoVersion } from "../utils/stamp-info-version";
 import { parseOpenApiSpec } from "../parser/openapi/parse";
 import { diffSpecs } from "../compat-engine/differ";
 import { checkGracePeriod } from "../compat-engine/grace-period";
@@ -52,7 +53,6 @@ export class RegistryService {
 
     const isOpenApi = (options?.type ?? "openapi") === "openapi";
     const normalized = isOpenApi ? normalizeSpec(content) : content;
-    const checksum = computeChecksum(normalized);
 
     let spec: Spec;
     let compatReport: CompatReport | undefined;
@@ -126,11 +126,20 @@ export class RegistryService {
       }
     }
 
+    // The registry owns the document version: info.version is rewritten to
+    // the assigned semver before storage. The diff above ran against the
+    // unstamped candidate. OpenAPI content is normalized again after
+    // stamping so the stored document stays in canonical key order.
+    const stamped = isOpenApi
+      ? normalizeSpec(stampInfoVersion(content, semver))
+      : stampInfoVersion(normalized, semver);
+    const checksum = computeChecksum(stamped);
+
     const version: SpecVersion = {
       id: uuid(),
       specId: spec.id,
       semver,
-      content: normalized,
+      content: stamped,
       checksum,
       gitRef: options?.gitRef,
       pushedBy: options?.pushedBy,

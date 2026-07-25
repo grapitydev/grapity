@@ -73,7 +73,7 @@
     "build:demo": "tsup --config tsup.demo.config.ts",
     "dev": "bun run src/cli/index.ts",
     "dev:hub": "vite",
-    "dev:registry": "node --import tsx/esm src/registry/standalone.ts",
+    "dev:registry": "bun --watch src/registry/standalone.ts",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "generate": "bun run scripts/generate-types.ts",

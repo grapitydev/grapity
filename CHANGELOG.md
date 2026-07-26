@@ -4,6 +4,19 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.12.0](https://github.com/grapitydev/grapity/compare/v0.11.0...v0.12.0) (2026-07-26)
+
+
+### Features
+
+* public specs with anonymous hub browsing, production server image, and registry GitHub Action ([ef7c73b](https://github.com/grapitydev/grapity/commit/ef7c73b1203efd2fcb68dd02d0b2dc5da2898c89))
+* stamp info.version with the assigned version on push ([c70e4a3](https://github.com/grapitydev/grapity/commit/c70e4a3edf8c914b7d1749c3a2dedde5295fb8fc))
+
+
+### Bug Fixes
+
+* run dev:registry under bun so the sqlite driver alias resolves ([af62e88](https://github.com/grapitydev/grapity/commit/af62e88f7669742953c07d57e29921df8d4db1f4))
+
 ## [0.11.0](https://github.com/grapitydev/grapity/compare/v0.10.0...v0.11.0) (2026-07-22)
 
 

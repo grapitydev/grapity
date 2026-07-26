@@ -304,8 +304,9 @@ export function formatSpec(spec: Spec & { latestVersion?: SpecVersion }): string
   const tags = spec.tags.length > 0 ? c.primary(spec.tags.join(", ")) : c.dim("no tags");
   const owner = spec.owner ? c.primary(spec.owner) : c.dim("unknown");
   const latest = spec.latestVersion ? c.accent(spec.latestVersion.semver) : c.dim("no version");
+  const visibility = spec.visibility === "public" ? c.success("public") : c.dim("private");
   return [
-    `  ${c.accentDim("▸")} ${name}  ${type}`,
+    `  ${c.accentDim("▸")} ${name}  ${type}  ${visibility}`,
     `    ${c.label("Owner")}  ${owner}    ${c.label("Tags")}  ${tags}`,
     `    ${c.label("Latest")}  ${latest}`,
   ].join("\n");
@@ -367,6 +368,7 @@ export function formatSpecDetail(spec: Spec, latestVersion?: SpecVersion): strin
   if (spec.owner)       lines.push(labelLine("Owner",       c.primary(spec.owner)));
   if (spec.sourceRepo)  lines.push(labelLine("Source",      c.primary(spec.sourceRepo)));
   if (spec.tags.length > 0) lines.push(labelLine("Tags",   c.primary(spec.tags.join(", "))));
+  lines.push(labelLine("Visibility", spec.visibility === "public" ? c.success("public") : c.dim("private")));
   lines.push(labelLine("Created", c.dim(String(spec.createdAt))));
 
   lines.push("");
@@ -388,6 +390,11 @@ export function formatSpecDetail(spec: Spec, latestVersion?: SpecVersion): strin
 
 export function formatDeleteSuccess(name: string): string {
   return `  ${c.success("✓")}  Deleted spec ${c.accent(name)} and all versions`;
+}
+
+export function formatUpdatedSpec(spec: Spec): string {
+  const visibility = spec.visibility === "public" ? c.success("public") : c.dim("private");
+  return `  ${c.success("✓")}  Updated spec ${c.accent(spec.name)}  ${c.label("Visibility")}  ${visibility}`;
 }
 
 export function formatError(descriptor: string, message: string, hints: string[] = []): string {

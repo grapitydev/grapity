@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Moon, Sun, LogOut } from "lucide-react";
+import { Moon, Sun, LogOut, LogIn } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import { useConfig } from "../../context/ConfigContext";
@@ -7,7 +7,7 @@ import { GrapityLogo, GrapityWordmark } from "../branding/Logo";
 
 export function Header() {
   const { theme, toggle } = useTheme();
-  const { isAuthenticated, isLoading, logout } = useAuth();
+  const { isAuthenticated, isLoading, login, logout } = useAuth();
   const { auth } = useConfig();
 
   return (
@@ -26,6 +26,15 @@ export function Header() {
             >
               <LogOut className="h-4 w-4" />
               Sign out
+            </button>
+          )}
+          {auth && !isLoading && !isAuthenticated && (
+            <button
+              onClick={login}
+              className="flex items-center gap-2 rounded-sm px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary hover:bg-surface-hover"
+            >
+              <LogIn className="h-4 w-4" />
+              Sign in
             </button>
           )}
           <button

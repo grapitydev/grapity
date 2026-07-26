@@ -35,6 +35,7 @@ export class RegistryService {
       owner?: string;
       sourceRepo?: string;
       tags?: string[];
+      visibility?: Spec["visibility"];
       gitRef?: string;
       pushedBy?: string;
       prerelease?: boolean;
@@ -68,12 +69,16 @@ export class RegistryService {
         owner: options?.owner,
         sourceRepo: options?.sourceRepo,
         tags: options?.tags ?? [],
+        visibility: options?.visibility ?? "private",
         createdAt: new Date(),
         updatedAt: new Date(),
       };
       semver = prerelease ? "0.1.0" : "1.0.0";
     } else {
-      spec = existingSpec;
+      spec = {
+        ...existingSpec,
+        visibility: options?.visibility ?? existingSpec.visibility,
+      };
       const latestVersion = await this.store.getLatestVersion(name);
 
       if (prerelease && latestVersion && !latestVersion.isPrerelease) {
@@ -245,6 +250,20 @@ export class RegistryService {
       await this.store.logAudit("spec.delete", actor ?? "unknown", name, undefined, {});
     }
     return deleted;
+  }
+
+  async updateSpec(
+    name: string,
+    update: { visibility?: Spec["visibility"] },
+    actor?: string
+  ): Promise<Spec | null> {
+    const updated = await this.store.updateSpec(name, update);
+    if (updated && update.visibility) {
+      await this.store.logAudit("spec.update", actor ?? "unknown", name, undefined, {
+        visibility: update.visibility,
+      });
+    }
+    return updated;
   }
 
   private bumpRelease(current: string, classification: VersionClassification | "initial"): string {

@@ -1,4 +1,4 @@
-import type { Spec, SpecType } from "./spec";
+import type { Spec, SpecType, SpecVisibility } from "./spec";
 import type { SpecVersion } from "./spec-version";
 import type {
   CompatReport,
@@ -28,7 +28,7 @@ import type {
 } from "./gateway-log";
 
 // Re-export domain types
-export type { Spec, SpecType } from "./spec";
+export type { Spec, SpecType, SpecVisibility } from "./spec";
 export type { SpecVersion } from "./spec-version";
 export type {
   CompatReport,
@@ -36,7 +36,7 @@ export type {
   SafeChange,
   VersionClassification,
 } from "./compat-report";
-export type { SpecStore, SpecFilters, AuditAction } from "./spec-store";
+export type { SpecStore, SpecFilters, SpecUpdate, AuditAction } from "./spec-store";
 export type {
   GatewayConfig,
   GatewayConfigVersion,
@@ -57,7 +57,7 @@ export type {
   CallerIdentificationRule as LogCallerIdentificationRule,
 } from "./gateway-log";
 
-// Generated API types from openapi.yaml — these use string for dates (correct for JSON boundaries)
+// Generated API types from specs/grapity-registry.yaml — these use string for dates (correct for JSON boundaries)
 export type { paths, operations, components } from "./generated/api";
 
 // Convenience aliases
@@ -85,6 +85,8 @@ export interface AuditLogEntry {
 import type { components } from "./generated/api";
 export type PushSpecRequest = components["schemas"]["PushSpecRequest"];
 export type PushSpecResponse = components["schemas"]["PushSpecResponse"];
+export type UpdateSpecRequest = components["schemas"]["UpdateSpecRequest"];
+export type UpdateSpecResponse = components["schemas"]["UpdateSpecResponse"];
 export type ValidateSpecRequest = components["schemas"]["ValidateSpecRequest"];
 export type ValidateSpecResponse = components["schemas"]["ValidateSpecResponse"];
 export type ListSpecsResponse = components["schemas"]["ListSpecsResponse"];

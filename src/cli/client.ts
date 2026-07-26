@@ -9,6 +9,8 @@ import type {
   GetVersionResponse,
   GetCompatReportResponse,
   HealthResponse,
+  UpdateSpecRequest,
+  UpdateSpecResponse,
   PushGatewayConfigRequest,
   PushGatewayConfigResponse,
   ListGatewayConfigsResponse,
@@ -119,6 +121,11 @@ export const client = {
 
   getSpec: async (name: string) => {
     const res = await request<GetSpecResponse>("GET", `/v1/specs/${name}`);
+    return res.data;
+  },
+
+  updateSpec: async (name: string, data: UpdateSpecRequest) => {
+    const res = await request<UpdateSpecResponse>("PATCH", `/v1/specs/${name}`, data);
     return res.data;
   },
 

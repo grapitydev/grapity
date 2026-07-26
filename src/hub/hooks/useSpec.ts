@@ -17,7 +17,7 @@ export function useSpec(name: string) {
     client
       .getSpec(name)
       .then((data) => {
-        setSpec(data.spec);
+        setSpec({ ...data.spec, visibility: data.spec.visibility as Spec["visibility"] });
         setLatestVersion(data.latestVersion ?? null);
       })
       .catch(setError)

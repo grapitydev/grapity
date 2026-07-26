@@ -9,6 +9,7 @@ export const specs = pgTable("specs", {
   owner: text("owner"),
   sourceRepo: text("source_repo"),
   tags: jsonb("tags").$type<string[]>().default([]),
+  visibility: text("visibility", { enum: ["private", "public"] as [string, ...string[]] }).notNull().default("private"),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 });
@@ -33,7 +34,7 @@ export const specVersions = pgTable("spec_versions", {
 
 export const auditLog = pgTable("audit_log", {
   id: text("id").primaryKey(),
-  action: text("action", { enum: ["spec.push", "spec.push.force", "spec.delete"] as [string, ...string[]] }).notNull(),
+  action: text("action", { enum: ["spec.push", "spec.push.force", "spec.delete", "spec.update"] as [string, ...string[]] }).notNull(),
   actor: text("actor").notNull(),
   specName: text("spec_name").notNull(),
   version: text("version"),

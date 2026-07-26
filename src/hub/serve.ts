@@ -18,6 +18,7 @@ export interface HubConfig {
   port?: number;
   registryUrl?: string;
   publicRegistryUrl?: string;
+  proxyRegistryUrl?: string;
   auth?: HubAuthConfig;
 }
 
@@ -43,10 +44,14 @@ function injectConfigScript(html: string): string {
 export async function startHubServer(userConfig?: Partial<HubConfig>): Promise<RunningHubServer> {
   const config = {
     port: userConfig?.port ?? DEFAULT_PORT,
-    registryUrl: userConfig?.publicRegistryUrl ?? userConfig?.registryUrl ?? DEFAULT_REGISTRY_URL,
+    registryUrl:
+      userConfig?.publicRegistryUrl ??
+      (userConfig?.proxyRegistryUrl
+        ? ""
+        : (userConfig?.registryUrl ?? DEFAULT_REGISTRY_URL)),
     proxyUrl: userConfig?.publicRegistryUrl
       ? undefined
-      : (userConfig?.registryUrl ?? DEFAULT_REGISTRY_URL),
+      : (userConfig?.proxyRegistryUrl ?? userConfig?.registryUrl ?? DEFAULT_REGISTRY_URL),
     auth: userConfig?.auth,
   };
 

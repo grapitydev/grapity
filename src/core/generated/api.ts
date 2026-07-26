@@ -23,7 +23,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List all specs */
+        /**
+         * List all specs
+         * @description Anonymous access: requests without a token receive only specs whose visibility is "public". Authenticated requests receive all specs.
+         */
         get: operations["listSpecs"];
         put?: never;
         /**
@@ -44,7 +47,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get a spec and its latest version */
+        /**
+         * Get a spec and its latest version
+         * @description Anonymous access: requests without a token are allowed when the spec's visibility is "public". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.
+         */
         get: operations["getSpec"];
         put?: never;
         post?: never;
@@ -55,7 +61,11 @@ export interface paths {
         delete: operations["deleteSpec"];
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update spec metadata
+         * @description Updates mutable spec metadata. Currently supports changing `visibility` to publish or unpublish anonymous read access. Changes take effect immediately and do not create a new version.
+         */
+        patch: operations["updateSpec"];
         trace?: never;
     };
     "/v1/specs/{name}/validate": {
@@ -87,7 +97,7 @@ export interface paths {
         };
         /**
          * List all versions of a spec
-         * @description Returns versions ordered newest first.
+         * @description Returns versions ordered newest first. Anonymous access: requests without a token are allowed when the spec's visibility is "public". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.
          */
         get: operations["listVersions"];
         put?: never;
@@ -105,7 +115,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get a specific version */
+        /**
+         * Get a specific version
+         * @description Anonymous access: requests without a token are allowed when the spec's visibility is "public". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.
+         */
         get: operations["getVersion"];
         put?: never;
         post?: never;
@@ -124,7 +137,7 @@ export interface paths {
         };
         /**
          * Get the latest spec as JSON
-         * @description Returns the latest version of the spec document as a parsed JSON object. The spec is converted to JSON regardless of the format it was pushed in. Content-Type reflects the spec type (OpenAPI or AsyncAPI). The document's `info.version` is the registry-assigned version, rewritten at push time.
+         * @description Returns the latest version of the spec document as a parsed JSON object. The spec is converted to JSON regardless of the format it was pushed in. Content-Type reflects the spec type (OpenAPI or AsyncAPI). The document's `info.version` is the registry-assigned version, rewritten at push time. Anonymous access: requests without a token are allowed when the spec's visibility is "public". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.
          */
         get: operations["getSpecJson"];
         put?: never;
@@ -144,7 +157,7 @@ export interface paths {
         };
         /**
          * Get the latest spec as YAML
-         * @description Returns the latest version of the spec document as YAML text. The spec is converted to YAML regardless of the format it was pushed in. Content-Type reflects the spec type (OpenAPI or AsyncAPI). The document's `info.version` is the registry-assigned version, rewritten at push time.
+         * @description Returns the latest version of the spec document as YAML text. The spec is converted to YAML regardless of the format it was pushed in. Content-Type reflects the spec type (OpenAPI or AsyncAPI). The document's `info.version` is the registry-assigned version, rewritten at push time. Anonymous access: requests without a token are allowed when the spec's visibility is "public". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.
          */
         get: operations["getSpecYaml"];
         put?: never;
@@ -164,7 +177,7 @@ export interface paths {
         };
         /**
          * Get a specific version as JSON
-         * @description Returns the requested version of the spec document as a parsed JSON object. The document's `info.version` equals the registry-assigned `{semver}` in the path.
+         * @description Returns the requested version of the spec document as a parsed JSON object. The document's `info.version` equals the registry-assigned `{semver}` in the path. Anonymous access: requests without a token are allowed when the spec's visibility is "public". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.
          */
         get: operations["getVersionSpecJson"];
         put?: never;
@@ -184,7 +197,7 @@ export interface paths {
         };
         /**
          * Get a specific version as YAML
-         * @description Returns the requested version of the spec document as YAML text. The document's `info.version` equals the registry-assigned `{semver}` in the path.
+         * @description Returns the requested version of the spec document as YAML text. The document's `info.version` equals the registry-assigned `{semver}` in the path. Anonymous access: requests without a token are allowed when the spec's visibility is "public". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.
          */
         get: operations["getVersionSpecYaml"];
         put?: never;
@@ -204,7 +217,7 @@ export interface paths {
         };
         /**
          * Get the compatibility report for a version
-         * @description Returns the compatibility report generated when this version was pushed. Not available for the first version of a spec (no previous version to diff against).
+         * @description Returns the compatibility report generated when this version was pushed. Not available for the first version of a spec (no previous version to diff against). Anonymous access: requests without a token are allowed when the spec's visibility is "public". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.
          */
         get: operations["getCompatReport"];
         put?: never;
@@ -224,7 +237,7 @@ export interface paths {
         };
         /**
          * Compare two versions of a spec
-         * @description Returns an incremental comparison between two versions. All versions between the two endpoints are included, ordered oldest to newest. The response contains the precomputed compatibility report for each step.
+         * @description Returns an incremental comparison between two versions. All versions between the two endpoints are included, ordered oldest to newest. The response contains the precomputed compatibility report for each step. Anonymous access: requests without a token are allowed when the spec's visibility is "public". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.
          */
         get: operations["compareVersions"];
         put?: never;
@@ -431,6 +444,11 @@ export interface components {
              */
             tags: string[];
             /**
+             * @description Controls anonymous read access. Treat as an open string — new values may be added as access models evolve. Known values: "private" (authenticated reads only), "public" (anonymous reads allowed for this spec's metadata, versions, content, and compatibility reports). Defaults to "private" on first push.
+             * @example public
+             */
+            visibility: string;
+            /**
              * Format: date-time
              * @example 2026-04-25T10:30:00.000Z
              */
@@ -603,6 +621,11 @@ export interface components {
              */
             tags?: string[];
             /**
+             * @description Spec visibility. Known values: "private", "public". Applied on create; on subsequent pushes, supplying it updates the spec's visibility, omitting it leaves visibility unchanged. Default: "private".
+             * @example public
+             */
+            visibility?: string;
+            /**
              * @description Git commit SHA
              * @example a1b2c3d4
              */
@@ -635,6 +658,18 @@ export interface components {
                 isNewSpec: boolean;
                 spec: components["schemas"]["Spec"];
                 version: components["schemas"]["SpecVersion"];
+            };
+        };
+        UpdateSpecRequest: {
+            /**
+             * @description New spec visibility. Known values: "private", "public". Changes take effect immediately and do not create a new version.
+             * @example public
+             */
+            visibility: string;
+        };
+        UpdateSpecResponse: {
+            data: {
+                spec: components["schemas"]["Spec"];
             };
         };
         ValidateSpecRequest: {
@@ -1226,6 +1261,78 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Forbidden - missing required scope */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Spec not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    updateSpec: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description URL-friendly spec identifier */
+                name: components["parameters"]["specName"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateSpecRequest"];
+            };
+        };
+        responses: {
+            /** @description Spec updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UpdateSpecResponse"];
+                };
+            };
+            /** @description Missing or unknown visibility value */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
             /** @description Unauthorized */
             401: {

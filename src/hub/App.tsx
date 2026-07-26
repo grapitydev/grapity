@@ -1,7 +1,7 @@
 import { Routes, Route, Outlet, useSearchParams } from "react-router-dom";
 import { useMemo, useCallback } from "react";
-import { ConfigProvider, useConfig } from "./context/ConfigContext";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ConfigProvider } from "./context/ConfigContext";
+import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { SpecExplorerProvider } from "./context/SpecExplorerContext";
 import { AuthGuard } from "./components/auth/AuthGuard";
@@ -33,9 +33,7 @@ function AppRoutes() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const filters = useMemo(() => parseFilters(searchParams), [searchParams]);
-  const { auth } = useConfig();
-  const { isAuthenticated } = useAuth();
-  const { specs, loading, error } = useSpecs({}, !auth || isAuthenticated);
+  const { specs, loading, error } = useSpecs({}, true);
 
   const setFilters = useCallback(
     (next: Filters) => {

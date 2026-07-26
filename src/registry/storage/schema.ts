@@ -9,6 +9,7 @@ export const specs = sqliteTable("specs", {
   owner: text("owner"),
   sourceRepo: text("source_repo"),
   tags: text("tags", { mode: "json" }).$type<string[]>().default([]),
+  visibility: text("visibility", { enum: ["private", "public"] }).notNull().default("private"),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
@@ -33,7 +34,7 @@ export const specVersions = sqliteTable("spec_versions", {
 
 export const auditLog = sqliteTable("audit_log", {
   id: text("id").primaryKey(),
-  action: text("action", { enum: ["spec.push", "spec.push.force", "spec.delete"] }).notNull(),
+  action: text("action", { enum: ["spec.push", "spec.push.force", "spec.delete", "spec.update"] }).notNull(),
   actor: text("actor").notNull(),
   specName: text("spec_name").notNull(),
   version: text("version"),

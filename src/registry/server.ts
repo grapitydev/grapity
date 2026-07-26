@@ -7,6 +7,7 @@ import { pushRoute } from "./routes/push";
 import { validateRoute } from "./routes/validate";
 import { listRoute } from "./routes/list";
 import { getSpecRoute } from "./routes/get-spec";
+import { updateSpecRoute } from "./routes/update-spec";
 import { deleteSpecRoute } from "./routes/delete-spec";
 import { versionsRoute } from "./routes/versions";
 import { getVersionRoute } from "./routes/get-version";
@@ -34,6 +35,7 @@ export type AppEnv = {
     config: ServerConfig;
     actor?: string;
     claims?: Record<string, unknown>;
+    anonymous?: boolean;
   };
 };
 
@@ -63,7 +65,7 @@ export function createApp(config: ServerConfig, store: SpecStore & GatewayConfig
     if (err instanceof AuthError) {
       return c.json(
         { error: err.code, message: err.message, statusCode: err.statusCode },
-        err.statusCode as 401 | 403
+        err.statusCode as 401 | 403 | 404
       );
     }
     console.error("Unhandled error:", err);
@@ -77,6 +79,7 @@ export function createApp(config: ServerConfig, store: SpecStore & GatewayConfig
   app.route("/v1/specs", validateRoute);
   app.route("/v1/specs", listRoute);
   app.route("/v1/specs", getSpecRoute);
+  app.route("/v1/specs", updateSpecRoute);
   app.route("/v1/specs", deleteSpecRoute);
   app.route("/v1/specs", versionsRoute);
   app.route("/v1/specs", getVersionRoute);

@@ -1,0 +1,67 @@
+name: Registry dogfood
+
+# Grapity on Grapity: our own registry API contract (specs/grapity-registry.yaml)
+# is validated on pull requests and pushed to our public registry on merge,
+# through the same composite action we ship to users (./actions/registry).
+#
+# Both jobs stay inert until the canonical instance exists: they run only when
+# the GRAPITY_REGISTRY_URL repository variable is set, which is also the
+# registry URL they target.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - specs/**
+      - actions/registry/**
+      - .github/workflows/registry-dogfood.yml
+  push:
+    branches: [main]
+    paths:
+      - specs/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    # Fork pull requests never receive repository secrets (GitHub limitation),
+    # so external contributions skip validation instead of failing on a
+    # missing client secret. Maintainers can validate locally with the CLI.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && vars.GRAPITY_REGISTRY_URL != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate against the registry
+        uses: ./actions/registry
+        with:
+          command: validate
+          spec: specs/grapity-registry.yaml
+          name: grapity-registry
+          registry-url: ${{ vars.GRAPITY_REGISTRY_URL }}
+          keycloak-server-url: https://keycloak.grapity.dev
+          realm: grapity
+          client-id: grapity-ci
+          client-secret: ${{ secrets.GRAPITY_CI_CLIENT_SECRET }}
+
+  push:
+    if: github.event_name == 'push' && vars.GRAPITY_REGISTRY_URL != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Push to the registry
+        uses: ./actions/registry
+        with:
+          command: push
+          spec: specs/grapity-registry.yaml
+          name: grapity-registry
+          visibility: public
+          pushed-by: github-actions[bot]
+          registry-url: ${{ vars.GRAPITY_REGISTRY_URL }}
+          keycloak-server-url: https://keycloak.grapity.dev
+          realm: grapity
+          client-id: grapity-ci
+          client-secret: ${{ secrets.GRAPITY_CI_CLIENT_SECRET }}

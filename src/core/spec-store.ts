@@ -1,8 +1,12 @@
-import type { Spec, SpecType } from "./spec";
+import type { Spec, SpecType, SpecVisibility } from "./spec";
 import type { SpecVersion } from "./spec-version";
 import type { CompatReport } from "./compat-report";
 
-export type AuditAction = "spec.push" | "spec.push.force" | "spec.delete";
+export type AuditAction = "spec.push" | "spec.push.force" | "spec.delete" | "spec.update";
+
+export interface SpecUpdate {
+  visibility?: SpecVisibility;
+}
 
 export interface SpecStore {
   getSpec(name: string): Promise<Spec | null>;
@@ -14,6 +18,7 @@ export interface SpecStore {
     options?: { limit?: number; offset?: number }
   ): Promise<{ versions: SpecVersion[]; total: number }>;
   pushSpecVersion(spec: Spec, version: SpecVersion): Promise<SpecVersion>;
+  updateSpec(name: string, update: SpecUpdate): Promise<Spec | null>;
   deleteSpec(name: string): Promise<boolean>;
   getCompatReport(
     name: string,
@@ -32,4 +37,5 @@ export interface SpecFilters {
   type?: SpecType;
   owner?: string;
   tags?: string[];
+  visibility?: SpecVisibility;
 }

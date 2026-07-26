@@ -38,6 +38,7 @@ const sampleSpecs: SpecListItem[] = [
     type: "openapi" as const,
     owner: "platform-team",
     tags: ["payments", "public"],
+    visibility: "private",
     createdAt: new Date(),
     updatedAt: new Date(),
     latestVersion: {
@@ -61,6 +62,7 @@ const sampleSpecs: SpecListItem[] = [
     type: "openapi" as const,
     owner: "payments-team",
     tags: ["internal"],
+    visibility: "private",
     createdAt: new Date(),
     updatedAt: new Date(),
   },

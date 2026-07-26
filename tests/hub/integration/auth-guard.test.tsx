@@ -39,17 +39,18 @@ afterEach(() => {
   localStorage.clear();
 });
 
-describe("AuthGuard — login landing page", () => {
-  test("shows Keycloak login page when auth is configured and user is not authenticated", async () => {
+describe("AuthGuard — anonymous browsing", () => {
+  test("renders the spec list anonymously when auth is configured and no session exists", async () => {
+    mockFetchJson({ data: [] });
+
     render(<App />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByText(/Explore and manage your API specs/i)).toBeTruthy();
+      expect(screen.getByText(/Browse All Specs/i)).toBeTruthy();
     });
 
-    expect(screen.getByRole("button", { name: /Sign in with Keycloak/i })).toBeTruthy();
-    expect(screen.queryByText(/Failed to load specs/i)).toBeNull();
-    expect(screen.queryByText(/Browse All Specs/i)).toBeNull();
+    expect(screen.getByRole("button", { name: /^Sign in$/i })).toBeTruthy();
+    expect(screen.queryByText(/Sign in with Keycloak/i)).toBeNull();
   });
 
   test("shows spec list when auth is not configured", async () => {
@@ -62,10 +63,10 @@ describe("AuthGuard — login landing page", () => {
       expect(screen.getByText(/Browse All Specs/i)).toBeTruthy();
     });
 
-    expect(screen.queryByText(/Sign in to Grapity Hub/i)).toBeNull();
+    expect(screen.queryByRole("button", { name: /Sign in/i })).toBeNull();
   });
 
-  test("shows a redirecting state after clicking the sign-in button", async () => {
+  test("initiates the Keycloak login flow when clicking Sign in", async () => {
     const originalLocation = window.location;
     Object.defineProperty(window, "location", {
       configurable: true,
@@ -82,20 +83,17 @@ describe("AuthGuard — login landing page", () => {
       },
     });
 
+    mockFetchJson({ data: [] });
     render(<App />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByText(/Explore and manage your API specs/i)).toBeTruthy();
+      expect(screen.getByText(/Browse All Specs/i)).toBeTruthy();
     });
 
-    const button = screen.getByRole("button", { name: /Sign in with Keycloak/i });
-    fireEvent.click(button);
+    fireEvent.click(screen.getByRole("button", { name: /^Sign in$/i }));
 
-    await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Redirecting/i })).toBeTruthy();
-    });
-
-    expect((screen.getByRole("button", { name: /Redirecting/i }) as HTMLButtonElement).disabled).toBe(true);
+    expect(localStorage.getItem("grapity_pkce_verifier")).toBeTruthy();
+    expect(localStorage.getItem("grapity_oidc_state")).toBeTruthy();
 
     Object.defineProperty(window, "location", {
       configurable: true,

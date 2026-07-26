@@ -9,6 +9,7 @@ import { useSpecExplorer } from "../context/SpecExplorerContext";
 import { parseOpenAPI } from "../lib/parseOpenAPI";
 import { VersionDetail } from "../components/version/VersionDetail";
 import { VersionBadge } from "../components/spec/VersionBadge";
+import { ErrorState } from "../components/feedback/ErrorState";
 import { Badge } from "../components/ui/badge";
 import { Tag, User, ExternalLink } from "lucide-react";
 
@@ -36,12 +37,7 @@ export function VersionPage() {
   }, [setEndpoints]);
 
   if (versionError) {
-    return (
-      <div className="rounded-lg border border-accent-rose/20 bg-accent-rose/5 p-6">
-        <p className="text-sm text-accent-rose mb-2">Failed to load version</p>
-        <p className="text-xs text-text-secondary">{versionError.message}</p>
-      </div>
-    );
+    return <ErrorState title="Failed to load version" message={versionError.message} />;
   }
 
   if (versionLoading || !version) {

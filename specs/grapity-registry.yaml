@@ -138,6 +138,7 @@
           "specs"
         ],
         "summary": "List all specs",
+        "description": "Anonymous access: requests without a token receive only specs whose visibility is \"public\". Authenticated requests receive all specs.\n",
         "parameters": [
           {
             "name": "type",
@@ -302,7 +303,8 @@
             "keycloak": [
               "specs:read"
             ]
-          }
+          },
+          {}
         ]
       },
       "post": {
@@ -568,6 +570,7 @@
           "specs"
         ],
         "summary": "Get a spec and its latest version",
+        "description": "Anonymous access: requests without a token are allowed when the spec's visibility is \"public\". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/specName"
@@ -704,7 +707,8 @@
             "keycloak": [
               "specs:read"
             ]
-          }
+          },
+          {}
         ]
       },
       "delete": {
@@ -796,6 +800,180 @@
                       "error": "forbidden",
                       "message": "Missing required scope: specs:write",
                       "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "keycloak": [
+              "specs:write"
+            ]
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "updateSpec",
+        "tags": [
+          "specs"
+        ],
+        "summary": "Update spec metadata",
+        "description": "Updates mutable spec metadata. Currently supports changing `visibility` to publish or unpublish anonymous read access. Changes take effect immediately and do not create a new version.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/specName"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSpecRequest"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "visibility": "public"
+                  },
+                  "summary": "Default"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Spec updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateSpecResponse"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "data": {
+                        "spec": {
+                          "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "name": "payments-api",
+                          "type": "openapi",
+                          "description": "Payments service API",
+                          "owner": "platform-team",
+                          "sourceRepo": "https://github.com/acme/payments-service",
+                          "tags": [
+                            "payments",
+                            "public"
+                          ],
+                          "visibility": "public",
+                          "createdAt": "2026-04-25T10:30:00.000Z",
+                          "updatedAt": "2026-06-07T14:00:00.000Z"
+                        }
+                      }
+                    },
+                    "summary": "Default"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or unknown visibility value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "bad_request",
+                      "message": "Missing required field: visibility",
+                      "statusCode": 400
+                    },
+                    "summary": "Default"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "unauthorized",
+                      "message": "Invalid or missing bearer token",
+                      "statusCode": 401
+                    },
+                    "summary": "Default"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - missing required scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "forbidden",
+                      "message": "Missing required scope: specs:write",
+                      "statusCode": 403
+                    },
+                    "summary": "Default"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Spec not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "not_found",
+                      "message": "Spec \"payments-api\" not found",
+                      "statusCode": 404
+                    },
+                    "summary": "Default"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "error": "internal_error",
+                      "message": "Internal server error",
+                      "statusCode": 500
                     },
                     "summary": "Default"
                   }
@@ -997,7 +1175,7 @@
           "specs"
         ],
         "summary": "List all versions of a spec",
-        "description": "Returns versions ordered newest first.",
+        "description": "Returns versions ordered newest first. Anonymous access: requests without a token are allowed when the spec's visibility is \"public\". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/specName"
@@ -1158,7 +1336,8 @@
             "keycloak": [
               "specs:read"
             ]
-          }
+          },
+          {}
         ]
       }
     },
@@ -1169,6 +1348,7 @@
           "specs"
         ],
         "summary": "Get a specific version",
+        "description": "Anonymous access: requests without a token are allowed when the spec's visibility is \"public\". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/specName"
@@ -1292,7 +1472,8 @@
             "keycloak": [
               "specs:read"
             ]
-          }
+          },
+          {}
         ]
       }
     },
@@ -1303,7 +1484,7 @@
           "specs"
         ],
         "summary": "Get the latest spec as JSON",
-        "description": "Returns the latest version of the spec document as a parsed JSON object. The spec is converted to JSON regardless of the format it was pushed in. Content-Type reflects the spec type (OpenAPI or AsyncAPI). The document's `info.version` is the registry-assigned version, rewritten at push time.\n",
+        "description": "Returns the latest version of the spec document as a parsed JSON object. The spec is converted to JSON regardless of the format it was pushed in. Content-Type reflects the spec type (OpenAPI or AsyncAPI). The document's `info.version` is the registry-assigned version, rewritten at push time. Anonymous access: requests without a token are allowed when the spec's visibility is \"public\". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/specName"
@@ -1411,7 +1592,8 @@
             "keycloak": [
               "specs:read"
             ]
-          }
+          },
+          {}
         ]
       }
     },
@@ -1422,7 +1604,7 @@
           "specs"
         ],
         "summary": "Get the latest spec as YAML",
-        "description": "Returns the latest version of the spec document as YAML text. The spec is converted to YAML regardless of the format it was pushed in. Content-Type reflects the spec type (OpenAPI or AsyncAPI). The document's `info.version` is the registry-assigned version, rewritten at push time.\n",
+        "description": "Returns the latest version of the spec document as YAML text. The spec is converted to YAML regardless of the format it was pushed in. Content-Type reflects the spec type (OpenAPI or AsyncAPI). The document's `info.version` is the registry-assigned version, rewritten at push time. Anonymous access: requests without a token are allowed when the spec's visibility is \"public\". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/specName"
@@ -1530,7 +1712,8 @@
             "keycloak": [
               "specs:read"
             ]
-          }
+          },
+          {}
         ]
       }
     },
@@ -1541,7 +1724,7 @@
           "specs"
         ],
         "summary": "Get a specific version as JSON",
-        "description": "Returns the requested version of the spec document as a parsed JSON object. The document's `info.version` equals the registry-assigned `{semver}` in the path.\n",
+        "description": "Returns the requested version of the spec document as a parsed JSON object. The document's `info.version` equals the registry-assigned `{semver}` in the path. Anonymous access: requests without a token are allowed when the spec's visibility is \"public\". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/specName"
@@ -1652,7 +1835,8 @@
             "keycloak": [
               "specs:read"
             ]
-          }
+          },
+          {}
         ]
       }
     },
@@ -1663,7 +1847,7 @@
           "specs"
         ],
         "summary": "Get a specific version as YAML",
-        "description": "Returns the requested version of the spec document as YAML text. The document's `info.version` equals the registry-assigned `{semver}` in the path.\n",
+        "description": "Returns the requested version of the spec document as YAML text. The document's `info.version` equals the registry-assigned `{semver}` in the path. Anonymous access: requests without a token are allowed when the spec's visibility is \"public\". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/specName"
@@ -1774,7 +1958,8 @@
             "keycloak": [
               "specs:read"
             ]
-          }
+          },
+          {}
         ]
       }
     },
@@ -1785,7 +1970,7 @@
           "specs"
         ],
         "summary": "Get the compatibility report for a version",
-        "description": "Returns the compatibility report generated when this version was pushed. Not available for the first version of a spec (no previous version to diff against).\n",
+        "description": "Returns the compatibility report generated when this version was pushed. Not available for the first version of a spec (no previous version to diff against). Anonymous access: requests without a token are allowed when the spec's visibility is \"public\". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.\n",
         "parameters": [
           {
             "$ref": "#/components/parameters/specName"
@@ -1912,7 +2097,8 @@
             "keycloak": [
               "specs:read"
             ]
-          }
+          },
+          {}
         ]
       }
     },
@@ -1923,7 +2109,7 @@
           "specs"
         ],
         "summary": "Compare two versions of a spec",
-        "description": "Returns an incremental comparison between two versions. All versions between the two endpoints are included, ordered oldest to newest. The response contains the precomputed compatibility report for each step.",
+        "description": "Returns an incremental comparison between two versions. All versions between the two endpoints are included, ordered oldest to newest. The response contains the precomputed compatibility report for each step. Anonymous access: requests without a token are allowed when the spec's visibility is \"public\". For private specs, anonymous requests receive 404 so spec names cannot be enumerated.",
         "parameters": [
           {
             "$ref": "#/components/parameters/specName"
@@ -2108,7 +2294,8 @@
             "keycloak": [
               "specs:read"
             ]
-          }
+          },
+          {}
         ]
       }
     },
@@ -3801,6 +3988,7 @@
           "name",
           "type",
           "tags",
+          "visibility",
           "createdAt",
           "updatedAt"
         ],
@@ -3850,6 +4038,13 @@
                 "payments",
                 "public"
               ]
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "description": "Controls anonymous read access. Treat as an open string — new values may be added as access models evolve. Known values: \"private\" (authenticated reads only), \"public\" (anonymous reads allowed for this spec's metadata, versions, content, and compatibility reports). Defaults to \"private\" on first push.\n",
+            "examples": [
+              "public"
             ]
           },
           "createdAt": {
@@ -4241,6 +4436,13 @@
               ]
             ]
           },
+          "visibility": {
+            "type": "string",
+            "description": "Spec visibility. Known values: \"private\", \"public\". Applied on create; on subsequent pushes, supplying it updates the spec's visibility, omitting it leaves visibility unchanged. Default: \"private\".\n",
+            "examples": [
+              "public"
+            ]
+          },
           "gitRef": {
             "type": "string",
             "description": "Git commit SHA",
@@ -4301,6 +4503,40 @@
               },
               "version": {
                 "$ref": "#/components/schemas/SpecVersion"
+              }
+            }
+          }
+        }
+      },
+      "UpdateSpecRequest": {
+        "type": "object",
+        "required": [
+          "visibility"
+        ],
+        "properties": {
+          "visibility": {
+            "type": "string",
+            "description": "New spec visibility. Known values: \"private\", \"public\". Changes take effect immediately and do not create a new version.\n",
+            "examples": [
+              "public"
+            ]
+          }
+        }
+      },
+      "UpdateSpecResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "spec"
+            ],
+            "properties": {
+              "spec": {
+                "$ref": "#/components/schemas/Spec"
               }
             }
           }

@@ -8,7 +8,7 @@ const DATE = ts.factory.createTypeReferenceNode(
   ts.factory.createIdentifier("Date")
 );
 
-const ast = await openapiTS(new URL("../openapi.yaml", import.meta.url), {
+const ast = await openapiTS(new URL("../specs/grapity-registry.yaml", import.meta.url), {
   transform(schemaObject) {
     if (schemaObject.format === "date-time") {
       return DATE;
@@ -67,7 +67,7 @@ function generateRouteScopes(spec: Record<string, unknown>): RouteScope[] {
 }
 
 function writeRouteScopes(): void {
-  const specPath = new URL("../openapi.yaml", import.meta.url);
+  const specPath = new URL("../specs/grapity-registry.yaml", import.meta.url);
   const spec = yaml.load(fs.readFileSync(specPath, "utf-8")) as Record<string, unknown>;
   const routeScopes = generateRouteScopes(spec);
 
@@ -75,7 +75,7 @@ function writeRouteScopes(): void {
   fs.mkdirSync(path.dirname(outputPath.pathname), { recursive: true });
 
   const lines = [
-    "// Generated from openapi.yaml by scripts/generate-types.ts",
+    "// Generated from specs/grapity-registry.yaml by scripts/generate-types.ts",
     "// Do not edit by hand.",
     "",
     "export interface RouteScope {",

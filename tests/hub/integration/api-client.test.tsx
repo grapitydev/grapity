@@ -48,7 +48,7 @@ beforeEach(() => {
 
 describe("listSpecs", () => {
   test("calls GET /v1/specs and returns specs array", async () => {
-    const specs = [{ id: "1", name: "payments-api", type: "openapi" as const, tags: [], createdAt: new Date("2026-01-01T00:00:00Z"), updatedAt: new Date("2026-01-01T00:00:00Z") }];
+    const specs = [{ id: "1", name: "payments-api", type: "openapi" as const, tags: [], visibility: "private", createdAt: new Date("2026-01-01T00:00:00Z"), updatedAt: new Date("2026-01-01T00:00:00Z") }];
     mockFetchJson(200, { data: specs });
 
     const { result } = renderHook(() => useApiClient(), { wrapper });
@@ -98,7 +98,7 @@ describe("listSpecs", () => {
 
 describe("getSpec", () => {
   test("calls GET /v1/specs/:name and returns spec data", async () => {
-    const spec: Spec = { id: "1", name: "payments-api", type: "openapi", tags: [], createdAt: new Date(), updatedAt: new Date() };
+    const spec: Spec = { id: "1", name: "payments-api", type: "openapi", tags: [], visibility: "private", createdAt: new Date(), updatedAt: new Date() };
     mockFetchJson(200, { data: { spec, latestVersion: null } });
 
     const { result } = renderHook(() => useApiClient(), { wrapper });

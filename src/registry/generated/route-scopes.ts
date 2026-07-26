@@ -1,4 +1,4 @@
-// Generated from openapi.yaml by scripts/generate-types.ts
+// Generated from specs/grapity-registry.yaml by scripts/generate-types.ts
 // Do not edit by hand.
 
 export interface RouteScope {
@@ -43,6 +43,14 @@ export const routeScopes: RouteScope[] = [
     "method": "DELETE",
     "path": "/v1/specs/:name",
     "operationId": "deleteSpec",
+    "scopes": [
+      "specs:write"
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/v1/specs/:name",
+    "operationId": "updateSpec",
     "scopes": [
       "specs:write"
     ]

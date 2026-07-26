@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { Badge } from "../ui/badge";
 import { Card } from "../ui/card";
-import type { Spec, VersionClassification } from "core";
+import type { SpecListItem, VersionClassification } from "core";
 import { getClassificationPillStyle } from "../../lib/classificationStyles";
 
 interface SpecCardProps {
-  spec: Spec;
+  spec: SpecListItem;
   latestVersion?: { semver: string; classification?: VersionClassification };
 }
 
@@ -18,7 +18,10 @@ export function SpecCard({ spec, latestVersion }: SpecCardProps) {
       onClick={() => navigate(`/specs/${spec.name}`)}
     >
       <div className="flex items-start justify-between mb-3">
-        <Badge variant={spec.type === "openapi" ? "green" : spec.type === "asyncapi" ? "rose" : "default"}>{spec.type}</Badge>
+        <div className="flex items-center gap-1">
+          <Badge variant={spec.type === "openapi" ? "green" : spec.type === "asyncapi" ? "rose" : "default"}>{spec.type}</Badge>
+          {spec.visibility === "public" && <Badge variant="default">public</Badge>}
+        </div>
         {latestVersion && (
           <span className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-xs font-bold ${getClassificationPillStyle(latestVersion.classification)}`}>
             {latestVersion.semver}

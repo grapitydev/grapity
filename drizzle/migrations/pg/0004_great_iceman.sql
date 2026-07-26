@@ -1,0 +1,1 @@
+ALTER TABLE "specs" ADD COLUMN "visibility" text DEFAULT 'private' NOT NULL;

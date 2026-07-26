@@ -18,6 +18,7 @@ export const pushCommand = new Command("push")
   .option("--owner <owner>", "Owner of the spec")
   .option("--source-repo <url>", "Source repository URL")
   .option("--tags <tags>", "Comma-separated tags")
+  .option("--visibility <visibility>", "Spec visibility: private (default) or public")
   .option("--git-ref <ref>", "Git commit SHA")
   .option("--pushed-by <by>", "Identity of the pusher")
   .option("--force", "Force push even with breaking changes")
@@ -41,6 +42,7 @@ export const pushCommand = new Command("push")
         owner: options.owner,
         sourceRepo: options.sourceRepo,
         tags: options.tags?.split(","),
+        visibility: options.visibility,
         gitRef: options.gitRef,
         pushedBy: options.pushedBy,
         prerelease: options.prerelease,

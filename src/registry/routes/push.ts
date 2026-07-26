@@ -29,6 +29,18 @@ export const pushRoute = new Hono<AppEnv>().post("/", async (c) => {
     }, 400);
   }
 
+  if (
+    body.visibility !== undefined &&
+    body.visibility !== "private" &&
+    body.visibility !== "public"
+  ) {
+    return c.json({
+      error: "bad_request",
+      message: `Unknown visibility value: ${String(body.visibility)}. Known values: private, public`,
+      statusCode: 400,
+    }, 400);
+  }
+
   const store = c.get("store");
   const service = new RegistryService(store);
 
@@ -41,6 +53,7 @@ export const pushRoute = new Hono<AppEnv>().post("/", async (c) => {
       owner: body.owner as string | undefined,
       sourceRepo: body.sourceRepo as string | undefined,
       tags: Array.isArray(body.tags) ? body.tags as string[] : undefined,
+      visibility: body.visibility as "private" | "public" | undefined,
       gitRef: body.gitRef as string | undefined,
       pushedBy: actor,
       prerelease: body.prerelease as boolean | undefined,

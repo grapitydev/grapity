@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useConfig } from "../../context/ConfigContext";
-import { LoginPage } from "../../pages/LoginPage";
 
 interface AuthGuardProps {
   children: ReactNode;
@@ -9,7 +8,7 @@ interface AuthGuardProps {
 
 export function AuthGuard({ children }: AuthGuardProps) {
   const { auth } = useConfig();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isLoading } = useAuth();
 
   if (!auth) {
     return <>{children}</>;
@@ -21,10 +20,6 @@ export function AuthGuard({ children }: AuthGuardProps) {
         Loading…
       </div>
     );
-  }
-
-  if (!isAuthenticated) {
-    return <LoginPage />;
   }
 
   return <>{children}</>;

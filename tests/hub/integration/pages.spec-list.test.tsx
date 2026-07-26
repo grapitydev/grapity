@@ -40,6 +40,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
         name: "payments-api",
         type: "openapi" as const,
         tags: ["payments", "public"],
+        visibility: "private",
         createdAt: new Date(),
         updatedAt: new Date(),
         latestVersion: {
@@ -57,7 +58,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
           },
         },
       },
-      { id: "2", name: "users-api", type: "openapi" as const, tags: ["internal"], createdAt: new Date(), updatedAt: new Date() },
+      { id: "2", name: "users-api", type: "openapi" as const, tags: ["internal"], visibility: "private", createdAt: new Date(), updatedAt: new Date() },
     ];
     render(<SpecListPage specs={specs} />, { wrapper });
 
@@ -75,6 +76,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
         name: "payments-api",
         type: "openapi" as const,
         tags: [],
+        visibility: "private",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -83,6 +85,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
         name: "events-api",
         type: "asyncapi" as const,
         tags: [],
+        visibility: "private",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -103,6 +106,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
         type: "openapi" as const,
         owner: "platform-team",
         tags: [],
+        visibility: "private",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -112,6 +116,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
         type: "openapi" as const,
         owner: "payments-team",
         tags: [],
+        visibility: "private",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -131,6 +136,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
         name: "payments-api",
         type: "openapi" as const,
         tags: ["payments", "public"],
+        visibility: "private",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -139,6 +145,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
         name: "users-api",
         type: "openapi" as const,
         tags: ["internal"],
+        visibility: "private",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -158,6 +165,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
         name: "payments-api",
         type: "openapi" as const,
         tags: [],
+        visibility: "private",
         createdAt: new Date(),
         updatedAt: new Date(),
         latestVersion: {
@@ -180,6 +188,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
         name: "users-api",
         type: "openapi" as const,
         tags: [],
+        visibility: "private",
         createdAt: new Date(),
         updatedAt: new Date(),
         latestVersion: {
@@ -213,6 +222,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
         name: "payments-api",
         type: "openapi" as const,
         tags: [],
+        visibility: "private",
         createdAt: new Date(),
         updatedAt: new Date(),
         latestVersion: {
@@ -235,6 +245,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
         name: "users-api",
         type: "openapi" as const,
         tags: [],
+        visibility: "private",
         createdAt: new Date(),
         updatedAt: new Date(),
         latestVersion: {
@@ -276,6 +287,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
         name: "payments-api",
         type: "openapi" as const,
         tags: ["payments", "public"],
+        visibility: "private",
         createdAt: new Date(),
         updatedAt: new Date(),
         latestVersion: {
@@ -293,7 +305,7 @@ describe("SpecListPage — / (Browse All Specs)", () => {
           },
         },
       },
-      { id: "2", name: "users-api", type: "openapi" as const, tags: ["internal"], createdAt: new Date(), updatedAt: new Date() },
+      { id: "2", name: "users-api", type: "openapi" as const, tags: ["internal"], visibility: "private", createdAt: new Date(), updatedAt: new Date() },
     ];
     render(<SpecListPage specs={specs} />, { wrapper });
 

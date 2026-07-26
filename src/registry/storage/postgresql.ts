@@ -7,6 +7,7 @@ import type {
   Spec,
   SpecVersion,
   SpecFilters,
+  SpecUpdate,
   CompatReport,
   SpecStore,
   AuditAction,
@@ -123,6 +124,7 @@ export class PostgreSQLSpecStore implements SpecStore, GatewayConfigStore {
     const conditions = [];
     if (filters?.type) conditions.push(eq(specs.type, filters.type));
     if (filters?.owner) conditions.push(eq(specs.owner, filters.owner));
+    if (filters?.visibility) conditions.push(eq(specs.visibility, filters.visibility));
 
     let rows = conditions.length > 0
       ? await this.db.select().from(specs).where(and(...conditions))
@@ -175,12 +177,13 @@ export class PostgreSQLSpecStore implements SpecStore, GatewayConfigStore {
         owner: spec.owner ?? null,
         sourceRepo: spec.sourceRepo ?? null,
         tags: spec.tags ?? [],
+        visibility: spec.visibility ?? "private",
         createdAt: spec.createdAt,
         updatedAt: spec.updatedAt,
       });
     } else {
       await this.db.update(specs)
-        .set({ updatedAt: new Date() })
+        .set({ updatedAt: new Date(), visibility: spec.visibility ?? existingSpec.visibility })
         .where(eq(specs.id, existingSpec.id));
     }
 
@@ -201,6 +204,20 @@ export class PostgreSQLSpecStore implements SpecStore, GatewayConfigStore {
     });
 
     return version;
+  }
+
+  async updateSpec(name: string, update: SpecUpdate): Promise<Spec | null> {
+    const existingSpec = await this.getSpec(name);
+    if (!existingSpec) return null;
+
+    await this.db.update(specs)
+      .set({
+        visibility: update.visibility ?? existingSpec.visibility,
+        updatedAt: new Date(),
+      })
+      .where(eq(specs.id, existingSpec.id));
+
+    return this.getSpec(name);
   }
 
   async deleteSpec(name: string): Promise<boolean> {
@@ -244,6 +261,7 @@ export class PostgreSQLSpecStore implements SpecStore, GatewayConfigStore {
       owner: row.owner ?? undefined,
       sourceRepo: row.sourceRepo ?? undefined,
       tags: (row.tags as string[]) ?? [],
+      visibility: (row.visibility as Spec["visibility"]) ?? "private",
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
     };

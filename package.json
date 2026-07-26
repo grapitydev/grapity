@@ -65,12 +65,13 @@
     "bin"
   ],
   "scripts": {
-    "build": "bun run build:core && bun run build:registry && bun run build:hub && bun run build:cli && bun run build:demo",
+    "build": "bun run build:core && bun run build:registry && bun run build:hub && bun run build:cli && bun run build:demo && bun run build:serve",
     "build:core": "tsup --config tsup.core.config.ts",
     "build:registry": "tsup --config tsup.registry.config.ts",
     "build:hub": "rm -rf dist/assets dist/index.html dist/favicon.svg && vite build && tsup --config tsup.hub.config.ts",
     "build:cli": "tsup --config tsup.cli.config.ts",
     "build:demo": "tsup --config tsup.demo.config.ts",
+    "build:serve": "tsup --config tsup.serve.config.ts",
     "dev": "bun run src/cli/index.ts",
     "dev:hub": "vite",
     "dev:registry": "bun --watch src/registry/standalone.ts",

@@ -1,5 +1,7 @@
 export type SpecType = "openapi" | "asyncapi";
 
+export type SpecVisibility = "private" | "public";
+
 export interface Spec {
   id: string;
   name: string;
@@ -8,6 +10,7 @@ export interface Spec {
   owner?: string;
   sourceRepo?: string;
   tags: string[];
+  visibility: SpecVisibility;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -4,6 +4,7 @@ import { validateCommand } from "./validate";
 import { listCommand } from "./list";
 import { versionsCommand } from "./versions";
 import { getCommand } from "./get";
+import { updateCommand } from "./update";
 import { deleteCommand } from "./delete";
 import { specCommand } from "./spec";
 
@@ -14,5 +15,6 @@ export const registryCommand = new Command("registry")
   .addCommand(listCommand)
   .addCommand(versionsCommand)
   .addCommand(getCommand)
+  .addCommand(updateCommand)
   .addCommand(deleteCommand)
   .addCommand(specCommand);

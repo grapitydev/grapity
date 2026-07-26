@@ -24,6 +24,7 @@ function makeSpec(overrides: Partial<Spec & { latestVersion?: PublicSpecVersion 
     name: "payments-api",
     type: "openapi",
     tags: [],
+    visibility: "private",
     createdAt: CREATED_AT as unknown as Date,
     updatedAt: UPDATED_AT as unknown as Date,
     ...overrides,

@@ -8,7 +8,7 @@ import {
   it,
   expect,
 } from "bun:test";
-import { render, screen, waitFor, cleanup, fireEvent, renderHook } from "@testing-library/react";
+import { render, screen, waitFor, cleanup, fireEvent, renderHook, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import App from "hub/App";
 import { Header } from "hub/components/layout/Header";
@@ -131,13 +131,14 @@ afterEach(() => {
 });
 
 describe("Hub Keycloak integration", () => {
-  it("shows the Keycloak login landing page when no token is present", async () => {
+  it("renders the spec list anonymously and offers sign-in when no token is present", async () => {
     render(<App />, { wrapper: appWrapper });
 
     await waitFor(() => {
-      expect(screen.getByText(/Explore and manage your API specs/i)).toBeTruthy();
+      expect(screen.getByText(/Browse All Specs/i)).toBeTruthy();
     });
-    expect(screen.getByRole("button", { name: /Sign in with Keycloak/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /^Sign in$/i })).toBeTruthy();
+    expect(screen.queryByText(/Sign in with Keycloak/i)).toBeNull();
   });
 
   it("redirects to the running Keycloak authorization endpoint when signing in", async () => {
@@ -162,10 +163,10 @@ describe("Hub Keycloak integration", () => {
     render(<App />, { wrapper: appWrapper });
 
     await waitFor(() => {
-      expect(screen.getByText(/Explore and manage your API specs/i)).toBeTruthy();
+      expect(screen.getByText(/Browse All Specs/i)).toBeTruthy();
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /Sign in with Keycloak/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^Sign in$/i }));
 
     await waitFor(() => {
       expect(assignedUrl).not.toBe("");
@@ -222,13 +223,53 @@ describe("Hub Keycloak integration", () => {
     render(<App />, { wrapper: appWrapper });
 
     await waitFor(() => {
-      expect(screen.getByText(/Explore and manage your API specs/i)).toBeTruthy();
+      expect(screen.getByText(/Browse All Specs/i)).toBeTruthy();
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /Sign in with Keycloak/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^Sign in$/i }));
 
     await waitFor(() => {
       expect(localStorage.getItem("grapity_post_login_path")).toBe("/specs/payments-api?tab=versions");
+    });
+
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: originalLocation,
+    });
+  });
+
+  it("offers sign-in from the error state of a spec that is private or unknown to anonymous visitors", async () => {
+    const originalLocation = window.location;
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: {
+        origin: "http://localhost:3000",
+        pathname: "/specs/secret-api",
+        search: "",
+        get href() {
+          return "http://localhost:3000/specs/secret-api";
+        },
+        set href(_value: string) {
+          // no-op
+        },
+      },
+    });
+
+    render(<App />, {
+      wrapper: ({ children }: { children: React.ReactNode }) => (
+        <MemoryRouter initialEntries={["/specs/secret-api"]}>{children}</MemoryRouter>
+      ),
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/does not exist or is private/i)).toBeTruthy();
+    });
+
+    const notice = screen.getByText(/does not exist or is private/i).closest("div")!;
+    fireEvent.click(within(notice.parentElement ?? notice).getByRole("button", { name: /^Sign in$/i }));
+
+    await waitFor(() => {
+      expect(localStorage.getItem("grapity_post_login_path")).toBe("/specs/secret-api");
     });
 
     Object.defineProperty(window, "location", {

@@ -58,7 +58,7 @@ describe("SpecDetailPage — /specs/:name", () => {
     const spec: Spec = {
       id: "1", name: "payments-api", type: "openapi" as const,
       description: "Payments service", owner: "platform-team",
-      tags: ["payments", "public"], createdAt: new Date(), updatedAt: new Date(),
+      tags: ["payments", "public"], visibility: "private", createdAt: new Date(), updatedAt: new Date(),
     };
     const versions: PublicSpecVersion[] = [
       { id: "v1", specId: "1", semver: "1.0.0", checksum: "abc", isPrerelease: false, createdAt: new Date() },

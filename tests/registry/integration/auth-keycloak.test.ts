@@ -76,11 +76,22 @@ describe("Keycloak auth enabled", () => {
     await cleanup();
   });
 
-  it("rejects requests without a Bearer token", async () => {
-    const res = await app.request("/v1/specs", { method: "GET" });
+  it("rejects write requests without a Bearer token", async () => {
+    const res = await app.request("/v1/specs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: baseSpec, name: "payments-api" }),
+    });
     expect(res.status).toBe(401);
     const body = (await res.json()) as { error: string };
     expect(body.error).toBe("unauthorized");
+  });
+
+  it("allows anonymous reads of the spec list, returning only public specs", async () => {
+    const res = await app.request("/v1/specs", { method: "GET" });
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { data: unknown[] };
+    expect(body.data).toEqual([]);
   });
 
   it("rejects requests with an invalid token", async () => {

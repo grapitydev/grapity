@@ -42,7 +42,7 @@ beforeEach(() => {
 describe("useSpecs", () => {
   test("starts loading then returns specs on success", async () => {
     const specs: SpecListItem[] = [
-      { id: "1", name: "payments-api", type: "openapi" as const, tags: [], createdAt: new Date("2026-01-01T00:00:00Z"), updatedAt: new Date("2026-01-01T00:00:00Z"), latestVersion: { id: "v1", specId: "1", semver: "1.0.0", checksum: "abc", isPrerelease: false, createdAt: new Date("2026-01-01T00:00:00Z") } },
+      { id: "1", name: "payments-api", type: "openapi" as const, tags: [], visibility: "private", createdAt: new Date("2026-01-01T00:00:00Z"), updatedAt: new Date("2026-01-01T00:00:00Z"), latestVersion: { id: "v1", specId: "1", semver: "1.0.0", checksum: "abc", isPrerelease: false, createdAt: new Date("2026-01-01T00:00:00Z") } },
     ];
     mockFetchJson(200, { data: specs });
 
@@ -90,7 +90,7 @@ describe("useSpecs", () => {
 
 describe("useSpec", () => {
   test("fetches spec and latest version", async () => {
-    const spec: Spec = { id: "1", name: "payments-api", type: "openapi" as const, tags: [], createdAt: new Date("2026-01-01T00:00:00Z"), updatedAt: new Date("2026-01-01T00:00:00Z") };
+    const spec: Spec = { id: "1", name: "payments-api", type: "openapi" as const, tags: [], visibility: "private", createdAt: new Date("2026-01-01T00:00:00Z"), updatedAt: new Date("2026-01-01T00:00:00Z") };
     const latestVersion: PublicSpecVersion = { id: "v1", specId: "1", semver: "1.0.0", checksum: "abc", isPrerelease: false, createdAt: new Date("2026-01-01T00:00:00Z") };
     mockFetchJson(200, { data: { spec, latestVersion } });
 

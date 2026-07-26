@@ -78,6 +78,24 @@ export function createAuthMiddleware(
 
     const authHeader = c.req.header("Authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      if (isAnonymousReadRoute(required, routeKey)) {
+        const specName = extractPathParam(matchedPath ?? c.req.routePath, c.req.path, "name");
+        if (!specName) {
+          // The spec list route: proceed anonymously, the handler filters
+          // results down to public specs.
+          c.set("anonymous", true);
+          return await next();
+        }
+        const store = c.get("store");
+        const spec = await store.getSpec(specName);
+        if (spec && spec.visibility === "public") {
+          c.set("anonymous", true);
+          return await next();
+        }
+        // Private or unknown spec: respond 404 so anonymous callers cannot
+        // enumerate which spec names exist.
+        throw new AuthError(404, "not_found", `Spec "${specName}" not found`);
+      }
       throw new AuthError(401, "unauthorized", "Bearer token required");
     }
 
@@ -135,6 +153,38 @@ function extractScopes(
     return new Set(scopeValue.split(/\s+/).filter(Boolean));
   }
   return new Set();
+}
+
+const SPECS_READ_SCOPE = "specs:read";
+const SPECS_ROUTE_PREFIX = "/v1/specs";
+
+function isAnonymousReadRoute(required: OperationScope, routeKey: string): boolean {
+  const method = routeKey.slice(0, routeKey.indexOf(":"));
+  const path = routeKey.slice(routeKey.indexOf(":") + 1);
+  return (
+    method === "GET" &&
+    path.startsWith(SPECS_ROUTE_PREFIX) &&
+    required.scopes.length === 1 &&
+    required.scopes[0] === SPECS_READ_SCOPE
+  );
+}
+
+function extractPathParam(
+  pattern: string,
+  actualPath: string,
+  param: string
+): string | undefined {
+  const patternSegments = pattern.split("/").filter(Boolean);
+  const pathSegments = actualPath.split("/").filter(Boolean);
+  if (patternSegments.length !== pathSegments.length) return undefined;
+
+  for (let i = 0; i < patternSegments.length; i++) {
+    const segment = patternSegments[i];
+    if (segment === `:${param}`) {
+      return pathSegments[i];
+    }
+  }
+  return undefined;
 }
 
 export function parseRouteScopes(spec: Record<string, unknown>): RouteInfo[] {

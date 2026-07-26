@@ -1,0 +1,94 @@
+# Self-hosting reference: Grapity registry + hub + PostgreSQL.
+#
+# Canonical compose for running a production Grapity instance with any
+# docker-compose-capable setup. Our own public instance
+# (hub.grapity.dev / registry.grapity.dev) runs this stack.
+#
+# Topology:
+#   - postgres:  internal only, named volume
+#   - registry:  the machine-facing API. Expose it (e.g. registry.example.com)
+#                if CI or external tooling needs to push/validate directly.
+#                Keycloak guards everything: anonymous callers only ever see
+#                public specs, writes need a token.
+#   - hub:       the human-facing portal. Expose it on your public domain.
+#                Browsers stay on this origin: the hub proxies /v1/* to the
+#                registry over the internal network, so no CORS setup is
+#                needed for browser traffic.
+#
+# Required environment (via .env or your orchestrator's secret store):
+#   POSTGRES_USER / POSTGRES_PASSWORD / POSTGRES_DB
+#   GRAPITY_KEYCLOAK_SERVER_URL    e.g. https://keycloak.example.com
+#   GRAPITY_KEYCLOAK_REALM
+#   GRAPITY_KEYCLOAK_HUB_CLIENT_ID public PKCE client for the hub SPA
+#
+# Optional:
+#   GRAPITY_VERSION                image tag (default: latest)
+#   GRAPITY_KEYCLOAK_AUDIENCE
+#   GRAPITY_CORS_ORIGINS           pin the registry's CORS to your hub origin
+
+services:
+  registry:
+    image: 'ghcr.io/grapitydev/grapity:${GRAPITY_VERSION:-latest}'
+    environment:
+      - GRAPITY_SERVICE=registry
+      - GRAPITY_AUTH_MODE=keycloak
+      - 'GRAPITY_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/${POSTGRES_DB:-grapity}'
+      - 'GRAPITY_KEYCLOAK_SERVER_URL=${GRAPITY_KEYCLOAK_SERVER_URL}'
+      - 'GRAPITY_KEYCLOAK_REALM=${GRAPITY_KEYCLOAK_REALM}'
+      - 'GRAPITY_KEYCLOAK_AUDIENCE=${GRAPITY_KEYCLOAK_AUDIENCE:-}'
+      - 'GRAPITY_KEYCLOAK_ROLE_SOURCE=${GRAPITY_KEYCLOAK_ROLE_SOURCE:-scope}'
+      - 'GRAPITY_CORS_ORIGINS=${GRAPITY_CORS_ORIGINS:-}'
+    # Publish only if machines (CI, CLI) reach the registry directly.
+    # ports:
+    #   - "3750:3750"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'curl -fsS http://127.0.0.1:3750/v1/health || exit 1'
+      interval: 5s
+      timeout: 20s
+      retries: 10
+
+  hub:
+    image: 'ghcr.io/grapitydev/grapity:${GRAPITY_VERSION:-latest}'
+    environment:
+      - GRAPITY_SERVICE=hub
+      - 'GRAPITY_REGISTRY_URL=http://registry:3750'
+      - 'GRAPITY_KEYCLOAK_SERVER_URL=${GRAPITY_KEYCLOAK_SERVER_URL}'
+      - 'GRAPITY_KEYCLOAK_REALM=${GRAPITY_KEYCLOAK_REALM}'
+      - 'GRAPITY_KEYCLOAK_HUB_CLIENT_ID=${GRAPITY_KEYCLOAK_HUB_CLIENT_ID}'
+      - 'GRAPITY_KEYCLOAK_AUDIENCE=${GRAPITY_KEYCLOAK_AUDIENCE:-}'
+    ports:
+      - "3000:3000"
+    depends_on:
+      registry:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'curl -fsS http://127.0.0.1:3000/ || exit 1'
+      interval: 5s
+      timeout: 20s
+      retries: 10
+
+  postgres:
+    image: 'postgres:16-alpine'
+    volumes:
+      - 'grapity-postgresql-data:/var/lib/postgresql/data'
+    environment:
+      - 'POSTGRES_USER=${POSTGRES_USER}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+      - 'POSTGRES_DB=${POSTGRES_DB:-grapity}'
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}'
+      interval: 5s
+      timeout: 20s
+      retries: 10
+
+volumes:
+  grapity-postgresql-data:

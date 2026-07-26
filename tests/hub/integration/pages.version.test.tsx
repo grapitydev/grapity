@@ -13,7 +13,7 @@ import type { PublicSpecVersion, CompatReport, Spec } from "core";
 const TEST_SPEC: Spec = {
   id: "1", name: "payments-api", type: "openapi" as const,
   description: "Payments service", owner: "platform-team",
-  tags: ["payments", "public"], createdAt: new Date(), updatedAt: new Date(),
+  tags: ["payments", "public"], visibility: "private", createdAt: new Date(), updatedAt: new Date(),
 };
 
 function Wrapper({ children }: { children: React.ReactNode }) {
@@ -218,7 +218,7 @@ describe("VersionPage — /specs/:name/versions/:semver", () => {
     const spec: Spec = {
       id: "1", name: "payments-api", type: "openapi" as const,
       description: "Payments service", owner: "platform-team",
-      tags: ["payments", "public"], createdAt: new Date(), updatedAt: new Date(),
+      tags: ["payments", "public"], visibility: "private", createdAt: new Date(), updatedAt: new Date(),
     };
     const version: PublicSpecVersion = {
       id: "v1", specId: "1", semver: "1.0.0", checksum: "abc",

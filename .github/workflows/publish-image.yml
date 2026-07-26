@@ -28,7 +28,7 @@ jobs:
       - name: Resolve version
         id: version
         run: |
-          RAW="${{ github.event.client-payload.tag || inputs.tag }}"
+          RAW="${{ github.event.client_payload.tag || inputs.tag }}"
           echo "version=${RAW#v}" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU

@@ -21,10 +21,11 @@ afterAll(async () => {
 describe("Canonical normalization on push", () => {
   it("stores OpenAPI spec with alphabetically sorted keys", async () => {
     const spec = JSON.stringify({
-      z: 1,
-      a: 2,
-      info: { z: 1, a: 2 },
+      "x-zulu": 1,
+      "x-alpha": 2,
+      info: { "x-zulu": 1, "x-alpha": 2, title: "API", version: "0.0.0" },
       openapi: "3.1.0",
+      paths: {},
     });
 
     const { res } = await pushSpec(app, { content: spec, name: "ordered-api" });
@@ -32,9 +33,9 @@ describe("Canonical normalization on push", () => {
 
     const stored = await app.request("/v1/specs/ordered-api/spec.json");
     const body = await stored.json();
-    expect(Object.keys(body)).toEqual(["openapi", "info", "a", "z"]);
-    // info.version is added by the registry stamp (assigned version 1.0.0)
-    expect(Object.keys(body.info)).toEqual(["a", "version", "z"]);
+    expect(Object.keys(body)).toEqual(["openapi", "info", "paths", "x-alpha", "x-zulu"]);
+    // info.version is overwritten by the registry stamp (assigned version 1.0.0)
+    expect(Object.keys(body.info)).toEqual(["title", "version", "x-alpha", "x-zulu"]);
   });
 
   it("produces identical checksums for same spec with different key ordering", async () => {

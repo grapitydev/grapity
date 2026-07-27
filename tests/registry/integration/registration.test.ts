@@ -208,3 +208,45 @@ describe("Scenario 15: Version pagination", () => {
     expect(page.pagination.limit).toBe(25);
   });
 });
+
+describe("Schema validation on push", () => {
+  const unresolvedRefSpec = [
+    "openapi: 3.0.3",
+    "info:",
+    "  title: Broken API",
+    "  version: 1.0.0",
+    "paths:",
+    "  /payments:",
+    "    get:",
+    "      operationId: listPayments",
+    "      responses:",
+    "        '200':",
+    "          description: ok",
+    "          content:",
+    "            application/json:",
+    "              schema:",
+    "                $ref: '#/components/schemas/Ghost'",
+    "",
+  ].join("\n");
+
+  it("rejects an OpenAPI document with an unresolvable $ref as 400", async () => {
+    const { res, body } = await pushSpec(app, { content: unresolvedRefSpec, name: "broken-api" });
+
+    expect(res.status).toBe(400);
+    expect(body.error).toBe("bad_request");
+  });
+
+  it("stores nothing after a rejected push", async () => {
+    await pushSpec(app, { content: unresolvedRefSpec, name: "broken-api" });
+
+    const res = await app.request("/v1/specs/broken-api");
+    expect(res.status).toBe(404);
+  });
+
+  it("rejects unparseable YAML as 400 instead of 500", async () => {
+    const { res, body } = await pushSpec(app, { content: "foo: [1, 2", name: "broken-api" });
+
+    expect(res.status).toBe(400);
+    expect(body.error).toBe("bad_request");
+  });
+});

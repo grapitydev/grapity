@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { AppEnv } from "../server";
 import { RegistryService, BreakingChangeError, PrereleaseConstraintError } from "../services/registry";
+import { validateOpenApiSpec } from "../parser/openapi/validate";
 import type { components } from "core";
 
 type PushBody = Partial<components["schemas"]["PushSpecRequest"]>;
@@ -39,6 +40,17 @@ export const pushRoute = new Hono<AppEnv>().post("/", async (c) => {
       message: `Unknown visibility value: ${String(body.visibility)}. Known values: private, public`,
       statusCode: 400,
     }, 400);
+  }
+
+  if ((body.type ?? "openapi") === "openapi") {
+    const lint = await validateOpenApiSpec(body.content);
+    if (!lint.valid) {
+      return c.json({
+        error: "bad_request",
+        message: `Spec failed OpenAPI schema validation: ${lint.errors.join("; ")}`,
+        statusCode: 400,
+      }, 400);
+    }
   }
 
   const store = c.get("store");

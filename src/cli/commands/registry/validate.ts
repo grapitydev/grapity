@@ -27,6 +27,9 @@ export const validateCommand = new Command("validate")
 
       spinner.stop();
       console.log(formatValidateResult(result));
+      if (!result.valid) {
+        process.exit(1);
+      }
     } catch (err) {
       spinner.stop();
       const message = err instanceof Error ? err.message : "An unexpected error occurred";

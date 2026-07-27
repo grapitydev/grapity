@@ -55,6 +55,35 @@ afterAll(async () => {
 });
 
 describe("Scenario 9: CI validate before pushing", () => {
+  it("validate treats an unknown spec as an initial version instead of 404", async () => {
+    const res = await app.request("/v1/specs/brand-new-api/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: baseSpec }),
+    });
+    const body = await res.json() as any;
+
+    expect(res.status).toBe(200);
+    expect(body.data.valid).toBe(true);
+    expect(body.data.compatReport.classification).toBe("initial");
+    expect(body.data.compatReport.previousVersion).toBe("0.0.0");
+    expect(body.data.compatReport.breakingChanges).toHaveLength(0);
+    expect(body.data.compatReport.safeChanges).toHaveLength(0);
+  });
+
+  it("validate still reports schema errors for an unknown spec", async () => {
+    const res = await app.request("/v1/specs/brand-new-api/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: "not: [valid" }),
+    });
+    const body = await res.json() as any;
+
+    expect(res.status).toBe(200);
+    expect(body.data.valid).toBe(false);
+    expect(body.data.errors.length).toBeGreaterThan(0);
+  });
+
   it("validate returns valid: false with compat report for breaking spec", async () => {
     await pushSpec(app, { content: baseSpec, name: "payments-api" });
 

@@ -35,7 +35,19 @@ export const validateRoute = new Hono<AppEnv>().post("/:name/validate", async (c
   const result = await service.getSpec(name);
 
   if (!result) {
-    return c.json({ error: "not_found", message: `Spec "${name}" not found`, statusCode: 404 }, 404);
+    return c.json({
+      data: {
+        compatReport: {
+          previousVersion: "0.0.0",
+          classification: "initial",
+          breakingChanges: [],
+          safeChanges: [],
+        },
+        errors: [],
+        valid: true,
+        warnings,
+      },
+    });
   }
 
   if (!result.latestVersion) {

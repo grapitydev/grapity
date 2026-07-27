@@ -679,7 +679,7 @@ paths:
         - specs
       summary: Validate a spec without pushing
       description: |
-        Validates the spec content and checks backward compatibility against the latest registered version for this name. Does not store anything.
+        Validates the spec content and checks backward compatibility against the latest registered version for this name. Does not store anything. When no spec exists for the name, the content is validated structurally and reported as an initial version (compatReport classification `initial`, previousVersion `0.0.0`), mirroring what a first push would accept.
       parameters:
         - $ref: '#/components/parameters/specName'
       requestBody:

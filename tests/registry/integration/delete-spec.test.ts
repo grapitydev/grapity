@@ -120,16 +120,17 @@ describe("GET /v1/specs/{name}/versions — fixed 404 behavior", () => {
   });
 });
 
-describe("POST /v1/specs/{name}/validate — fixed 404 behavior", () => {
-  it("returns 404 for a non-existent spec", async () => {
+describe("POST /v1/specs/{name}/validate — unknown spec behavior", () => {
+  it("returns 200 with an initial compat report for a non-existent spec", async () => {
     const res = await app.request("/v1/specs/does-not-exist/validate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: baseSpec }),
     });
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(200);
     const body = await res.json() as any;
-    expect(body.error).toBe("not_found");
+    expect(body.data.valid).toBe(true);
+    expect(body.data.compatReport.classification).toBe("initial");
   });
 
   it("returns 200 for an existing spec", async () => {

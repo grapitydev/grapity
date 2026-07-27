@@ -29,7 +29,10 @@ jobs:
     # Fork pull requests never receive repository secrets (GitHub limitation),
     # so external contributions skip validation instead of failing on a
     # missing client secret. Maintainers can validate locally with the CLI.
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && vars.GRAPITY_REGISTRY_URL != ''
+    # On merge to main, validation re-runs against the registry's current
+    # state and gates the push below (registry state may have moved since
+    # the pull request was validated).
+    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && vars.GRAPITY_REGISTRY_URL != '') || (github.event_name == 'push' && vars.GRAPITY_REGISTRY_URL != '')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,6 +50,7 @@ jobs:
           client-secret: ${{ secrets.GRAPITY_CI_CLIENT_SECRET }}
 
   push:
+    needs: validate
     if: github.event_name == 'push' && vars.GRAPITY_REGISTRY_URL != ''
     runs-on: ubuntu-latest
     steps:
@@ -59,6 +63,9 @@ jobs:
           spec: specs/grapity-registry.yaml
           name: grapity-registry
           visibility: public
+          # Publishes 0.x pre-release versions until the registry API is
+          # declared stable; dropping this line graduates the spec to 1.0.0.
+          prerelease: "true"
           pushed-by: github-actions[bot]
           registry-url: ${{ vars.GRAPITY_REGISTRY_URL }}
           keycloak-server-url: https://keycloak.grapity.dev

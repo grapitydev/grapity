@@ -36,6 +36,10 @@ inputs:
     description: 'Spec visibility on push: "private" or "public" (optional, push only)'
     required: false
     default: ""
+  prerelease:
+    description: 'Publish as a 0.x pre-release version: "true" or "false" (optional, push only, default: false)'
+    required: false
+    default: ""
   git-ref:
     description: "Git commit SHA recorded on the version (defaults to github.sha)"
     required: false
@@ -109,10 +113,14 @@ runs:
         GIT_REF: ${{ inputs.git-ref || github.sha }}
         PUSHED_BY: ${{ inputs.pushed-by || github.actor }}
         VISIBILITY: ${{ inputs.visibility }}
+        PRERELEASE: ${{ inputs.prerelease }}
       run: |
         ARGS=(--name "${{ inputs.name }}" --git-ref "$GIT_REF" --pushed-by "$PUSHED_BY")
         if [ -n "$VISIBILITY" ]; then
           ARGS+=(--visibility "$VISIBILITY")
+        fi
+        if [ "$PRERELEASE" = "true" ]; then
+          ARGS+=(--prerelease)
         fi
         set +e
         OUTPUT=$(grapity registry push "${{ inputs.spec }}" "${ARGS[@]}" 2>&1 | sed 's/\x1B\[[0-9;]*m//g')

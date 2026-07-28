@@ -4,6 +4,16 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.14.0](https://github.com/grapitydev/grapity/compare/v0.13.0...v0.14.0) (2026-07-28)
+
+
+### Features
+
+* add prerelease filter and badge, shared footer, drop asyncapi type option ([18d98e8](https://github.com/grapitydev/grapity/commit/18d98e88ad50961413390794e3722f4a80fc6e4e))
+* make registry push idempotent for unchanged content ([1109a0e](https://github.com/grapitydev/grapity/commit/1109a0e53ab537fc7f1d041ad2d33166da2eec78))
+* push dogfood registry spec only on software releases ([b0ab377](https://github.com/grapitydev/grapity/commit/b0ab377b5af4d98457e1712e23b48afdcab8409d))
+* re-enable registry dogfood validate and push ([bc3c138](https://github.com/grapitydev/grapity/commit/bc3c138feea5537d8b93c6dd10489a9c78ce16ca))
+
 ## [0.13.0](https://github.com/grapitydev/grapity/compare/v0.12.0...v0.13.0) (2026-07-28)
 
 

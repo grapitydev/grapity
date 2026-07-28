@@ -45,10 +45,7 @@ jobs:
           event-type: publish-image
           client-payload: '{"tag": "${{ steps.release-please.outputs.tag_name }}"}'
 
-      - name: Dispatch registry spec publish for releases
-        if: ${{ steps.release-please.outputs.releases_created == 'true' }}
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          event-type: publish-registry-spec
-          client-payload: '{"tag": "${{ steps.release-please.outputs.tag_name }}"}'
+      # The registry spec publish is NOT dispatched here: the dogfood action
+      # installs the released CLI binary, which only exists once the
+      # build-binaries pipeline uploads the release assets. binaries.yml
+      # dispatches publish-registry-spec after publish-binaries succeeds.

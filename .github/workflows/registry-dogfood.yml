@@ -6,9 +6,11 @@ name: Registry dogfood
 # ship to users (./actions/registry).
 #
 # The push fires on the publish-registry-spec repository_dispatch sent by
-# release.yml after release-please creates a release, and only when specs/**
-# changed since the previous release tag: an unchanged spec classifies as patch
-# and would mint a meaningless version per release.
+# binaries.yml once the release assets are uploaded (the composite action
+# installs the released CLI binary, which does not exist at release-creation
+# time), and only when specs/** changed since the previous release tag: an
+# unchanged spec classifies as patch and would mint a meaningless version per
+# release.
 #
 # Requires the GRAPITY_REGISTRY_URL repository variable
 # (https://registry.grapity.dev) and the GRAPITY_CI_CLIENT_SECRET secret.

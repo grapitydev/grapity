@@ -15,6 +15,7 @@ interface Filters {
   owner?: string;
   tags?: string[];
   classification?: string;
+  track?: string;
 }
 
 function wrapper({ children }: { children: React.ReactNode }) {
@@ -84,6 +85,16 @@ describe("Sidebar filters", () => {
     expect(screen.getByText("Tags")).toBeTruthy();
     expect(screen.getByText("Classification")).toBeTruthy();
     expect(screen.getByText("Select multiple")).toBeTruthy();
+    expect(screen.queryByText("Track")).toBeNull();
+  });
+
+  test("does not offer asyncapi as a type option", () => {
+    render(<Sidebar filters={{ onFilterChange: () => {} }} specs={sampleSpecs} />,
+      { wrapper }
+    );
+
+    expect(screen.getByRole("button", { name: /openapi/i })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /asyncapi/i })).toBeNull();
   });
 
   test("shows active filter count and clear all", () => {
@@ -190,6 +201,85 @@ describe("Sidebar filters", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /Patch/i }));
     expect(latestFilters.classification).toBe("patch");
+  });
+
+  test("pre-release checkbox sets track and greys out classification radios", () => {
+    let latestFilters: Filters = { classification: "major" };
+    render(
+      <Sidebar
+        filters={{
+          classification: "major",
+          onFilterChange: (f) => {
+            latestFilters = f;
+          },
+        }}
+        specs={sampleSpecs}
+      />,
+      { wrapper }
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Pre-release/i }));
+    expect(latestFilters.track).toBe("prerelease");
+    expect(latestFilters.classification).toBe("major");
+  });
+
+  test("classification radios are disabled while pre-release is checked", () => {
+    render(
+      <Sidebar
+        filters={{ classification: "major", track: "prerelease", onFilterChange: () => {} }}
+        specs={sampleSpecs}
+      />,
+      { wrapper }
+    );
+
+    expect(screen.getByRole("button", { name: /Major/i }).getAttribute("aria-disabled")).toBe("true");
+    expect(screen.getByRole("button", { name: /Minor/i }).getAttribute("aria-disabled")).toBe("true");
+    expect(screen.getByRole("button", { name: /Patch/i }).getAttribute("aria-disabled")).toBe("true");
+  });
+
+  test("unchecking pre-release clears track and restores classification radios", () => {
+    let latestFilters: Filters = { classification: "major", track: "prerelease" };
+    render(
+      <Sidebar
+        filters={{
+          classification: "major",
+          track: "prerelease",
+          onFilterChange: (f) => {
+            latestFilters = f;
+          },
+        }}
+        specs={sampleSpecs}
+      />,
+      { wrapper }
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Pre-release/i }));
+    expect(latestFilters.track).toBeUndefined();
+    expect(latestFilters.classification).toBe("major");
+  });
+
+  test("classification radios are interactive when pre-release is unchecked", () => {
+    render(
+      <Sidebar
+        filters={{ classification: "major", onFilterChange: () => {} }}
+        specs={sampleSpecs}
+      />,
+      { wrapper }
+    );
+
+    expect(screen.getByRole("button", { name: /Major/i }).getAttribute("aria-disabled")).not.toBe("true");
+  });
+
+  test("counts only applied filters: pre-release counts, greyed classification does not", () => {
+    render(
+      <Sidebar
+        filters={{ classification: "major", track: "prerelease", onFilterChange: () => {} }}
+        specs={sampleSpecs}
+      />,
+      { wrapper }
+    );
+
+    expect(screen.getByText("1 active")).toBeTruthy();
   });
 
   test("hides Owner and Tags sections when no values exist", () => {

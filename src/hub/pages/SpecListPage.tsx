@@ -10,6 +10,7 @@ interface Filters {
   owner?: string;
   tags?: string[];
   classification?: string;
+  track?: string;
 }
 
 interface SpecListPageProps {
@@ -46,7 +47,7 @@ export function SpecListPage({
       );
     }
 
-    if (filters.classification) {
+    if (filters.classification && filters.track !== "prerelease") {
       const matchMap: Record<string, string[]> = {
         major: ["initial", "major"],
         minor: ["minor"],
@@ -54,10 +55,20 @@ export function SpecListPage({
       };
       const allowed = matchMap[filters.classification];
       if (allowed) {
-        result = result.filter((s) =>
-          allowed.includes(s.latestVersion?.compatibility?.classification ?? "")
+        result = result.filter(
+          (s) =>
+            !s.latestVersion?.isPrerelease &&
+            allowed.includes(s.latestVersion?.compatibility?.classification ?? "")
         );
       }
+    }
+
+    if (filters.track) {
+      result = result.filter((s) =>
+        filters.track === "prerelease"
+          ? s.latestVersion?.isPrerelease === true
+          : !s.latestVersion?.isPrerelease
+      );
     }
 
     return result;

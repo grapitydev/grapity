@@ -91,7 +91,7 @@ describe("App URL filter sync", () => {
   test("reads filters from URL on load and renders active chips", async () => {
     function wrapperWithUrl({ children }: { children: React.ReactNode }) {
       return (
-        <MemoryRouter initialEntries={["/?type=asyncapi&tags=payments"]} initialIndex={0}>
+        <MemoryRouter initialEntries={["/?type=openapi&tags=payments"]} initialIndex={0}>
           <ConfigProvider>
             <AuthProvider>
               <ThemeProvider>
@@ -107,8 +107,31 @@ describe("App URL filter sync", () => {
     render(<App />, { wrapper: wrapperWithUrl });
 
     await waitFor(() => {
-      expect(screen.getByText("Type: asyncapi")).toBeTruthy();
+      expect(screen.getByText("Type: openapi")).toBeTruthy();
       expect(screen.getByText("Tag: payments")).toBeTruthy();
+    });
+  });
+
+  test("syncs track filter between sidebar, URL and chips", async () => {
+    function wrapperWithUrl({ children }: { children: React.ReactNode }) {
+      return (
+        <MemoryRouter initialEntries={["/?track=prerelease"]} initialIndex={0}>
+          <ConfigProvider>
+            <AuthProvider>
+              <ThemeProvider>
+                <SpecExplorerProvider>{children}</SpecExplorerProvider>
+              </ThemeProvider>
+            </AuthProvider>
+          </ConfigProvider>
+        </MemoryRouter>
+      );
+    }
+
+    mockFetchJson({ data: sampleSpecs });
+    render(<App />, { wrapper: wrapperWithUrl });
+
+    await waitFor(() => {
+      expect(screen.getByText("Track: Pre-release")).toBeTruthy();
     });
   });
 });

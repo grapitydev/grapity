@@ -27,7 +27,8 @@ interface SidebarProps {
     owner?: string;
     tags?: string[];
     classification?: string;
-    onFilterChange: (filters: { type?: string; owner?: string; tags?: string[]; classification?: string }) => void;
+    track?: string;
+    onFilterChange: (filters: { type?: string; owner?: string; tags?: string[]; classification?: string; track?: string }) => void;
   };
 }
 
@@ -40,11 +41,13 @@ export function Sidebar({ specs, filters }: SidebarProps) {
 
   const activeFilterCount = useMemo(() => {
     if (!filters) return 0;
+    const isPrerelease = filters.track === "prerelease";
     return (
       (filters.type ? 1 : 0) +
       (filters.owner ? 1 : 0) +
       (filters.tags?.length ?? 0) +
-      (filters.classification ? 1 : 0)
+      (filters.classification && !isPrerelease ? 1 : 0) +
+      (filters.track ? 1 : 0)
     );
   }, [filters]);
 
@@ -251,7 +254,7 @@ export function Sidebar({ specs, filters }: SidebarProps) {
                   Type
                 </h3>
                 <div className="space-y-1">
-                  {["openapi", "asyncapi"].map((type) => {
+                  {["openapi"].map((type) => {
                     const isSelected = filters.type === type;
                     return (
                       <button
@@ -292,19 +295,24 @@ export function Sidebar({ specs, filters }: SidebarProps) {
                     { key: "patch", label: "Patch" },
                   ].map((item) => {
                     const isSelected = filters.classification === item.key;
+                    const isDisabled = filters.track === "prerelease";
                     return (
                       <button
                         key={item.key}
-                        onClick={() =>
+                        aria-disabled={isDisabled}
+                        onClick={() => {
+                          if (isDisabled) return;
                           filters.onFilterChange({
                             ...filters,
                             classification: isSelected ? undefined : item.key,
-                          })
-                        }
+                          });
+                        }}
                         className={`flex w-full items-center gap-2 rounded-sm px-2 py-1 text-left text-sm transition-colors ${
-                          isSelected
-                            ? "border border-accent-indigo/30 bg-accent-indigo/15 font-medium text-accent-indigo"
-                            : "border border-transparent text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+                          isDisabled
+                            ? "border border-transparent text-text-muted opacity-50 cursor-not-allowed"
+                            : isSelected
+                              ? "border border-accent-indigo/30 bg-accent-indigo/15 font-medium text-accent-indigo"
+                              : "border border-transparent text-text-secondary hover:bg-surface-hover hover:text-text-primary"
                         }`}
                       >
                         {isSelected ? (
@@ -316,6 +324,28 @@ export function Sidebar({ specs, filters }: SidebarProps) {
                       </button>
                     );
                   })}
+                </div>
+                <div className="mt-2 border-t border-surface-border pt-2">
+                  <button
+                    onClick={() =>
+                      filters.onFilterChange({
+                        ...filters,
+                        track: filters.track === "prerelease" ? undefined : "prerelease",
+                      })
+                    }
+                    className={`flex w-full items-center gap-2 rounded-sm px-2 py-1 text-left text-sm transition-colors ${
+                      filters.track === "prerelease"
+                        ? "border border-accent-indigo/30 bg-accent-indigo/15 font-medium text-accent-indigo"
+                        : "border border-transparent text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+                    }`}
+                  >
+                    {filters.track === "prerelease" ? (
+                      <CheckSquare className="h-3.5 w-3.5" />
+                    ) : (
+                      <Square className="h-3.5 w-3.5 text-text-muted" />
+                    )}
+                    Pre-release
+                  </button>
                 </div>
               </div>
 

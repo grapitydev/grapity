@@ -19,6 +19,7 @@ interface Filters {
   owner?: string;
   tags?: string[];
   classification?: string;
+  track?: string;
 }
 
 function parseFilters(searchParams: URLSearchParams): Filters {
@@ -26,7 +27,8 @@ function parseFilters(searchParams: URLSearchParams): Filters {
   const owner = searchParams.get("owner") || undefined;
   const tags = searchParams.get("tags")?.split(",").filter(Boolean) || undefined;
   const classification = searchParams.get("classification") || undefined;
-  return { type, owner, tags, classification };
+  const track = searchParams.get("track") || undefined;
+  return { type, owner, tags, classification, track };
 }
 
 function AppRoutes() {
@@ -42,6 +44,7 @@ function AppRoutes() {
       if (next.owner) params.set("owner", next.owner);
       if (next.tags?.length) params.set("tags", next.tags.join(","));
       if (next.classification) params.set("classification", next.classification);
+      if (next.track) params.set("track", next.track);
       setSearchParams(params, { replace: true });
     },
     [setSearchParams]

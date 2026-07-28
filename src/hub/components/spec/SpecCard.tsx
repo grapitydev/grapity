@@ -6,7 +6,7 @@ import { getClassificationPillStyle } from "../../lib/classificationStyles";
 
 interface SpecCardProps {
   spec: SpecListItem;
-  latestVersion?: { semver: string; classification?: VersionClassification };
+  latestVersion?: { semver: string; classification?: VersionClassification; isPrerelease?: boolean };
 }
 
 export function SpecCard({ spec, latestVersion }: SpecCardProps) {
@@ -23,8 +23,15 @@ export function SpecCard({ spec, latestVersion }: SpecCardProps) {
           {spec.visibility === "public" && <Badge variant="default">public</Badge>}
         </div>
         {latestVersion && (
-          <span className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-xs font-bold ${getClassificationPillStyle(latestVersion.classification)}`}>
-            {latestVersion.semver}
+          <span className="flex items-center gap-1">
+            <span className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-xs font-bold ${getClassificationPillStyle(latestVersion.classification)}`}>
+              {latestVersion.semver}
+            </span>
+            {latestVersion.isPrerelease && (
+              <span className="rounded-sm bg-accent-amber/10 px-1.5 py-0.5 text-xs text-accent-amber">
+                prerelease
+              </span>
+            )}
           </span>
         )}
       </div>

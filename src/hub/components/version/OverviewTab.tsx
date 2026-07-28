@@ -1,6 +1,5 @@
 import { useMemo, useEffect } from "react";
 import { EndpointList } from "./EndpointList";
-import { OverviewFooter } from "./OverviewFooter";
 import { Skeleton } from "../ui/skeleton";
 import { useSpecExplorer } from "../../context/SpecExplorerContext";
 import { useActiveEndpoint } from "../../hooks/useActiveEndpoint";
@@ -97,7 +96,6 @@ export function OverviewTab({ version, jsonLoading }: OverviewTabProps) {
             No endpoints found in this spec.
           </p>
         )}
-        <OverviewFooter />
       </div>
     </div>
   );

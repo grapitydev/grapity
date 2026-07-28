@@ -5,6 +5,7 @@ interface Filters {
   owner?: string;
   tags?: string[];
   classification?: string;
+  track?: string;
 }
 
 interface ActiveFilterChipsProps {
@@ -43,10 +44,17 @@ export function ActiveFilterChips({ filters, onChange }: ActiveFilterChipsProps)
     });
   });
 
-  if (filters.classification) {
+  if (filters.classification && filters.track !== "prerelease") {
     chips.push({
       label: `Classification: ${formatClassification(filters.classification)}`,
       onRemove: () => onChange({ ...filters, classification: undefined }),
+    });
+  }
+
+  if (filters.track) {
+    chips.push({
+      label: `Track: ${filters.track === "prerelease" ? "Pre-release" : "Release"}`,
+      onRemove: () => onChange({ ...filters, track: undefined }),
     });
   }
 

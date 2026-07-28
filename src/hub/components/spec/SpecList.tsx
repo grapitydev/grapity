@@ -58,6 +58,7 @@ export function SpecList({ specs, loading, searchQuery }: SpecListProps) {
               ? {
                   semver: spec.latestVersion.semver,
                   classification: spec.latestVersion.compatibility?.classification,
+                  isPrerelease: spec.latestVersion.isPrerelease,
                 }
               : undefined
           }

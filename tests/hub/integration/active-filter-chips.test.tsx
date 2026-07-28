@@ -69,4 +69,33 @@ describe("ActiveFilterChips", () => {
 
     expect(container.firstChild).toBeNull();
   });
+
+  test("renders and removes a track chip", () => {
+    let latest = {};
+    render(
+      <ActiveFilterChips
+        filters={{ track: "prerelease" }}
+        onChange={(f) => {
+          latest = f;
+        }}
+      />
+    );
+
+    expect(screen.getByText("Track: Pre-release")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: /Remove Track: Pre-release/i }));
+    expect(latest).toEqual({});
+  });
+
+  test("hides greyed-out classification chip while pre-release is checked", () => {
+    render(
+      <ActiveFilterChips
+        filters={{ classification: "major", track: "prerelease" }}
+        onChange={() => {}}
+      />
+    );
+
+    expect(screen.getByText("Track: Pre-release")).toBeTruthy();
+    expect(screen.queryByText("Classification: Major")).toBeNull();
+  });
 });

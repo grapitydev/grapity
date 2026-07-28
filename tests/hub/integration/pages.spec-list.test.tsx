@@ -272,6 +272,233 @@ describe("SpecListPage — / (Browse All Specs)", () => {
     });
   });
 
+  test("filters specs by prerelease track client-side", async () => {
+    const specs: SpecListItem[] = [
+      {
+        id: "1",
+        name: "payments-api",
+        type: "openapi" as const,
+        tags: [],
+        visibility: "private",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        latestVersion: {
+          id: "v1",
+          specId: "1",
+          semver: "1.0.0",
+          checksum: "abc",
+          isPrerelease: false,
+          createdAt: new Date(),
+          compatibility: {
+            previousVersion: "0.0.0",
+            classification: "initial" as const,
+            breakingChanges: [],
+            safeChanges: [],
+          },
+        },
+      },
+      {
+        id: "2",
+        name: "users-api",
+        type: "openapi" as const,
+        tags: [],
+        visibility: "private",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        latestVersion: {
+          id: "v2",
+          specId: "2",
+          semver: "0.1.0",
+          checksum: "def",
+          isPrerelease: true,
+          createdAt: new Date(),
+          compatibility: {
+            previousVersion: "0.0.0",
+            classification: "initial" as const,
+            breakingChanges: [],
+            safeChanges: [],
+          },
+        },
+      },
+    ];
+    render(<SpecListPage specs={specs} filters={{ track: "prerelease" }} />, { wrapper });
+
+    await waitFor(() => {
+      expect(screen.queryByText("payments-api")).toBeNull();
+      expect(screen.getByText("users-api")).toBeTruthy();
+    });
+  });
+
+  test("filters specs by release track client-side", async () => {
+    const specs: SpecListItem[] = [
+      {
+        id: "1",
+        name: "payments-api",
+        type: "openapi" as const,
+        tags: [],
+        visibility: "private",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        latestVersion: {
+          id: "v1",
+          specId: "1",
+          semver: "1.0.0",
+          checksum: "abc",
+          isPrerelease: false,
+          createdAt: new Date(),
+          compatibility: {
+            previousVersion: "0.0.0",
+            classification: "initial" as const,
+            breakingChanges: [],
+            safeChanges: [],
+          },
+        },
+      },
+      {
+        id: "2",
+        name: "users-api",
+        type: "openapi" as const,
+        tags: [],
+        visibility: "private",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        latestVersion: {
+          id: "v2",
+          specId: "2",
+          semver: "0.1.0",
+          checksum: "def",
+          isPrerelease: true,
+          createdAt: new Date(),
+          compatibility: {
+            previousVersion: "0.0.0",
+            classification: "initial" as const,
+            breakingChanges: [],
+            safeChanges: [],
+          },
+        },
+      },
+    ];
+    render(<SpecListPage specs={specs} filters={{ track: "release" }} />, { wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText("payments-api")).toBeTruthy();
+      expect(screen.queryByText("users-api")).toBeNull();
+    });
+  });
+
+  test("classification filter excludes prerelease versions", async () => {
+    const specs: SpecListItem[] = [
+      {
+        id: "1",
+        name: "payments-api",
+        type: "openapi" as const,
+        tags: [],
+        visibility: "private",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        latestVersion: {
+          id: "v1",
+          specId: "1",
+          semver: "1.0.0",
+          checksum: "abc",
+          isPrerelease: false,
+          createdAt: new Date(),
+          compatibility: {
+            previousVersion: "0.0.0",
+            classification: "initial" as const,
+            breakingChanges: [],
+            safeChanges: [],
+          },
+        },
+      },
+      {
+        id: "2",
+        name: "users-api",
+        type: "openapi" as const,
+        tags: [],
+        visibility: "private",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        latestVersion: {
+          id: "v2",
+          specId: "2",
+          semver: "0.2.0",
+          checksum: "def",
+          isPrerelease: true,
+          createdAt: new Date(),
+          compatibility: {
+            previousVersion: "0.1.0",
+            classification: "major" as const,
+            breakingChanges: [{ id: "1", rule: "endpoint-removed", description: "Removed GET /users", path: "/users", category: "structural" as const }],
+            safeChanges: [],
+          },
+        },
+      },
+    ];
+    render(<SpecListPage specs={specs} filters={{ classification: "major" }} />, { wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText("payments-api")).toBeTruthy();
+      expect(screen.queryByText("users-api")).toBeNull();
+    });
+  });
+
+  test("renders prerelease tag on spec cards", async () => {
+    const specs: SpecListItem[] = [
+      {
+        id: "1",
+        name: "payments-api",
+        type: "openapi" as const,
+        tags: [],
+        visibility: "private",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        latestVersion: {
+          id: "v1",
+          specId: "1",
+          semver: "1.0.0",
+          checksum: "abc",
+          isPrerelease: false,
+          createdAt: new Date(),
+          compatibility: {
+            previousVersion: "0.0.0",
+            classification: "initial" as const,
+            breakingChanges: [],
+            safeChanges: [],
+          },
+        },
+      },
+      {
+        id: "2",
+        name: "users-api",
+        type: "openapi" as const,
+        tags: [],
+        visibility: "private",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        latestVersion: {
+          id: "v2",
+          specId: "2",
+          semver: "0.1.0",
+          checksum: "def",
+          isPrerelease: true,
+          createdAt: new Date(),
+          compatibility: {
+            previousVersion: "0.0.0",
+            classification: "initial" as const,
+            breakingChanges: [],
+            safeChanges: [],
+          },
+        },
+      },
+    ];
+    render(<SpecListPage specs={specs} />, { wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText("prerelease")).toBeTruthy();
+    });
+  });
+
   test("shows error state when error is provided", () => {
     const error = new Error("Server failed");
     render(<SpecListPage error={error} />, { wrapper });

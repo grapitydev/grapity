@@ -67,14 +67,15 @@ describe("Canonical normalization on push", () => {
     expect(body2.data.version.checksum).toBe(checksum1);
   });
 
-  it("second push with identical content bumps patch version", async () => {
+  it("second push with identical content creates no new version", async () => {
     const base = makeSpec();
     const { res: res1 } = await pushSpec(app, { content: base, name: "payments-api" });
     expect(res1.status).toBe(201);
 
     const { res: res2, body: body2 } = await pushSpec(app, { content: base, name: "payments-api" });
-    expect(res2.status).toBe(201);
-    expect(body2.data.version.semver).toBe("1.0.1");
+    expect(res2.status).toBe(200);
+    expect(body2.data.unchanged).toBe(true);
+    expect(body2.data.version.semver).toBe("1.0.0");
   });
 
   it("preserves array order after normalization", async () => {

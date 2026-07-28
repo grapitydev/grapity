@@ -61,7 +61,8 @@ describe("PATCH /v1/specs/:name", () => {
       name: "some-api",
       visibility: "public",
     });
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
+    expect(body.data.unchanged).toBe(true);
     expect(body.data.spec.visibility).toBe("public");
   });
 
@@ -69,7 +70,7 @@ describe("PATCH /v1/specs/:name", () => {
     await pushSpec(app, { content: baseSpec, name: "some-api", visibility: "public" });
 
     const { res, body } = await pushSpec(app, { content: baseSpec, name: "some-api" });
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
     expect(body.data.spec.visibility).toBe("public");
   });
 

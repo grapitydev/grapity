@@ -71,12 +71,15 @@ export const validateRoute = new Hono<AppEnv>().post("/:name/validate", async (c
       (b) => !allowedRules.has(b.rule)
     );
     const hasBlocked = blockedChanges.length > 0;
+    const unchanged =
+      compatReport.breakingChanges.length === 0 && compatReport.safeChanges.length === 0;
     return c.json({
       data: {
         compatReport,
         errors: hasBlocked ? blockedChanges.map((b) => b.description) : [],
         valid: !hasBlocked,
         warnings,
+        ...(unchanged ? { unchanged: true } : {}),
       },
     });
   } catch (err) {

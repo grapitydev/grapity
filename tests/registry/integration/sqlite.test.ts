@@ -52,7 +52,7 @@ describe("registry over HTTP with SQLite backend", () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        content: makeSpec({ info: { title: "Test API", version: "9.9.9" } }),
+        content: makeSpec({ info: { title: "Test API v2", version: "9.9.9" } }),
         name: "payments-api",
       }),
     });

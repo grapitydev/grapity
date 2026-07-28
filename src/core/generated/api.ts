@@ -656,6 +656,8 @@ export interface components {
                 compatReport: components["schemas"]["CompatReport"];
                 /** @description True if this is the first version of this spec */
                 isNewSpec: boolean;
+                /** @description True when the pushed content is identical to the latest version and no new version was created (200 response) */
+                unchanged?: boolean;
                 spec: components["schemas"]["Spec"];
                 version: components["schemas"]["SpecVersion"];
             };
@@ -686,6 +688,8 @@ export interface components {
             data: {
                 compatReport?: components["schemas"]["CompatReport"];
                 errors?: string[];
+                /** @description True when the content is identical to the latest version; pushing it would register nothing */
+                unchanged?: boolean;
                 valid: boolean;
                 warnings?: string[];
             };
@@ -1119,6 +1123,15 @@ export interface operations {
             };
         };
         responses: {
+            /** @description Pushed content is identical to the latest version; no new version was created */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PushSpecResponse"];
+                };
+            };
             /** @description Spec version registered successfully */
             201: {
                 headers: {

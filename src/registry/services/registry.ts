@@ -47,6 +47,7 @@ export class RegistryService {
     version: SpecVersion;
     compatReport?: CompatReport;
     isNewSpec: boolean;
+    unchanged?: boolean;
   }> {
     const prerelease = options?.prerelease ?? false;
     const existingSpec = await this.store.getSpec(name);
@@ -116,6 +117,15 @@ export class RegistryService {
 
         if (!options?.force && blockedBreakingChanges.length > 0) {
           throw new BreakingChangeError(report);
+        }
+
+        // Idempotent push: an empty diff registers nothing. A requested
+        // visibility change still applies, without creating a version.
+        if (report.breakingChanges.length === 0 && report.safeChanges.length === 0) {
+          if (spec.visibility !== existingSpec.visibility) {
+            spec = (await this.updateSpec(name, { visibility: spec.visibility }, options?.pushedBy)) ?? spec;
+          }
+          return { spec, version: latestVersion, compatReport: report, isNewSpec: false, unchanged: true };
         }
 
         if (prerelease) {

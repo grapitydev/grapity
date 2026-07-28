@@ -266,3 +266,37 @@ describe("Scenario 9: CI validate before pushing", () => {
     expect(body.data.compatReport.breakingChanges.map((b: any) => b.rule)).toContain("response-property-removed-without-deprecation");
   });
 });
+
+describe("Scenario: Validate unchanged content", () => {
+  it("reports unchanged: true when the content matches the latest version", async () => {
+    await pushSpec(app, { content: baseSpec, name: "payments-api" });
+
+    const res = await app.request("/v1/specs/payments-api/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: baseSpec }),
+    });
+    const body = await res.json() as any;
+
+    expect(res.status).toBe(200);
+    expect(body.data.valid).toBe(true);
+    expect(body.data.unchanged).toBe(true);
+    expect(body.data.compatReport.breakingChanges).toHaveLength(0);
+    expect(body.data.compatReport.safeChanges).toHaveLength(0);
+  });
+
+  it("does not report unchanged when the content differs", async () => {
+    await pushSpec(app, { content: baseSpec, name: "payments-api" });
+
+    const res = await app.request("/v1/specs/payments-api/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: specWithNewEndpoint }),
+    });
+    const body = await res.json() as any;
+
+    expect(res.status).toBe(200);
+    expect(body.data.valid).toBe(true);
+    expect(body.data.unchanged).toBeUndefined();
+  });
+});

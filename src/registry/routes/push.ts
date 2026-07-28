@@ -72,7 +72,7 @@ export const pushRoute = new Hono<AppEnv>().post("/", async (c) => {
       force: body.force as boolean | undefined,
       reason: body.reason as string | undefined,
     });
-    return c.json({ data: result }, 201);
+    return c.json({ data: result }, result.unchanged ? 200 : 201);
   } catch (err) {
     if (err instanceof BreakingChangeError) {
       return c.json({

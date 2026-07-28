@@ -250,3 +250,37 @@ describe("Schema validation on push", () => {
     expect(body.error).toBe("bad_request");
   });
 });
+
+describe("Scenario: Idempotent push (no changes)", () => {
+  it("returns 200 with unchanged: true and creates no new version", async () => {
+    await pushSpec(app, { content: baseSpec, name: "payments-api" });
+
+    const { res, body } = await pushSpec(app, { content: baseSpec, name: "payments-api" });
+
+    expect(res.status).toBe(200);
+    expect(body.data.unchanged).toBe(true);
+    expect(body.data.version.semver).toBe("1.0.0");
+
+    const versions = await app.request("/v1/specs/payments-api/versions");
+    const versionsBody = await versions.json() as any;
+    expect(versionsBody.data.length).toBe(1);
+  });
+
+  it("applies a requested visibility change without creating a version", async () => {
+    await pushSpec(app, { content: baseSpec, name: "payments-api" });
+
+    const { res, body } = await pushSpec(app, {
+      content: baseSpec,
+      name: "payments-api",
+      visibility: "public",
+    });
+
+    expect(res.status).toBe(200);
+    expect(body.data.unchanged).toBe(true);
+    expect(body.data.spec.visibility).toBe("public");
+
+    const versions = await app.request("/v1/specs/payments-api/versions");
+    const versionsBody = await versions.json() as any;
+    expect(versionsBody.data.length).toBe(1);
+  });
+});

@@ -88,6 +88,11 @@ export function formatPushResult(
 
   lines.push(`  ${c.success("✓")} ${name}  ${type}  validated`);
 
+  if (result.unchanged) {
+    lines.push(`  ${c.accentDim("◆")} ${c.successDim("no changes")}  ${c.label("·")}  ${c.dim(`already at ${result.version.semver}`)}`);
+    return lines.join("\n");
+  }
+
   if (result.compatReport) {
     const { breakingChanges, safeChanges, previousVersion, classification } = result.compatReport;
     const bCount = breakingChanges.length;

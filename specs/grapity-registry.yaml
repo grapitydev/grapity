@@ -301,6 +301,46 @@ paths:
                             description: Endpoint GET /payments/{id}/refunds added
                             path: /payments/{id}/refunds/GET
                   summary: Default
+        '200':
+          description: Pushed content is identical to the latest version; no new version was created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushSpecResponse'
+              examples:
+                default:
+                  value:
+                    data:
+                      isNewSpec: false
+                      unchanged: true
+                      spec:
+                        id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                        name: payments-api
+                        type: openapi
+                        description: Payments service API
+                        owner: platform-team
+                        sourceRepo: https://github.com/acme/payments-service
+                        tags:
+                          - payments
+                          - public
+                        createdAt: '2026-04-25T10:30:00.000Z'
+                        updatedAt: '2026-06-07T14:00:00.000Z'
+                      version:
+                        id: ver-uuid-2
+                        specId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                        semver: 1.1.0
+                        checksum: sha256-def456
+                        gitRef: 9z8y7x6w
+                        pushedBy: github-actions[bot]
+                        previousVersion: 1.0.0
+                        isPrerelease: false
+                        createdAt: '2026-05-10T09:00:00.000Z'
+                      compatReport:
+                        previousVersion: 1.1.0
+                        classification: patch
+                        breakingChanges: []
+                        safeChanges: []
+                  summary: Default
         '400':
           description: Missing required fields or invalid spec content
           content:
@@ -2979,6 +3019,9 @@ components:
             isNewSpec:
               type: boolean
               description: True if this is the first version of this spec
+            unchanged:
+              type: boolean
+              description: True when the pushed content is identical to the latest version and no new version was created (200 response)
             spec:
               $ref: '#/components/schemas/Spec'
             version:
@@ -3036,6 +3079,9 @@ components:
               type: array
               items:
                 type: string
+            unchanged:
+              type: boolean
+              description: True when the content is identical to the latest version; pushing it would register nothing
             valid:
               type: boolean
             warnings:

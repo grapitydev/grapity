@@ -4,6 +4,23 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.13.0](https://github.com/grapitydev/grapity/compare/v0.12.0...v0.13.0) (2026-07-28)
+
+
+### Features
+
+* gate registry pushes on merge-time validation and publish prerelease track ([0dd593e](https://github.com/grapitydev/grapity/commit/0dd593e6d6df30397a9ba07016c0186ea9758d30))
+
+
+### Bug Fixes
+
+* exit non-zero when registry validate reports an invalid spec ([8243c4b](https://github.com/grapitydev/grapity/commit/8243c4bf5a8e841bea7dcd4b795a8ec6972fc780))
+* format registry spec as yaml and placeholder info.version ([ee3c733](https://github.com/grapitydev/grapity/commit/ee3c7335f7da48b4b9165c476089425578297489))
+* pause dogfood validate and push until enforcement fixes ship in a release ([2818931](https://github.com/grapitydev/grapity/commit/281893165346bc85a7c88143c84f2f0df909481e))
+* read repository_dispatch client_payload with correct key in publish-image workflow ([447eca0](https://github.com/grapitydev/grapity/commit/447eca0a967a401ca13a138c52ba8e9c95df267a))
+* reject schema-invalid OpenAPI documents on push ([7028715](https://github.com/grapitydev/grapity/commit/7028715039cf95ce73b07fbb0d5a565dafe6e217))
+* validate unknown specs as initial versions instead of 404 ([e4f2663](https://github.com/grapitydev/grapity/commit/e4f266380d0d4ec5690aa45e6d3edb8240b2e5b0))
+
 ## [0.12.0](https://github.com/grapitydev/grapity/compare/v0.11.0...v0.12.0) (2026-07-26)
 
 

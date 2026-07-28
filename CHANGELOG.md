@@ -4,6 +4,13 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.14.1](https://github.com/grapitydev/grapity/compare/v0.14.0...v0.14.1) (2026-07-28)
+
+
+### Bug Fixes
+
+* dispatch registry spec publish only after release binaries exist ([05ee998](https://github.com/grapitydev/grapity/commit/05ee998cdb88c758e64fd3f9d566d42bf85af5c3))
+
 ## [0.14.0](https://github.com/grapitydev/grapity/compare/v0.13.0...v0.14.0) (2026-07-28)
 
 

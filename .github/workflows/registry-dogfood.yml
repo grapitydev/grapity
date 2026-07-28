@@ -1,12 +1,18 @@
 name: Registry dogfood
 
 # Grapity on Grapity: our own registry API contract (specs/grapity-registry.yaml)
-# is validated on pull requests and pushed to our public registry on merge,
-# through the same composite action we ship to users (./actions/registry).
+# is validated on pull requests and merges to main, and pushed to our public
+# registry when a software release ships, through the same composite action we
+# ship to users (./actions/registry).
+#
+# The push fires on the publish-registry-spec repository_dispatch sent by
+# release.yml after release-please creates a release, and only when specs/**
+# changed since the previous release tag: an unchanged spec classifies as patch
+# and would mint a meaningless version per release.
 #
 # Requires the GRAPITY_REGISTRY_URL repository variable
 # (https://registry.grapity.dev) and the GRAPITY_CI_CLIENT_SECRET secret.
-# Without the variable, both jobs skip.
+# Without the variable, all jobs skip.
 
 on:
   pull_request:
@@ -19,6 +25,8 @@ on:
     branches: [main]
     paths:
       - specs/**
+  repository_dispatch:
+    types: [publish-registry-spec]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -29,10 +37,10 @@ jobs:
     # Fork pull requests never receive repository secrets (GitHub limitation),
     # so external contributions skip validation instead of failing on a
     # missing client secret. Maintainers can validate locally with the CLI.
-    # On merge to main, validation re-runs against the registry's current
-    # state and gates the push below (registry state may have moved since
-    # the pull request was validated).
-    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && vars.GRAPITY_REGISTRY_URL != '') || (github.event_name == 'push' && vars.GRAPITY_REGISTRY_URL != '')
+    # Validation re-runs at release time against the registry's current state
+    # and gates the push below (registry state may have moved since the pull
+    # request was validated).
+    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && vars.GRAPITY_REGISTRY_URL != '') || (github.event_name == 'push' && vars.GRAPITY_REGISTRY_URL != '') || (github.event_name == 'repository_dispatch' && vars.GRAPITY_REGISTRY_URL != '')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,12 +59,30 @@ jobs:
 
   push:
     needs: validate
-    if: github.event_name == 'push' && vars.GRAPITY_REGISTRY_URL != ''
+    if: github.event_name == 'repository_dispatch' && vars.GRAPITY_REGISTRY_URL != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for spec changes since the previous release
+        id: changes
+        run: |
+          PREV_TAG=$(git tag --sort=-creatordate | sed -n 2p)
+          if [ -z "$PREV_TAG" ]; then
+            echo "No previous release tag; treating as changed"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif git diff --quiet "$PREV_TAG"...HEAD -- specs/; then
+            echo "No specs/ changes since $PREV_TAG; skipping push"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "specs/ changed since $PREV_TAG"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Push to the registry
+        if: steps.changes.outputs.changed == 'true'
         uses: ./actions/registry
         with:
           command: push

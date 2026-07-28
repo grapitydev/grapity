@@ -4,13 +4,9 @@ name: Registry dogfood
 # is validated on pull requests and pushed to our public registry on merge,
 # through the same composite action we ship to users (./actions/registry).
 #
-# PAUSED: the validate and push steps are commented out until the v0.12.1
-# release ships the enforcement fixes (validate exit code, initial-version
-# semantics for unknown specs, push-time schema lint) and the canonical
-# instance on bee runs that image. To re-enable: uncomment both steps, set
-# the GRAPITY_REGISTRY_URL repository variable to https://registry.grapity.dev,
-# and include any real change under specs/** in the same merge so the push
-# job fires and seeds the first version automatically.
+# Requires the GRAPITY_REGISTRY_URL repository variable
+# (https://registry.grapity.dev) and the GRAPITY_CI_CLIENT_SECRET secret.
+# Without the variable, both jobs skip.
 
 on:
   pull_request:
@@ -41,17 +37,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # - name: Validate against the registry
-      #   uses: ./actions/registry
-      #   with:
-      #     command: validate
-      #     spec: specs/grapity-registry.yaml
-      #     name: grapity-registry
-      #     registry-url: ${{ vars.GRAPITY_REGISTRY_URL }}
-      #     keycloak-server-url: https://keycloak.grapity.dev
-      #     realm: grapity
-      #     client-id: grapity-ci
-      #     client-secret: ${{ secrets.GRAPITY_CI_CLIENT_SECRET }}
+      - name: Validate against the registry
+        uses: ./actions/registry
+        with:
+          command: validate
+          spec: specs/grapity-registry.yaml
+          name: grapity-registry
+          registry-url: ${{ vars.GRAPITY_REGISTRY_URL }}
+          keycloak-server-url: https://keycloak.grapity.dev
+          realm: grapity
+          client-id: grapity-ci
+          client-secret: ${{ secrets.GRAPITY_CI_CLIENT_SECRET }}
 
   push:
     needs: validate
@@ -60,19 +56,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # - name: Push to the registry
-      #   uses: ./actions/registry
-      #   with:
-      #     command: push
-      #     spec: specs/grapity-registry.yaml
-      #     name: grapity-registry
-      #     visibility: public
-      #     # Publishes 0.x pre-release versions until the registry API is
-      #     # declared stable; dropping this line graduates the spec to 1.0.0.
-      #     prerelease: "true"
-      #     pushed-by: github-actions[bot]
-      #     registry-url: ${{ vars.GRAPITY_REGISTRY_URL }}
-      #     keycloak-server-url: https://keycloak.grapity.dev
-      #     realm: grapity
-      #     client-id: grapity-ci
-      #     client-secret: ${{ secrets.GRAPITY_CI_CLIENT_SECRET }}
+      - name: Push to the registry
+        uses: ./actions/registry
+        with:
+          command: push
+          spec: specs/grapity-registry.yaml
+          name: grapity-registry
+          visibility: public
+          # Publishes 0.x pre-release versions until the registry API is
+          # declared stable; dropping this line graduates the spec to 1.0.0.
+          prerelease: "true"
+          pushed-by: github-actions[bot]
+          registry-url: ${{ vars.GRAPITY_REGISTRY_URL }}
+          keycloak-server-url: https://keycloak.grapity.dev
+          realm: grapity
+          client-id: grapity-ci
+          client-secret: ${{ secrets.GRAPITY_CI_CLIENT_SECRET }}

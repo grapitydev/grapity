@@ -8,6 +8,8 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
 servers:
+  - url: https://registry.grapity.dev
+    description: Production server
   - url: http://localhost:3750
     description: Local development server
 security:

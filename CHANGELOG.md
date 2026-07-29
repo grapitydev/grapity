@@ -4,6 +4,13 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.15.1](https://github.com/grapitydev/grapity/compare/v0.15.0...v0.15.1) (2026-07-29)
+
+
+### Bug Fixes
+
+* grant contents write to registry spec dispatch job ([f112fb4](https://github.com/grapitydev/grapity/commit/f112fb4382246f7ea858fb41de15d3d3130c275a))
+
 ## [0.15.0](https://github.com/grapitydev/grapity/compare/v0.14.1...v0.15.0) (2026-07-29)
 
 

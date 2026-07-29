@@ -6,8 +6,11 @@ import yaml from "js-yaml";
 import {
   materialize,
   check,
+  formatCheckResultsJson,
+  formatGitHubAnnotations,
   readProjectConfig,
   writeProjectConfig,
+  type CheckResult,
   type MaterializeDeps,
   type CheckDeps,
   type ProjectConfig,
@@ -302,6 +305,49 @@ describe("check command", () => {
     const deps = createCheckDeps();
 
     await expect(check({ cwd: tmpRepo, failOnStale: false }, deps)).rejects.toThrow("grapity-lock.json");
+  });
+});
+
+describe("check output formatting", () => {
+  const results: Record<string, CheckResult> = {
+    "payments-api": { name: "payments-api", resolved: "1.0.0", latest: "2.0.0", stale: true },
+    "users-api": { name: "users-api", resolved: "3.0.0", latest: "3.0.0", stale: false },
+  };
+
+  test("formatCheckResultsJson produces a machine-readable summary", () => {
+    const parsed = JSON.parse(formatCheckResultsJson(results));
+
+    expect(parsed.stale).toBe(true);
+    expect(parsed.specs).toEqual([
+      { name: "payments-api", resolved: "1.0.0", latest: "2.0.0", stale: true },
+      { name: "users-api", resolved: "3.0.0", latest: "3.0.0", stale: false },
+    ]);
+  });
+
+  test("formatCheckResultsJson reports stale false when all specs are fresh", () => {
+    const fresh: Record<string, CheckResult> = {
+      "users-api": { name: "users-api", resolved: "3.0.0", latest: "3.0.0", stale: false },
+    };
+
+    const parsed = JSON.parse(formatCheckResultsJson(fresh));
+
+    expect(parsed.stale).toBe(false);
+  });
+
+  test("formatGitHubAnnotations emits a ::warning:: line per stale spec", () => {
+    const lines = formatGitHubAnnotations(results);
+
+    expect(lines).toEqual([
+      "::warning file=grapity-lock.json::payments-api@1.0.0 is not the latest version (latest: 2.0.0)",
+    ]);
+  });
+
+  test("formatGitHubAnnotations emits nothing when all specs are fresh", () => {
+    const fresh: Record<string, CheckResult> = {
+      "users-api": { name: "users-api", resolved: "3.0.0", latest: "3.0.0", stale: false },
+    };
+
+    expect(formatGitHubAnnotations(fresh)).toEqual([]);
   });
 });
 

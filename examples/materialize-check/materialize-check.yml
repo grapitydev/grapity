@@ -1,0 +1,74 @@
+name: Grapity materialize check
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  materialize-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install grapity CLI
+        run: curl -fsSL https://packages.grapity.dev/install.sh | sh
+
+      - name: Configure registry remote
+        run: |
+          {
+            echo "mode: remote"
+            echo "remote:"
+            echo "  url: ${{ secrets.GRAPITY_REGISTRY_URL }}"
+            echo "  auth:"
+            echo "    mode: keycloak"
+            echo "    serverUrl: ${{ secrets.KEYCLOAK_SERVER_URL }}"
+            echo "    realm: ${{ secrets.KEYCLOAK_REALM }}"
+            echo "    clientId: ${{ secrets.KEYCLOAK_CLIENT_ID }}"
+          } > "$RUNNER_TEMP/grapity-config.yaml"
+
+      - name: Check materialized specs
+        id: check
+        env:
+          GRAPITY_CONFIG_PATH: ${{ runner.temp }}/grapity-config.yaml
+          GRAPITY_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
+        run: |
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          {
+            echo "result<<$EOF"
+            grapity materialize --check --json
+            echo "$EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build PR comment
+        id: comment
+        env:
+          RESULT: ${{ steps.check.outputs.result }}
+        run: |
+          if [ "$(echo "$RESULT" | jq -r '.stale')" = "true" ]; then
+            {
+              echo "### Grapity spec drift detected"
+              echo ""
+              echo "| Spec | Materialized | Latest |"
+              echo "| --- | --- | --- |"
+              echo "$RESULT" | jq -r '.specs[] | select(.stale) | "| \(.name) | \(.resolved) | \(.latest) |"'
+              echo ""
+              echo "Run \`grapity materialize --force\` locally and commit the updated specs to resolve."
+            } > comment.md
+          else
+            {
+              echo "### Grapity specs up to date"
+              echo ""
+              echo "All materialized specs match the latest registry versions."
+            } > comment.md
+          fi
+
+      - name: Upsert sticky PR comment
+        if: always()
+        uses: marocchino/sticky-pull-request-comment@v3
+        with:
+          header: materialize-check
+          skip_unchanged: true
+          path: comment.md

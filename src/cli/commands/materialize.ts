@@ -262,6 +262,27 @@ export interface CheckResult {
   stale: boolean;
 }
 
+export function formatCheckResultsJson(results: Record<string, CheckResult>): string {
+  const specs = Object.values(results);
+  return JSON.stringify(
+    {
+      stale: specs.some((r) => r.stale),
+      specs,
+    },
+    null,
+    2
+  );
+}
+
+export function formatGitHubAnnotations(results: Record<string, CheckResult>): string[] {
+  return Object.values(results)
+    .filter((r) => r.stale)
+    .map(
+      (r) =>
+        `::warning file=${LOCKFILE_FILENAME}::${r.name}@${r.resolved} is not the latest version (latest: ${r.latest})`
+    );
+}
+
 export async function check(
   options: CheckOptions,
   deps: CheckDeps = { getSpec: client.getSpec },
@@ -314,6 +335,7 @@ export const materializeCommand = new Command("materialize")
   .option("--fail-on-stale", "Exit with an error when the resolved version is not the latest")
   .option("--config <path>", "Path to grapity.yaml", CONFIG_FILENAME)
   .option("--check", "Verify lockfile specs are still the latest registry versions")
+  .option("--json", "With --check, print results as JSON for CI consumption")
   .action(async (name, options) => {
     try {
       const cwd = process.cwd();
@@ -322,11 +344,21 @@ export const materializeCommand = new Command("materialize")
         const results = await check({ cwd, failOnStale: options.failOnStale }, undefined, options.config);
         const entries = Object.values(results);
 
-        for (const result of entries) {
-          const meta = result.stale
-            ? `${result.resolved} → latest ${result.latest}`
-            : `${result.resolved} (latest)`;
-          console.log(formatHeader(result.name, meta));
+        if (options.json) {
+          console.log(formatCheckResultsJson(results));
+        } else {
+          for (const result of entries) {
+            const meta = result.stale
+              ? `${result.resolved} → latest ${result.latest}`
+              : `${result.resolved} (latest)`;
+            console.log(formatHeader(result.name, meta));
+          }
+        }
+
+        if (process.env.GITHUB_ACTIONS) {
+          for (const line of formatGitHubAnnotations(results)) {
+            console.log(line);
+          }
         }
 
         if (entries.some((r) => r.stale)) {

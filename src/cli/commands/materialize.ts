@@ -357,7 +357,7 @@ export const materializeCommand = new Command("materialize")
 
         if (process.env.GITHUB_ACTIONS) {
           for (const line of formatGitHubAnnotations(results)) {
-            console.log(line);
+            console.error(line);
           }
         }
 

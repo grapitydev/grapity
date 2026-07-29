@@ -351,6 +351,84 @@ describe("check output formatting", () => {
   });
 });
 
+describe("materialize --check CLI output streams", () => {
+  const cliRoot = join(import.meta.dirname, "../..");
+  let stubServer: ReturnType<typeof Bun.serve>;
+  let consumerRepo: string;
+  let configPath: string;
+
+  beforeEach(() => {
+    consumerRepo = mkdtempSync(join(tmpdir(), "grapity-consumer-repo-"));
+    const configDir = mkdtempSync(join(tmpdir(), "grapity-cli-config-"));
+    configPath = join(configDir, "config.yaml");
+
+    stubServer = Bun.serve({
+      port: 0,
+      fetch: () =>
+        new Response(
+          JSON.stringify({
+            data: { spec: { name: "payments-api" }, latestVersion: { semver: "2.0.0" } },
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        ),
+    });
+
+    writeFileSync(
+      configPath,
+      yaml.dump({ mode: "remote", remote: { url: `http://127.0.0.1:${stubServer.port}` } })
+    );
+
+    writeFileSync(
+      join(consumerRepo, LOCKFILE_FILENAME),
+      JSON.stringify({
+        version: "1",
+        specs: {
+          "payments-api": {
+            requested: "1.0.0",
+            resolved: "1.0.0",
+            latest: "1.0.0",
+            stale: false,
+            fetchedAt: "2026-01-01T00:00:00Z",
+          },
+        },
+      })
+    );
+  });
+
+  afterEach(() => {
+    stubServer?.stop(true);
+    rmSync(consumerRepo, { recursive: true, force: true });
+    rmSync(join(configPath, ".."), { recursive: true, force: true });
+  });
+
+  test("--json keeps stdout machine-parseable while annotations go to stderr", async () => {
+    const proc = Bun.spawn(
+      ["bun", "run", join(cliRoot, "src/cli/index.ts"), "materialize", "--check", "--json"],
+      {
+        cwd: consumerRepo,
+        env: {
+          ...process.env,
+          GRAPITY_CONFIG_PATH: configPath,
+          GITHUB_ACTIONS: "true",
+        },
+        stdout: "pipe",
+        stderr: "pipe",
+      }
+    );
+    const stdout = await new Response(proc.stdout).text();
+    const stderr = await new Response(proc.stderr).text();
+    await proc.exited;
+
+    const parsed = JSON.parse(stdout);
+    expect(parsed.stale).toBe(true);
+    expect(stdout).not.toContain("::warning");
+
+    expect(stderr).toContain(
+      "::warning file=grapity-lock.json::payments-api@1.0.0 is not the latest version (latest: 2.0.0)"
+    );
+  });
+});
+
 describe("project config helpers", () => {
   test("readProjectConfig returns null when file is missing", () => {
     const config = readProjectConfig(tmpRepo);

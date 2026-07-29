@@ -60,8 +60,9 @@ jobs:
             } > comment.md
           else
             {
-              echo "> [!TIP]"
-              echo "> **Specs up to date**: all materialized specs match the latest registry versions."
+              echo "### ✅ Specs up to date"
+              echo ""
+              echo "All materialized specs match the latest registry versions."
             } > comment.md
           fi
 

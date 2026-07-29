@@ -49,7 +49,8 @@ jobs:
         run: |
           if [ "$(echo "$RESULT" | jq -r '.stale')" = "true" ]; then
             {
-              echo "### Grapity spec drift detected"
+              echo "> [!WARNING]"
+              echo "> **Spec drift detected**: materialized specs are behind the registry."
               echo ""
               echo "| Spec | Materialized | Latest |"
               echo "| --- | --- | --- |"
@@ -59,9 +60,8 @@ jobs:
             } > comment.md
           else
             {
-              echo "### Grapity specs up to date"
-              echo ""
-              echo "All materialized specs match the latest registry versions."
+              echo "> [!TIP]"
+              echo "> **Specs up to date**: all materialized specs match the latest registry versions."
             } > comment.md
           fi
 

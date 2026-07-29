@@ -85,11 +85,13 @@ jobs:
   # The dogfood action installs the released CLI binary, so the registry spec
   # publish can only start once the release assets exist. Dispatching from
   # release.yml (at release creation) raced this pipeline and 404'd.
+  # The repository dispatch API requires contents: write on the token;
+  # actions: write does not cover it.
   dispatch-registry-spec:
     needs: publish-binaries
     runs-on: ubuntu-latest
     permissions:
-      actions: write
+      contents: write
     steps:
       - uses: peter-evans/repository-dispatch@v2
         with:

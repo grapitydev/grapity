@@ -11,7 +11,7 @@ setup header listing the variables and secrets to configure.
 | [`producer/contract.yml`](producer/contract.yml) | Validates the spec on every pull request (breaking changes fail) and pushes a new version on merge to main |
 
 The same setup the Grapity repository runs for its own registry spec, via the
-composite action [`grapitydev/grapity/actions/registry`](../actions/registry).
+composite action [`grapitydev/grapity/actions/grapity`](../actions/grapity).
 
 ## Consumer (you materialize specs from the registry)
 

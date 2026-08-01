@@ -22,7 +22,7 @@ name: API contract
 #    GRAPITY_REGISTRY_URL variable (e.g. https://registry.example.com) and
 #    the GRAPITY_CI_CLIENT_SECRET secret.
 # 4. Pin the action to a release tag for reproducibility, e.g.
-#    grapitydev/grapity/actions/registry@v0.16.0
+#    grapitydev/grapity/actions/grapity@v0.17.0
 #
 # Optional push inputs you can add under `with:` in the push job:
 #   visibility: public    make the spec readable without a token
@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Validate against the registry
-        uses: grapitydev/grapity/actions/registry@main # pin to a release tag
+        uses: grapitydev/grapity/actions/grapity@main # pin to a release tag
         with:
           command: validate
           spec: openapi.yaml # <-- SPEC_PATH
@@ -72,7 +72,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Push to the registry
-        uses: grapitydev/grapity/actions/registry@main # pin to a release tag
+        uses: grapitydev/grapity/actions/grapity@main # pin to a release tag
         with:
           command: push
           spec: openapi.yaml # <-- SPEC_PATH

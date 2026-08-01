@@ -1,7 +1,9 @@
 # Consumer example (GitHub Actions)
 
 Copy-paste workflow for repositories that materialize specs from a Grapity
-registry.
+registry. It uses the composite action
+[`grapitydev/grapity/actions/grapity`](../../actions/grapity), which installs
+the CLI and wraps `grapity materialize --check`.
 
 | File | When it runs | What it does |
 | --- | --- | --- |
@@ -18,28 +20,29 @@ Against public specs (anonymous reads) the only configuration needed is a
 `GRAPITY_REGISTRY_URL` variable under **Settings > Secrets and variables >
 Actions**.
 
-Authenticated registries (Keycloak client credentials) additionally need the
-keycloak block commented in the file plus these entries:
+Authenticated registries (Keycloak client credentials) switch
+`auth-mode: none` to `auth-mode: keycloak` and pass these inputs (the
+commented lines in the file):
 
-| Name | Kind | Description |
+| Input | Source | Description |
 | --- | --- | --- |
-| `KEYCLOAK_SERVER_URL` | Variable | Keycloak server URL |
-| `KEYCLOAK_REALM` | Variable | Keycloak realm |
-| `KEYCLOAK_CLIENT_ID` | Variable | Client id (needs the `specs:read` scope) |
-| `KEYCLOAK_CLIENT_SECRET` | Secret | Client secret |
+| `keycloak-server-url` | Variable | Keycloak server URL |
+| `realm` | Variable | Keycloak realm |
+| `client-id` | Variable | Client id (needs the `specs:read` scope) |
+| `client-secret` | Secret | Client secret |
 
 ## Behavior
 
 - **Warn by default.** Stale specs never fail the pipeline; they surface as a
   PR comment and as inline `::warning::` annotations in the GitHub checks UI.
 - **Sticky comment.** The comment is keyed by the `materialize-check` header
-  and updated in place, so re-runs never spam the PR. `skip_unchanged` avoids
-  no-op edits.
+  and updated in place, so re-runs never spam the PR. Set
+  `post-comment: "false"` to disable it (the job summary always shows the
+  status).
 - **All-clear.** When drift is resolved, the comment is edited to confirm all
   specs are up to date, so the PR always reflects the current state.
-- **Blocking mode.** Change the check step to
-  `grapity materialize --check --fail-on-stale` to fail the pipeline on
-  drift. Details in the workflow header.
+- **Blocking mode.** Add `fail-on-stale: "true"` to fail the pipeline on
+  drift; the comment still posts on a red run.
 
 ## Committing vs restoring specs
 

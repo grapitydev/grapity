@@ -5,6 +5,7 @@ name: Grapity materialize check
 # Reports spec drift on every pull request: compares grapity-lock.json
 # against the live registry and upserts a sticky PR comment showing either
 # the outdated specs (materialized vs latest version) or an all-clear note.
+# Stale specs also appear as inline warnings in the checks UI.
 #
 # Works out of the box against public specs (anonymous reads): the only
 # configuration needed is a GRAPITY_REGISTRY_URL variable under Settings >
@@ -12,19 +13,17 @@ name: Grapity materialize check
 # pull-requests: write permission (already declared) lets the workflow post
 # and update the comment.
 #
-# Authenticated registry (Keycloak client credentials): in the configure step
-# below, swap `mode: none` for the commented keycloak block, add the
+# Authenticated registry (Keycloak client credentials): replace the
+# auth-mode: none line with the commented keycloak inputs below, and add the
 # KEYCLOAK_SERVER_URL, KEYCLOAK_REALM, and KEYCLOAK_CLIENT_ID variables plus
-# the KEYCLOAK_CLIENT_SECRET secret (the client needs the specs:read scope),
-# and uncomment GRAPITY_CLIENT_SECRET in the check step.
+# the KEYCLOAK_CLIENT_SECRET secret (the client needs the specs:read scope).
 #
-# Stale specs never fail the pipeline by default. BLOCKING MODE: change the
-# check step to `grapity materialize --check --fail-on-stale`. Note that
-# --fail-on-stale exits non-zero, which marks the step failed (the comment
-# still posts thanks to `if: always()` on the comment step). Do not combine
-# --fail-on-stale with --json in the same step if you also want the JSON
-# output captured: the command exits before later lines in the same shell
-# block run. Use two steps if you need both.
+# Stale specs never fail the pipeline by default. BLOCKING MODE: add
+# fail-on-stale: "true" to the inputs. The comment still posts even when the
+# job goes red.
+#
+# Pin the action to a release tag for reproducibility, e.g.
+# grapitydev/grapity/actions/grapity@v0.17.0
 
 on:
   pull_request:
@@ -39,67 +38,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install grapity CLI
-        run: curl -fsSL https://packages.grapity.dev/install.sh | sh
-
-      - name: Configure registry remote
-        run: |
-          {
-            echo "mode: remote"
-            echo "remote:"
-            echo "  url: ${{ vars.GRAPITY_REGISTRY_URL }}"
-            echo "  auth:"
-            echo "    mode: none"
-            # Authenticated registry (Keycloak client credentials): replace
-            # the mode: none line above with:
-            # echo "    mode: keycloak"
-            # echo "    serverUrl: ${{ vars.KEYCLOAK_SERVER_URL }}"
-            # echo "    realm: ${{ vars.KEYCLOAK_REALM }}"
-            # echo "    clientId: ${{ vars.KEYCLOAK_CLIENT_ID }}"
-          } > "$RUNNER_TEMP/grapity-config.yaml"
-
       - name: Check materialized specs
-        id: check
-        env:
-          GRAPITY_CONFIG_PATH: ${{ runner.temp }}/grapity-config.yaml
-          # Authenticated registry only:
-          # GRAPITY_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
-        run: |
-          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-          {
-            echo "result<<$EOF"
-            grapity materialize --check --json
-            echo "$EOF"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Build PR comment
-        id: comment
-        env:
-          RESULT: ${{ steps.check.outputs.result }}
-        run: |
-          if [ "$(echo "$RESULT" | jq -r '.stale')" = "true" ]; then
-            {
-              echo "> [!WARNING]"
-              echo "> **Spec drift detected**: materialized specs are behind the registry."
-              echo ""
-              echo "| Spec | Materialized | Latest |"
-              echo "| --- | --- | --- |"
-              echo "$RESULT" | jq -r '.specs[] | select(.stale) | "| \(.name) | \(.resolved) | \(.latest) |"'
-              echo ""
-              echo "Run \`grapity materialize --force\` locally and commit the updated specs to resolve."
-            } > comment.md
-          else
-            {
-              echo "### ✅ Specs up to date"
-              echo ""
-              echo "All materialized specs match the latest registry versions."
-            } > comment.md
-          fi
-
-      - name: Upsert sticky PR comment
-        if: always()
-        uses: marocchino/sticky-pull-request-comment@v3
+        uses: grapitydev/grapity/actions/grapity@main # pin to a release tag
         with:
-          header: materialize-check
-          skip_unchanged: true
-          path: comment.md
+          command: check
+          registry-url: ${{ vars.GRAPITY_REGISTRY_URL }}
+          auth-mode: none
+          # Authenticated registry (Keycloak client credentials):
+          # auth-mode: keycloak
+          # keycloak-server-url: ${{ vars.KEYCLOAK_SERVER_URL }}
+          # realm: ${{ vars.KEYCLOAK_REALM }}
+          # client-id: ${{ vars.KEYCLOAK_CLIENT_ID }}
+          # client-secret: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
+          # Blocking mode:
+          # fail-on-stale: "true"

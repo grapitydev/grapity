@@ -3,7 +3,7 @@ name: Registry dogfood
 # Grapity on Grapity: our own registry API contract (specs/grapity-registry.yaml)
 # is validated on pull requests and merges to main, and pushed to our public
 # registry when a software release ships, through the same composite action we
-# ship to users (./actions/registry).
+# ship to users (./actions/grapity).
 #
 # The push fires on the publish-registry-spec repository_dispatch sent by
 # binaries.yml once the release assets are uploaded (the composite action
@@ -21,7 +21,7 @@ on:
     branches: [main]
     paths:
       - specs/**
-      - actions/registry/**
+      - actions/grapity/**
       - .github/workflows/registry-dogfood.yml
   push:
     branches: [main]
@@ -48,7 +48,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Validate against the registry
-        uses: ./actions/registry
+        uses: ./actions/grapity
         with:
           command: validate
           spec: specs/grapity-registry.yaml
@@ -85,7 +85,7 @@ jobs:
 
       - name: Push to the registry
         if: steps.changes.outputs.changed == 'true'
-        uses: ./actions/registry
+        uses: ./actions/grapity
         with:
           command: push
           spec: specs/grapity-registry.yaml

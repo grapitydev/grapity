@@ -1,0 +1,227 @@
+name: Grapity
+description: >-
+  Grapity CI for producers and consumers. Producers: validate an API spec
+  against the registry on pull requests and push a new version on merge.
+  Consumers: check materialized specs for drift on pull requests and report
+  it as a sticky PR comment.
+inputs:
+  command:
+    description: 'Operation to run: "validate" (producer PR checks), "push" (producer publish on merge), or "check" (consumer drift detection)'
+    required: true
+  registry-url:
+    description: "Base URL of the Grapity registry (e.g. https://registry.grapity.dev)"
+    required: true
+  auth-mode:
+    description: 'Registry auth mode: "keycloak" (client credentials) or "none" (public specs, anonymous reads)'
+    required: false
+    default: "keycloak"
+  keycloak-server-url:
+    description: "Keycloak server URL (required when auth-mode is keycloak)"
+    required: false
+    default: ""
+  realm:
+    description: "Keycloak realm (required when auth-mode is keycloak)"
+    required: false
+    default: ""
+  client-id:
+    description: "Keycloak client id (client credentials grant; producers need specs:write, consumers specs:read)"
+    required: false
+    default: ""
+  client-secret:
+    description: "Keycloak client secret (required when auth-mode is keycloak)"
+    required: false
+    default: ""
+  audience:
+    description: "Keycloak audience (optional, keycloak auth only)"
+    required: false
+    default: ""
+  spec:
+    description: "Path to the OpenAPI or AsyncAPI document (required for validate and push)"
+    required: false
+    default: ""
+  name:
+    description: "Name of the spec in the registry (required for validate and push)"
+    required: false
+    default: ""
+  visibility:
+    description: 'Spec visibility on push: "private" or "public" (optional, push only)'
+    required: false
+    default: ""
+  prerelease:
+    description: 'Publish as a 0.x pre-release version: "true" or "false" (optional, push only, default: false)'
+    required: false
+    default: ""
+  git-ref:
+    description: "Git commit SHA recorded on the version (optional, push only; defaults to github.sha)"
+    required: false
+    default: ""
+  pushed-by:
+    description: "Identity recorded as the pusher (optional, push only; defaults to github.actor)"
+    required: false
+    default: ""
+  fail-on-stale:
+    description: 'Fail the job when materialized specs are stale: "true" or "false" (optional, check only, default: false warns only)'
+    required: false
+    default: ""
+  post-comment:
+    description: 'Upsert a sticky PR comment with the drift status: "true" or "false" (optional, check only, default: true; requires pull-requests: write)'
+    required: false
+    default: "true"
+  comment-header:
+    description: "Sticky comment header key (optional, check only)"
+    required: false
+    default: "materialize-check"
+  cli-version:
+    description: 'grapity CLI version to install (e.g. v0.16.0, default: latest)'
+    required: false
+    default: "latest"
+
+runs:
+  using: composite
+  steps:
+    - name: Install grapity CLI
+      shell: bash
+      env:
+        GRAPITY_VERSION: ${{ inputs.cli-version }}
+        GRAPITY_FORCE_BINARY: "1"
+      run: curl -fsSL https://packages.grapity.dev/install.sh | sh
+
+    - name: Configure registry remote
+      shell: bash
+      env:
+        AUTH_MODE: ${{ inputs.auth-mode }}
+        AUDIENCE: ${{ inputs.audience }}
+      run: |
+        {
+          echo "mode: remote"
+          echo "remote:"
+          echo "  url: ${{ inputs.registry-url }}"
+          echo "  auth:"
+          if [ "$AUTH_MODE" = "none" ]; then
+            echo "    mode: none"
+          else
+            echo "    mode: keycloak"
+            echo "    serverUrl: ${{ inputs.keycloak-server-url }}"
+            echo "    realm: ${{ inputs.realm }}"
+            echo "    clientId: ${{ inputs.client-id }}"
+            if [ -n "$AUDIENCE" ]; then
+              echo "    audience: $AUDIENCE"
+            fi
+          fi
+        } > "$RUNNER_TEMP/grapity-config.yaml"
+
+    - name: Validate spec
+      if: inputs.command == 'validate'
+      shell: bash
+      env:
+        GRAPITY_CONFIG_PATH: ${{ runner.temp }}/grapity-config.yaml
+        GRAPITY_CLIENT_SECRET: ${{ inputs.client-secret }}
+      run: |
+        set +e
+        OUTPUT=$(grapity registry validate "${{ inputs.spec }}" --against "${{ inputs.name }}" 2>&1 | sed 's/\x1B\[[0-9;]*m//g')
+        STATUS=$?
+        set -e
+        echo "$OUTPUT"
+        {
+          echo "### Grapity compatibility check"
+          echo ""
+          echo '```text'
+          echo "$OUTPUT"
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
+        exit $STATUS
+
+    - name: Push spec
+      if: inputs.command == 'push'
+      shell: bash
+      env:
+        GRAPITY_CONFIG_PATH: ${{ runner.temp }}/grapity-config.yaml
+        GRAPITY_CLIENT_SECRET: ${{ inputs.client-secret }}
+        GIT_REF: ${{ inputs.git-ref || github.sha }}
+        PUSHED_BY: ${{ inputs.pushed-by || github.actor }}
+        VISIBILITY: ${{ inputs.visibility }}
+        PRERELEASE: ${{ inputs.prerelease }}
+      run: |
+        ARGS=(--name "${{ inputs.name }}" --git-ref "$GIT_REF" --pushed-by "$PUSHED_BY")
+        if [ -n "$VISIBILITY" ]; then
+          ARGS+=(--visibility "$VISIBILITY")
+        fi
+        if [ "$PRERELEASE" = "true" ]; then
+          ARGS+=(--prerelease)
+        fi
+        set +e
+        OUTPUT=$(grapity registry push "${{ inputs.spec }}" "${ARGS[@]}" 2>&1 | sed 's/\x1B\[[0-9;]*m//g')
+        STATUS=$?
+        set -e
+        echo "$OUTPUT"
+        {
+          echo "### Grapity registry push"
+          echo ""
+          echo '```text'
+          echo "$OUTPUT"
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
+        exit $STATUS
+
+    - name: Check materialized specs
+      if: inputs.command == 'check'
+      shell: bash
+      env:
+        GRAPITY_CONFIG_PATH: ${{ runner.temp }}/grapity-config.yaml
+        GRAPITY_CLIENT_SECRET: ${{ inputs.client-secret }}
+        FAIL_ON_STALE: ${{ inputs.fail-on-stale }}
+      run: |
+        COMMENT_PATH="$RUNNER_TEMP/grapity-materialize-comment.md"
+
+        # --check --json is invoked without --fail-on-stale so it always
+        # prints the JSON report; blocking is decided below, after the
+        # comment is built, so the sticky comment still reflects the drift
+        # on a red pipeline.
+        set +e
+        RESULT=$(grapity materialize --check --json)
+        STATUS=$?
+        set -e
+        echo "$RESULT"
+
+        if [ "$STATUS" -ne 0 ]; then
+          {
+            echo "### ⚠️ Grapity drift check failed"
+            echo ""
+            echo "\`grapity materialize --check\` exited with an error. See the job logs for details."
+          } > "$COMMENT_PATH"
+          cat "$COMMENT_PATH" >> "$GITHUB_STEP_SUMMARY"
+          exit "$STATUS"
+        fi
+
+        if [ "$(echo "$RESULT" | jq -r '.stale')" = "true" ]; then
+          {
+            echo "> [!WARNING]"
+            echo "> **Spec drift detected**: materialized specs are behind the registry."
+            echo ""
+            echo "| Spec | Materialized | Latest |"
+            echo "| --- | --- | --- |"
+            echo "$RESULT" | jq -r '.specs[] | select(.stale) | "| \(.name) | \(.resolved) | \(.latest) |"'
+            echo ""
+            echo "Run \`grapity materialize --force\` locally and commit the updated specs to resolve."
+          } > "$COMMENT_PATH"
+        else
+          {
+            echo "### ✅ Specs up to date"
+            echo ""
+            echo "All materialized specs match the latest registry versions."
+          } > "$COMMENT_PATH"
+        fi
+        cat "$COMMENT_PATH" >> "$GITHUB_STEP_SUMMARY"
+
+        if [ "$FAIL_ON_STALE" = "true" ] && [ "$(echo "$RESULT" | jq -r '.stale')" = "true" ]; then
+          echo "::error::Stale specs detected (fail-on-stale is enabled)"
+          exit 1
+        fi
+
+    - name: Upsert sticky PR comment
+      if: always() && inputs.command == 'check' && inputs.post-comment != 'false' && github.event_name == 'pull_request'
+      uses: marocchino/sticky-pull-request-comment@v3
+      with:
+        header: ${{ inputs.comment-header }}
+        skip_unchanged: true
+        path: ${{ runner.temp }}/grapity-materialize-comment.md

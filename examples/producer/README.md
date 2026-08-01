@@ -2,9 +2,9 @@
 
 Copy-paste workflow for API repositories that publish their spec to a Grapity
 registry. It uses the composite action
-[`grapitydev/grapity/actions/registry`](../../actions/registry), which
+[`grapitydev/grapity/actions/grapity`](../../actions/grapity), which
 installs the CLI and wraps `grapity registry validate` / `grapity registry
-push`.
+push` (the same action also serves consumers with `command: check`).
 
 | File | What it does |
 | --- | --- |
@@ -28,7 +28,7 @@ add under **Settings > Secrets and variables > Actions**:
 | `GRAPITY_CI_CLIENT_SECRET` | Secret | Client secret (client credentials grant, needs the `specs:write` scope) |
 
 Pin the action to a release tag for reproducibility
-(`grapitydev/grapity/actions/registry@v0.16.0`) instead of `@main`.
+(`grapitydev/grapity/actions/grapity@v0.17.0`) instead of `@main`.
 
 ## Notes
 

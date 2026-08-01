@@ -1,5 +1,31 @@
 name: Grapity materialize check
 
+# SETUP
+# -----
+# Reports spec drift on every pull request: compares grapity-lock.json
+# against the live registry and upserts a sticky PR comment showing either
+# the outdated specs (materialized vs latest version) or an all-clear note.
+#
+# Works out of the box against public specs (anonymous reads): the only
+# configuration needed is a GRAPITY_REGISTRY_URL variable under Settings >
+# Secrets and variables > Actions (e.g. https://registry.grapity.dev). The
+# pull-requests: write permission (already declared) lets the workflow post
+# and update the comment.
+#
+# Authenticated registry (Keycloak client credentials): in the configure step
+# below, swap `mode: none` for the commented keycloak block, add the
+# KEYCLOAK_SERVER_URL, KEYCLOAK_REALM, and KEYCLOAK_CLIENT_ID variables plus
+# the KEYCLOAK_CLIENT_SECRET secret (the client needs the specs:read scope),
+# and uncomment GRAPITY_CLIENT_SECRET in the check step.
+#
+# Stale specs never fail the pipeline by default. BLOCKING MODE: change the
+# check step to `grapity materialize --check --fail-on-stale`. Note that
+# --fail-on-stale exits non-zero, which marks the step failed (the comment
+# still posts thanks to `if: always()` on the comment step). Do not combine
+# --fail-on-stale with --json in the same step if you also want the JSON
+# output captured: the command exits before later lines in the same shell
+# block run. Use two steps if you need both.
+
 on:
   pull_request:
 
@@ -21,19 +47,23 @@ jobs:
           {
             echo "mode: remote"
             echo "remote:"
-            echo "  url: ${{ secrets.GRAPITY_REGISTRY_URL }}"
+            echo "  url: ${{ vars.GRAPITY_REGISTRY_URL }}"
             echo "  auth:"
-            echo "    mode: keycloak"
-            echo "    serverUrl: ${{ secrets.KEYCLOAK_SERVER_URL }}"
-            echo "    realm: ${{ secrets.KEYCLOAK_REALM }}"
-            echo "    clientId: ${{ secrets.KEYCLOAK_CLIENT_ID }}"
+            echo "    mode: none"
+            # Authenticated registry (Keycloak client credentials): replace
+            # the mode: none line above with:
+            # echo "    mode: keycloak"
+            # echo "    serverUrl: ${{ vars.KEYCLOAK_SERVER_URL }}"
+            # echo "    realm: ${{ vars.KEYCLOAK_REALM }}"
+            # echo "    clientId: ${{ vars.KEYCLOAK_CLIENT_ID }}"
           } > "$RUNNER_TEMP/grapity-config.yaml"
 
       - name: Check materialized specs
         id: check
         env:
           GRAPITY_CONFIG_PATH: ${{ runner.temp }}/grapity-config.yaml
-          GRAPITY_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
+          # Authenticated registry only:
+          # GRAPITY_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
         run: |
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           {

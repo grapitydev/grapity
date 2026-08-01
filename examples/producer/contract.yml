@@ -1,0 +1,84 @@
+name: API contract
+
+# SETUP
+# -----
+# Validates your API spec against the Grapity registry on every pull request
+# (breaking changes fail the check, the compatibility report appears in the
+# job summary) and pushes a new version on every merge to main: the registry
+# classifies the diff, assigns the semver version, and stamps it into the
+# stored document. Identical content registers nothing, so re-running the
+# pipeline never creates duplicate versions.
+#
+# This is the same setup the Grapity repository runs for its own registry
+# spec (which pushes on release instead of merge):
+# https://github.com/grapitydev/grapity/blob/main/.github/workflows/registry-dogfood.yml
+#
+# 1. Copy this file to .github/workflows/contract.yml in your API repository.
+# 2. Replace the marked values below: SPEC_PATH (also in on.paths above) and
+#    SPEC_NAME, plus the inline keycloak server URL, realm, and client id.
+#    The client uses the client credentials grant and needs the specs:write
+#    scope.
+# 3. Under Settings > Secrets and variables > Actions add the
+#    GRAPITY_REGISTRY_URL variable (e.g. https://registry.example.com) and
+#    the GRAPITY_CI_CLIENT_SECRET secret.
+# 4. Pin the action to a release tag for reproducibility, e.g.
+#    grapitydev/grapity/actions/registry@v0.16.0
+#
+# Optional push inputs you can add under `with:` in the push job:
+#   visibility: public    make the spec readable without a token
+#   prerelease: "true"    publish 0.x versions while the API is unstable
+# Emergency overrides stay manual: run
+# `grapity registry push --force --reason "..."` yourself, which records the
+# reason in the audit log.
+
+on:
+  pull_request:
+    branches: [main]
+    paths: [openapi.yaml] # <-- SPEC_PATH
+  push:
+    branches: [main]
+    paths: [openapi.yaml] # <-- SPEC_PATH
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    # Fork pull requests never receive repository secrets (GitHub
+    # limitation), so they skip validation instead of failing on a missing
+    # client secret. Maintainers can validate locally with the CLI.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate against the registry
+        uses: grapitydev/grapity/actions/registry@main # pin to a release tag
+        with:
+          command: validate
+          spec: openapi.yaml # <-- SPEC_PATH
+          name: payments-api # <-- SPEC_NAME
+          registry-url: ${{ vars.GRAPITY_REGISTRY_URL }}
+          keycloak-server-url: https://keycloak.example.com
+          realm: my-company
+          client-id: payments-api-ci
+          client-secret: ${{ secrets.GRAPITY_CI_CLIENT_SECRET }}
+
+  push:
+    needs: validate
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Push to the registry
+        uses: grapitydev/grapity/actions/registry@main # pin to a release tag
+        with:
+          command: push
+          spec: openapi.yaml # <-- SPEC_PATH
+          name: payments-api # <-- SPEC_NAME
+          registry-url: ${{ vars.GRAPITY_REGISTRY_URL }}
+          keycloak-server-url: https://keycloak.example.com
+          realm: my-company
+          client-id: payments-api-ci
+          client-secret: ${{ secrets.GRAPITY_CI_CLIENT_SECRET }}

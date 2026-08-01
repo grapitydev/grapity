@@ -4,6 +4,16 @@ This changelog merges the histories of the four previously separate packages
 (`@grapity/core`, `@grapity/registry`, `@grapity/hub`, `@grapity/cli`) into the
 unified `@grapity/grapity` package.
 
+## [0.17.0](https://github.com/grapitydev/grapity/compare/v0.16.0...v0.17.0) (2026-08-01)
+
+
+### Features
+
+* render all-clear materialize comment as a plain success note ([ef25870](https://github.com/grapitydev/grapity/commit/ef25870b554af659ff07da67114a4a56d390933f))
+* render materialize check PR comment as GitHub alerts ([08e156f](https://github.com/grapitydev/grapity/commit/08e156fb93827eda06ca684efd7d6d04fa4a3eb8))
+* reorganize CI examples into single producer and consumer workflows ([efdfc56](https://github.com/grapitydev/grapity/commit/efdfc56e441a86f937f3511682a403459000d44c))
+* replace actions/registry with unified actions/grapity action (validate, push, check) ([e48fe4f](https://github.com/grapitydev/grapity/commit/e48fe4f91321210f5d80a3ba5af5071e8d34a151))
+
 ## [0.16.0](https://github.com/grapitydev/grapity/compare/v0.15.1...v0.16.0) (2026-07-29)
 
 
